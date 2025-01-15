@@ -2,12 +2,15 @@ import type { User } from "@/server/db/schema";
 import { ProfileHeader } from "./ProfileHeader";
 import { BiographySection } from "./BiographySection";
 import { ListsSection } from "./ListsSection";
+import { userListQueries } from "@/server/db/queries/userList";
 
 type ProfileViewProps = {
   user: User;
 };
 
-export const ProfileView = ({ user }: ProfileViewProps) => {
+export const ProfileView = async ({ user }: ProfileViewProps) => {
+  const lists = await userListQueries.getListsByUserId(user.id);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <ProfileHeader user={user} />
@@ -17,7 +20,7 @@ export const ProfileView = ({ user }: ProfileViewProps) => {
           <BiographySection bio={user.bio ?? ""} />
         </div>
         <div className="md:col-span-2">
-          <ListsSection userId={user.id} />
+          <ListsSection userId={user.id} initialLists={lists} />
         </div>
       </div>
     </div>

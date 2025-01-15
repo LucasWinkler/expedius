@@ -21,7 +21,7 @@ export const ProfileHeader = async ({ user }: ProfileHeaderProps) => {
           <h1 className="text-3xl font-bold">{user.name}</h1>
           <p className="text-muted-foreground">@{user.username}</p>
           <div className="mt-2 flex justify-center space-x-4 md:justify-start">
-            <span>{listCount} Place Lists</span>
+            <span>{listCount} Lists</span>
             <span>0 Followers</span>
             <span>0 Following</span>
           </div>

@@ -13,11 +13,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { useUploadThing } from "@/lib/uploadthing";
 import { toast } from "sonner";
+import { FileInput } from "@/components/ui/file-input";
 
 export const SignUpForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -151,18 +153,20 @@ export const SignUpForm = () => {
         <FormField
           control={form.control}
           name="image"
-          render={({ field: { value, onChange, ...field } }) => (
+          render={({ field: { onChange, value, ...field } }) => (
             <FormItem>
-              <FormLabel>Profile Image</FormLabel>
+              <FormLabel>Profile Image (Optional)</FormLabel>
               <FormControl>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => onChange(e.target.files)}
+                <FileInput
+                  onChange={(files) => onChange(files)}
+                  onClear={() => onChange(undefined)}
                   disabled={isUploading}
-                  {...field}
+                  variant="square"
                 />
               </FormControl>
+              <FormDescription>
+                Recommended size: 400x400px. Maximum size: 4MB
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

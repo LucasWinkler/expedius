@@ -30,6 +30,18 @@ export const userListQueries = {
       return 0;
     }
   },
+
+  getById: async (id: string) => {
+    try {
+      const list = await db.query.userList.findFirst({
+        where: eq(userList.id, id),
+      });
+      return list;
+    } catch (error) {
+      console.error("Database error:", error);
+      throw new Error("Failed to fetch list");
+    }
+  },
 };
 
 export default userListQueries;

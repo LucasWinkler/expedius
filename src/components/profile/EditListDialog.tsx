@@ -1,8 +1,5 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "sonner";
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -23,80 +20,63 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { createUserList } from "@/server/actions/userList";
-import { Loader2 } from "lucide-react";
-import { ColorSwatch } from "./ColorSwatch";
-import { listColourPresets } from "@/constants";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { toast } from "sonner";
+import { updateUserList } from "@/server/actions/userList";
 import { useUploadThing } from "@/lib/uploadthing";
-import { FileInput } from "@/components/ui/file-input";
-import { Palette } from "lucide-react";
-import { Check } from "lucide-react";
+import type { UserList } from "@/server/db/schema";
+import { createListSchema, type CreateListInput } from "@/lib/validations/list";
+import { ColorSwatch } from "./ColorSwatch";
+import { Palette, Check, Loader2 } from "lucide-react";
+import { listColourPresets } from "@/constants";
 import { cn } from "@/lib/utils";
-import { UserList } from "@/server/db/schema";
+import { FileInput } from "@/components/ui/file-input";
 
-const createListSchema = z.object({
-  name: z.string().min(1, "Name is required").max(50),
-  description: z.string().max(500).optional(),
-  isPublic: z.boolean().default(false),
-  colour: z
-    .string()
-    .min(1, "Color is required")
-    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
-  image: z
-    .custom<File[]>()
-    .optional()
-    .refine(
-      (files) => {
-        if (!files?.[0]) return true;
-        return files[0].size <= 4 * 1024 * 1024;
-      },
-      {
-        message: "Image must be less than 4MB",
-      },
-    ),
-});
-
-type CreateListInput = z.infer<typeof createListSchema>;
-
-type CreateListDialogProps = {
+type EditListDialogProps = {
+  list: UserList;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (list: UserList) => void;
 };
 
-export const CreateListDialog = ({
+export const EditListDialog = ({
+  list,
   open,
   onOpenChange,
   onSuccess,
-}: CreateListDialogProps) => {
+}: EditListDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { startUpload, isUploading } = useUploadThing("userListImage");
 
   const form = useForm<CreateListInput>({
     resolver: zodResolver(createListSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      isPublic: false,
-      colour: listColourPresets[0],
+      name: list.name,
+      description: list.description ?? "",
+      isPublic: list.isPublic ?? false,
+      colour: list.colour ?? listColourPresets[0],
     },
   });
 
   const onSubmit = async (data: CreateListInput) => {
     try {
       setIsLoading(true);
-      let imageUrl: string | undefined;
+      let imageUrl: string | null | undefined = list.image;
 
-      if (data.image?.[0]) {
+      if (data.image && Array.isArray(data.image)) {
         const uploadResult = await startUpload([data.image[0]]);
         if (!uploadResult) {
           toast.error("Failed to upload image");
           return;
         }
         imageUrl = uploadResult[0].url;
+      } else if (data.image === null) {
+        imageUrl = null;
       }
 
-      const result = await createUserList({
+      const result = await updateUserList(list.id, {
         ...data,
         image: imageUrl,
       });
@@ -107,11 +87,10 @@ export const CreateListDialog = ({
       }
 
       if (result.data) {
-        onOpenChange(false);
-        toast.success("List created successfully");
-        form.reset();
         onSuccess?.(result.data);
       }
+      toast.success("List updated successfully");
+      onOpenChange(false);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
@@ -123,10 +102,8 @@ export const CreateListDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Create New List</DialogTitle>
-          <DialogDescription>
-            Create a new list to organize your favorite places
-          </DialogDescription>
+          <DialogTitle>Edit List</DialogTitle>
+          <DialogDescription>Update your list details</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -139,11 +116,7 @@ export const CreateListDialog = ({
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="My Favorite Places"
-                          {...field}
-                          disabled={isLoading}
-                        />
+                        <Input {...field} disabled={isLoading} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -158,7 +131,6 @@ export const CreateListDialog = ({
                       <FormLabel>Description (Optional)</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="A collection of my favorite spots..."
                           className="min-h-[120px] resize-none"
                           {...field}
                           disabled={isLoading}
@@ -276,8 +248,17 @@ export const CreateListDialog = ({
                       <FormControl>
                         <FileInput
                           onChange={(files) => onChange(files)}
-                          onClear={() => onChange(undefined)}
+                          onClear={() => {
+                            if (value) {
+                              // Clear new selection, keep existing
+                              onChange(undefined);
+                            } else if (list.image) {
+                              // Remove existing image
+                              onChange(null);
+                            }
+                          }}
                           disabled={isLoading}
+                          existingImage={list.image}
                         />
                       </FormControl>
                       <FormDescription>
@@ -303,10 +284,10 @@ export const CreateListDialog = ({
                 {isLoading || isUploading ? (
                   <div className="flex items-center">
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {isUploading ? "Uploading..." : "Creating..."}
+                    {isUploading ? "Uploading..." : "Saving..."}
                   </div>
                 ) : (
-                  "Create List"
+                  "Save Changes"
                 )}
               </Button>
             </div>
@@ -316,5 +297,3 @@ export const CreateListDialog = ({
     </Dialog>
   );
 };
-
-export default CreateListDialog;

@@ -45,8 +45,8 @@ export const userList = pgTable("user_list", {
   description: text("description"),
   image: text("image"),
   colour: text("colour").notNull().default(listColourPresets[0]),
-  isPublic: boolean("is_public").default(false),
-  isDefault: boolean("is_default").default(false),
+  isPublic: boolean("is_public").notNull().default(false),
+  isDefault: boolean("is_default").notNull().default(false),
   ...timestamps,
 });
 

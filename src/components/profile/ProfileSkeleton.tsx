@@ -4,7 +4,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 export const ProfileSkeleton = () => {
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header Skeleton */}
       <div className="flex flex-col items-center md:flex-row md:items-start md:justify-between">
         <div className="flex flex-col items-center md:flex-row md:items-center">
           <Skeleton className="h-32 w-32 rounded-full" />
@@ -34,7 +33,7 @@ export const ProfileSkeleton = () => {
         <div className="md:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Place Lists</CardTitle>
+              <Skeleton className="h-8 w-24" />
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

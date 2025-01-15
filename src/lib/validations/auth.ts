@@ -7,7 +7,7 @@ export const signUpSchema = z
       .string()
       .min(8, "Password must be at least 8 characters")
       .max(100, "Password must be less than 100 characters"),
-    confirmPassword: z.string(),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
     name: z
       .string()
       .min(2, "Name must be at least 2 characters")
@@ -20,7 +20,18 @@ export const signUpSchema = z
         /^[a-zA-Z0-9_-]+$/,
         "Username can only contain letters, numbers, underscores and dashes",
       ),
-    image: z.any().optional(),
+    image: z
+      .custom<File[]>()
+      .optional()
+      .refine(
+        (files) => {
+          if (!files?.[0]) return true;
+          return files[0].size <= 4 * 1024 * 1024;
+        },
+        {
+          message: "Image must be less than 4MB",
+        },
+      ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

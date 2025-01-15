@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import type { UserList } from "@/server/db/schema";
 import userListMutations from "@/server/db/mutations/userList";
 import { getServerSession } from "@/lib/auth/session";
+import { userListQueries } from "@/server/db/queries/userList";
+import type { CreateListInput } from "@/lib/validations/list";
 
 export const createUserList = async (data: {
   name: UserList["name"];
@@ -28,5 +30,69 @@ export const createUserList = async (data: {
     return {
       error: error instanceof Error ? error.message : "Something went wrong",
     };
+  }
+};
+
+export const updateUserList = async (
+  listId: string,
+  data: CreateListInput & { image?: string | null },
+) => {
+  try {
+    const session = await getServerSession();
+    if (!session) {
+      return { error: "Not authenticated" };
+    }
+
+    const list = await userListQueries.getById(listId);
+    if (!list) {
+      return { error: "List not found" };
+    }
+
+    if (list.userId !== session.user.id) {
+      return { error: "Not authorized" };
+    }
+
+    const updatedList = await userListMutations.update(listId, {
+      name: data.name,
+      description: data.description,
+      colour: data.colour,
+      isPublic: data.isPublic,
+      image: data.image,
+    });
+
+    revalidatePath(`/u/${session.user.username}`);
+    return { data: updatedList };
+  } catch (error) {
+    console.error("Failed to update list:", error);
+    return { error: "Failed to update list" };
+  }
+};
+
+export const deleteUserList = async (listId: string) => {
+  try {
+    const session = await getServerSession();
+    if (!session) {
+      return { error: "Not authenticated" };
+    }
+
+    const list = await userListQueries.getById(listId);
+    if (!list) {
+      return { error: "List not found" };
+    }
+
+    if (list.userId !== session.user.id) {
+      return { error: "Not authorized" };
+    }
+
+    if (list.isDefault) {
+      return { error: "Cannot delete default list" };
+    }
+
+    await userListMutations.delete(listId);
+    revalidatePath(`/u/${session.user.username}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete list:", error);
+    return { error: "Failed to delete list" };
   }
 };

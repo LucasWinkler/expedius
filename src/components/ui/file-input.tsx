@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Upload, X } from "lucide-react";
@@ -5,38 +7,53 @@ import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 type FileInputProps = {
-  onChange: (files: File[] | null) => void;
-  value: File[] | null;
+  onChange: (files: File[] | null | undefined) => void;
+  onClear: () => void;
   disabled?: boolean;
   className?: string;
+  existingImage?: string | null;
+  variant?: "landscape" | "square";
 };
 
 export const FileInput = ({
   onChange,
-  value,
+  onClear,
   disabled,
   className,
+  existingImage,
+  variant = "landscape",
 }: FileInputProps) => {
   const [preview, setPreview] = useState<string>();
+  const [isExistingImageHidden, setIsExistingImageHidden] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files?.[0]) {
       setPreview(URL.createObjectURL(files[0]));
+      setIsExistingImageHidden(true);
       onChange(Array.from(files));
     } else {
-      onChange(null);
+      onChange(undefined);
     }
   };
 
   const handleClear = () => {
-    setPreview(undefined);
-    onChange(null);
+    if (preview) {
+      setPreview(undefined);
+      setIsExistingImageHidden(false);
+    } else {
+      setIsExistingImageHidden(true);
+    }
+    onClear();
     if (inputRef.current) {
       inputRef.current.value = "";
     }
   };
+
+  const showPreview =
+    preview || (!preview && existingImage && !isExistingImageHidden);
+  const previewUrl = preview || (isExistingImageHidden ? null : existingImage);
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -50,13 +67,14 @@ export const FileInput = ({
           onClick={() => inputRef.current?.click()}
         >
           <Upload className="mr-2 h-4 w-4" />
-          {preview ? "Change Image" : "Upload Image"}
+          {showPreview ? "Change Image" : "Upload Image"}
         </Button>
-        {preview && (
+        {showPreview && (
           <Button
             type="button"
             variant="outline"
-            size="icon"
+            size="sm"
+            className="p-2"
             onClick={handleClear}
             disabled={disabled}
           >
@@ -72,10 +90,16 @@ export const FileInput = ({
         onChange={handleChange}
         disabled={disabled}
       />
-      {preview && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
+      {showPreview && previewUrl && (
+        <div
+          className={cn(
+            "relative overflow-hidden rounded-lg border bg-muted",
+            variant === "landscape" ? "aspect-video" : "aspect-square",
+            "w-full",
+          )}
+        >
           <img
-            src={preview}
+            src={previewUrl}
             alt="Preview"
             className="h-full w-full object-cover"
           />

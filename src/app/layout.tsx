@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import { Toaster } from "sonner";
-import { QueryProvider } from "@/providers/QueryProvider";
+import Nav from "@/components/layout/Nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +26,7 @@ export const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryProvider>{children}</QueryProvider>
+        {children}
         <Toaster
           position="bottom-right"
           expand={true}

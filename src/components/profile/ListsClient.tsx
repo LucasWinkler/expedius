@@ -5,13 +5,14 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { CreateListDialog } from "./CreateListDialog";
 import { useSession } from "@/lib/auth-client";
-import type { User } from "@/server/db/schema";
+import type { User, UserList } from "@/server/db/schema";
 
 type ListsClientProps = {
   userId: User["id"];
+  onSuccess?: (list: UserList) => void;
 };
 
-export const ListsClient = ({ userId }: ListsClientProps) => {
+export const ListsClient = ({ userId, onSuccess }: ListsClientProps) => {
   const { data: session, isPending } = useSession();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const isOwnProfile = session?.user.id === userId;
@@ -32,6 +33,7 @@ export const ListsClient = ({ userId }: ListsClientProps) => {
       <CreateListDialog
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
+        onSuccess={onSuccess}
       />
     </>
   );
