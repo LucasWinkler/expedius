@@ -30,7 +30,7 @@ export const generateMetadata = async ({ params }: ProfilePageProps) => {
   return { title: `${user.name} (${user.username}) | PoiToGo` };
 };
 
-export const ProfilePage = async ({ params }: ProfilePageProps) => {
+const ProfilePage = async ({ params }: ProfilePageProps) => {
   const username = (await params).username;
   if (!username) {
     notFound();

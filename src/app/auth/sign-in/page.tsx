@@ -2,7 +2,7 @@ import Link from "next/link";
 import { SignInForm } from "@/components/auth/SignInForm";
 import { Home, Search } from "lucide-react";
 
-export const SignInPage = () => {
+const SignInPage = () => {
   return (
     <div className="container mx-auto flex w-full flex-col justify-center space-y-6 px-4 sm:w-[350px]">
       <div className="flex flex-col space-y-2 text-center">
