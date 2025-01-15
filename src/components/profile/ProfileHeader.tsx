@@ -1,7 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { User } from "@/server/db/schema";
 import { userListQueries } from "@/server/db/queries/userList";
-import ProfileActions from "./ProfileActions";
+import { getServerSession } from "@/lib/auth/session";
+import { ProfileActionsWrapper } from "./ProfileActionsWrapper";
 
 type ProfileHeaderProps = {
   user: User;
@@ -9,6 +10,8 @@ type ProfileHeaderProps = {
 
 export const ProfileHeader = async ({ user }: ProfileHeaderProps) => {
   const listCount = await userListQueries.getListsCount(user.id);
+  const session = await getServerSession();
+  const isOwnProfile = session?.user.id === user.id;
 
   return (
     <div className="flex flex-col items-center md:flex-row md:items-start md:justify-between">
@@ -27,7 +30,7 @@ export const ProfileHeader = async ({ user }: ProfileHeaderProps) => {
           </div>
         </div>
       </div>
-      <ProfileActions userId={user.id} />
+      {isOwnProfile && <ProfileActionsWrapper userId={user.id} />}
     </div>
   );
 };
