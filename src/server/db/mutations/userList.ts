@@ -7,6 +7,9 @@ export const userListMutations = {
     name: UserList["name"];
     description?: UserList["description"];
     userId: User["id"];
+    isPublic?: UserList["isPublic"];
+    colour?: UserList["colour"];
+    image?: UserList["image"];
     isDefault?: UserList["isDefault"];
   }) => {
     try {

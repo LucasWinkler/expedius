@@ -8,7 +8,9 @@ import { getServerSession } from "@/lib/auth/session";
 export const createUserList = async (data: {
   name: UserList["name"];
   description?: UserList["description"];
-  isDefault?: UserList["isDefault"];
+  isPublic?: UserList["isPublic"];
+  colour?: UserList["colour"];
+  image?: UserList["image"];
 }) => {
   try {
     const session = await getServerSession();
@@ -17,6 +19,7 @@ export const createUserList = async (data: {
     const list = await userListMutations.create({
       ...data,
       userId: session.user.id,
+      isPublic: data.isPublic ?? false,
     });
 
     revalidatePath(`/u/${session.user.username}`);

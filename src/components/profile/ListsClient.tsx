@@ -12,10 +12,11 @@ type ListsClientProps = {
 };
 
 export const ListsClient = ({ userId }: ListsClientProps) => {
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const isOwnProfile = session?.user.id === userId;
 
+  if (isPending) return null;
   if (!isOwnProfile) return null;
 
   return (
@@ -35,4 +36,5 @@ export const ListsClient = ({ userId }: ListsClientProps) => {
     </>
   );
 };
+
 export default ListsClient;

@@ -31,21 +31,23 @@ export const Nav = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+      <div className="container mx-auto flex h-14 items-center">
         <div className="mr-4 flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <img src="/logo.svg" alt="Logo" className="h-6 w-6" />
+          <Link href="/" className="mr-6 space-x-2">
             <span className="font-bold">PoiToGo</span>
           </Link>
-          {session && (
-            <nav className="flex items-center space-x-6 text-sm font-medium">
-              <Link
-                href="/discover"
-                className="flex items-center space-x-1 transition-colors hover:text-foreground/80"
-              >
-                <Search className="h-4 w-4" />
-                <span>Discover</span>
-              </Link>
+        </div>
+
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          <nav className="flex items-center space-x-6 text-sm font-medium">
+            <Link
+              href="/discover"
+              className="flex items-center space-x-1 transition-colors hover:text-foreground/80"
+            >
+              <Search className="h-4 w-4" />
+              <span>Discover</span>
+            </Link>
+            {session ? (
               <Link
                 href={`/u/${session.user.username}`}
                 className="flex items-center space-x-1 transition-colors hover:text-foreground/80"
@@ -53,11 +55,8 @@ export const Nav = () => {
                 <MapPin className="h-4 w-4" />
                 <span>My Places</span>
               </Link>
-            </nav>
-          )}
-        </div>
-
-        <div className="flex flex-1 items-center justify-end space-x-4">
+            ) : null}
+          </nav>
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

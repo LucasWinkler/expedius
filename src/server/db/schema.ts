@@ -38,7 +38,6 @@ export type User = typeof user.$inferSelect;
 
 export const userList = pgTable("user_list", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
-
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

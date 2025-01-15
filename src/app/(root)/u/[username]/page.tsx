@@ -1,16 +1,14 @@
 import { notFound } from "next/navigation";
-import type { User } from "@/server/db/schema";
 import { ProfileView } from "@/components/profile/ProfileView";
 import userQueries from "@/server/db/queries/user";
 
-interface ProfilePageProps {
-  params: { username: string };
-}
+type ProfilePageProps = {
+  params: Promise<{ username: string }>;
+};
 
-export default async function ProfilePage({ params }: ProfilePageProps) {
-  const { username } = await params;
-
-  if (!username) {
+export const ProfilePage = async (props: ProfilePageProps) => {
+  const params = await props.params;
+  if (!params?.username) {
     notFound();
   }
 
@@ -20,4 +18,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   }
 
   return <ProfileView user={user} />;
-}
+};
+
+export default ProfilePage;

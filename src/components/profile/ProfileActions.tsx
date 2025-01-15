@@ -10,12 +10,12 @@ type ProfileActionsProps = {
 };
 
 export const ProfileActions = ({ userId }: ProfileActionsProps) => {
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
   const isOwnProfile = session?.user.id === userId;
 
-  if (!isOwnProfile) return null;
+  if (isPending) return null;
 
-  return (
+  return isOwnProfile ? (
     <div className="mt-4 flex space-x-2 md:mt-0">
       <Button variant="outline" size="sm">
         <Edit className="mr-2 h-4 w-4" />
@@ -30,7 +30,7 @@ export const ProfileActions = ({ userId }: ProfileActionsProps) => {
         Share
       </Button>
     </div>
-  );
+  ) : null;
 };
 
 export default ProfileActions;
