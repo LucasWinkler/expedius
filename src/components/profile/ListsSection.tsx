@@ -59,6 +59,7 @@ export const ListsSection = ({
               key={list.id}
               list={list}
               showActions={isOwnProfile}
+              showPrivacyBadge={isOwnProfile}
               onEdit={() => handleEdit(list)}
               onDelete={() => handleDelete(list.id)}
               isDefault={list.isDefault}

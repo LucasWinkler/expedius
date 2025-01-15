@@ -28,6 +28,7 @@ type ListCardProps = {
   onEdit: (list: UserList) => void;
   onDelete: () => Promise<void>;
   showActions?: boolean;
+  showPrivacyBadge?: boolean;
   placesCount?: number;
   isDefault: boolean;
 };
@@ -38,6 +39,7 @@ export const ListCard = ({
   onEdit,
   onDelete,
   placesCount = 0,
+  showPrivacyBadge,
 }: ListCardProps) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -154,19 +156,21 @@ export const ListCard = ({
                 <span className="drop-shadow-sm">{placesCount}</span>
               </div>
 
-              <Badge
-                variant="secondary"
-                className={cn(
-                  "h-5 text-xs font-normal",
-                  list.image
-                    ? "bg-white/20 text-white hover:bg-white/30"
-                    : shouldUseWhiteText(list.colour)
+              {showPrivacyBadge && (
+                <Badge
+                  variant="secondary"
+                  className={cn(
+                    "h-5 text-xs font-normal",
+                    list.image
                       ? "bg-white/20 text-white hover:bg-white/30"
-                      : "bg-black/20 text-black hover:bg-black/30",
-                )}
-              >
-                {list.isPublic ? "Public" : "Private"}
-              </Badge>
+                      : shouldUseWhiteText(list.colour)
+                        ? "bg-white/20 text-white hover:bg-white/30"
+                        : "bg-black/20 text-black hover:bg-black/30",
+                  )}
+                >
+                  {list.isPublic ? "Public" : "Private"}
+                </Badge>
+              )}
             </div>
           </CardHeader>
         </Card>

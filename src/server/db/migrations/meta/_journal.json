@@ -36,6 +36,20 @@
       "when": 1736959131451,
       "tag": "0004_flashy_mongoose",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1736975166138,
+      "tag": "0005_green_power_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1736975207028,
+      "tag": "0006_tranquil_queen_noir",
+      "breakpoints": true
     }
   ]
 }

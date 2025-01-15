@@ -11,6 +11,15 @@ export const ourFileRouter = {
     .onUploadComplete(({ file }) => {
       return { fileUrl: file.url };
     }),
+  updateProfileImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
+    .middleware(async () => {
+      const session = await getServerSession();
+      if (!session) throw new Error("Unauthorized");
+      return { userId: session.user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      return { fileUrl: file.url };
+    }),
 
   userListImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(async () => {

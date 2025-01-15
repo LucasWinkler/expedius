@@ -1,13 +1,19 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { userList } from "@/server/db/schema";
 import type { User } from "@/server/db/schema";
+import { getServerSession } from "@/lib/auth/session";
 
 export const userListQueries = {
   getListsByUserId: async (userId: User["id"]) => {
     try {
+      const session = await getServerSession();
+      const isOwnProfile = session?.user.id === userId;
+
       const lists = await db.query.userList.findMany({
-        where: eq(userList.userId, userId),
+        where: isOwnProfile
+          ? eq(userList.userId, userId)
+          : and(eq(userList.userId, userId), eq(userList.isPublic, true)),
         orderBy: (lists, { desc }) => [desc(lists.createdAt)],
       });
       return lists;
@@ -19,10 +25,17 @@ export const userListQueries = {
 
   getListsCount: async (userId: User["id"]) => {
     try {
+      const session = await getServerSession();
+      const isOwnProfile = session?.user.id === userId;
+
       const result = await db
         .select({ count: sql<number>`count(*)` })
         .from(userList)
-        .where(eq(userList.userId, userId));
+        .where(
+          isOwnProfile
+            ? eq(userList.userId, userId)
+            : and(eq(userList.userId, userId), eq(userList.isPublic, true)),
+        );
 
       return Number(result[0]?.count) || 0;
     } catch (error) {

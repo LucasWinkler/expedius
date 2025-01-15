@@ -17,7 +17,10 @@ export const ProfileHeader = async ({ user }: ProfileHeaderProps) => {
     <div className="flex flex-col items-center md:flex-row md:items-start md:justify-between">
       <div className="flex flex-col items-center md:flex-row md:items-center">
         <Avatar className="h-32 w-32">
-          <AvatarImage src={user.image ?? ""} alt={user.name ?? ""} />
+          <AvatarImage
+            src={user.image || undefined}
+            alt={user.name ?? user.username}
+          />
           <AvatarFallback>{user.name?.[0] ?? user.username[0]}</AvatarFallback>
         </Avatar>
         <div className="mt-4 text-center md:ml-6 md:mt-0 md:text-left">
@@ -30,7 +33,7 @@ export const ProfileHeader = async ({ user }: ProfileHeaderProps) => {
           </div>
         </div>
       </div>
-      {isOwnProfile && <ProfileActionsWrapper userId={user.id} />}
+      {isOwnProfile && <ProfileActionsWrapper user={user} />}
     </div>
   );
 };

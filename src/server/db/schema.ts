@@ -30,6 +30,9 @@ export const user = pgTable("user", {
   image: text("image"),
   bio: text("bio"),
   role: rolesEnum("role").notNull().default("user"),
+  usernameUpdatedAt: timestamp("username_updated_at", {
+    withTimezone: true,
+  }),
   isPublic: boolean("is_public").default(false),
   ...timestamps,
 });

@@ -1,9 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { User } from "@/server/db/schema";
 
 type ProfileActionsWrapperProps = {
-  userId: string;
+  user: User;
 };
 
 const ProfileActions = dynamic(() => import("./ProfileActions"), {
@@ -17,12 +18,8 @@ const ProfileActions = dynamic(() => import("./ProfileActions"), {
   ssr: false,
 });
 
-
-
-export const ProfileActionsWrapper = ({
-  userId,
-}: ProfileActionsWrapperProps) => {
-  return <ProfileActions userId={userId} />;
+export const ProfileActionsWrapper = ({ user }: ProfileActionsWrapperProps) => {
+  return <ProfileActions user={user} />;
 };
 
 export default ProfileActionsWrapper;

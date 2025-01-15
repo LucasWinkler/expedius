@@ -12,6 +12,16 @@ export const userQueries = {
       throw new Error("Failed to fetch user");
     }
   },
+  getById: async (id: User["id"]) => {
+    try {
+      return await db.query.user.findFirst({
+        where: (users, { eq }) => eq(users.id, id),
+      });
+    } catch (error) {
+      console.error("Database error:", error);
+      throw new Error("Failed to fetch user");
+    }
+  },
 };
 
 export default userQueries;
