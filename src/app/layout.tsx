@@ -11,7 +11,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "PoiToGo",
-  description: "PoiToGo is a place to find and share your favorite places.",
+  description: "PoiToGo is a place to find and share your favourite places.",
 };
 
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {

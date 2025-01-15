@@ -33,6 +33,7 @@ import { Palette, Check, Loader2 } from "lucide-react";
 import { listColourPresets } from "@/constants";
 import { cn } from "@/lib/utils";
 import { FileInput } from "@/components/ui/file-input";
+import { useDebouncedCallback } from "use-debounce";
 
 type EditListDialogProps = {
   list: UserList;
@@ -169,14 +170,20 @@ export const EditListDialog = ({
                   control={form.control}
                   name="colour"
                   render={({ field }) => {
-                    const [customColor, setCustomColor] =
-                      useState<string>("#000000");
+                    const [customColor, setCustomColor] = useState<string>(
+                      field.value && !listColourPresets.includes(field.value)
+                        ? field.value
+                        : "#000000",
+                    );
 
-                    const handleCustomColorChange = (color: string) => {
-                      const formattedColor = color.toUpperCase();
-                      setCustomColor(formattedColor);
-                      field.onChange(formattedColor);
-                    };
+                    const handleCustomColorChange = useDebouncedCallback(
+                      (color: string) => {
+                        const formattedColor = color.toUpperCase();
+                        setCustomColor(formattedColor);
+                        field.onChange(formattedColor);
+                      },
+                      16,
+                    );
 
                     const isCustomSelected = !listColourPresets.includes(
                       field.value,
@@ -202,10 +209,10 @@ export const EditListDialog = ({
                                 onClick={() => field.onChange(color)}
                               />
                             ))}
-                            <div className="relative">
+                            <div className="relative h-8 w-8">
                               <Input
                                 type="color"
-                                className="peer absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
+                                className="absolute inset-0 h-8 w-8 cursor-pointer opacity-0"
                                 value={customColor}
                                 onChange={(e) =>
                                   handleCustomColorChange(e.target.value)
@@ -217,7 +224,7 @@ export const EditListDialog = ({
                               />
                               <div
                                 className={cn(
-                                  "pointer-events-none flex h-8 w-8 items-center justify-center rounded-md border transition-all peer-hover:scale-110",
+                                  "pointer-events-none absolute inset-0 flex items-center justify-center rounded-md border transition-all",
                                   isCustomSelected &&
                                     "ring-2 ring-primary ring-offset-2",
                                 )}

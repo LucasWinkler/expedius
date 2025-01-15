@@ -33,6 +33,7 @@ import { Palette } from "lucide-react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserList } from "@/server/db/schema";
+import { useDebouncedCallback } from "use-debounce";
 
 const createListSchema = z.object({
   name: z.string().min(1, "Name is required").max(50),
@@ -125,7 +126,7 @@ export const CreateListDialog = ({
         <DialogHeader>
           <DialogTitle>Create New List</DialogTitle>
           <DialogDescription>
-            Create a new list to organize your favorite places
+            Create a new list to organize your favourite places
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -140,7 +141,7 @@ export const CreateListDialog = ({
                       <FormLabel>Name</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="My Favorite Places"
+                          placeholder="My Favourite Places"
                           {...field}
                           disabled={isLoading}
                         />
@@ -158,7 +159,7 @@ export const CreateListDialog = ({
                       <FormLabel>Description (Optional)</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="A collection of my favorite spots..."
+                          placeholder="A collection of my favourite spots..."
                           className="min-h-[120px] resize-none"
                           {...field}
                           disabled={isLoading}
@@ -197,14 +198,20 @@ export const CreateListDialog = ({
                   control={form.control}
                   name="colour"
                   render={({ field }) => {
-                    const [customColor, setCustomColor] =
-                      useState<string>("#000000");
+                    const [customColor, setCustomColor] = useState<string>(
+                      field.value && !listColourPresets.includes(field.value)
+                        ? field.value
+                        : "#000000",
+                    );
 
-                    const handleCustomColorChange = (color: string) => {
-                      const formattedColor = color.toUpperCase();
-                      setCustomColor(formattedColor);
-                      field.onChange(formattedColor);
-                    };
+                    const handleCustomColorChange = useDebouncedCallback(
+                      (color: string) => {
+                        const formattedColor = color.toUpperCase();
+                        setCustomColor(formattedColor);
+                        field.onChange(formattedColor);
+                      },
+                      16,
+                    );
 
                     const isCustomSelected = !listColourPresets.includes(
                       field.value,
@@ -230,10 +237,10 @@ export const CreateListDialog = ({
                                 onClick={() => field.onChange(color)}
                               />
                             ))}
-                            <div className="relative">
+                            <div className="relative h-8 w-8">
                               <Input
                                 type="color"
-                                className="peer absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
+                                className="absolute inset-0 h-8 w-8 cursor-pointer opacity-0"
                                 value={customColor}
                                 onChange={(e) =>
                                   handleCustomColorChange(e.target.value)
@@ -245,7 +252,7 @@ export const CreateListDialog = ({
                               />
                               <div
                                 className={cn(
-                                  "pointer-events-none flex h-8 w-8 items-center justify-center rounded-md border transition-all peer-hover:scale-110",
+                                  "pointer-events-none absolute inset-0 flex items-center justify-center rounded-md border transition-all",
                                   isCustomSelected &&
                                     "ring-2 ring-primary ring-offset-2",
                                 )}

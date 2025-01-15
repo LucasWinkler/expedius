@@ -93,39 +93,49 @@ export const ListCard = ({
               </CardTitle>
 
               {showActions && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      className={cn(
-                        "ml-2 h-8 w-8 shrink-0 backdrop-blur-sm",
-                        list.image
-                          ? "bg-white/20 text-white hover:bg-white/30"
-                          : shouldUseWhiteText(list.colour)
+                <div onClick={(e) => e.preventDefault()}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className={cn(
+                          "ml-2 h-8 w-8 shrink-0",
+                          list.image
                             ? "bg-white/20 text-white hover:bg-white/30"
-                            : "bg-black/20 text-black hover:bg-black/30",
-                      )}
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => onEdit(list)}>
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit List
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => setIsDeleteDialogOpen(true)}
-                      className="text-destructive focus:text-destructive"
-                      disabled={list.isDefault}
-                    >
-                      <Trash className="mr-2 h-4 w-4" />
-                      Delete List
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                            : shouldUseWhiteText(list.colour)
+                              ? "bg-white/20 text-white hover:bg-white/30"
+                              : "bg-black/20 text-black hover:bg-black/30",
+                        )}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onEdit(list);
+                        }}
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        Edit List
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setIsDeleteDialogOpen(true);
+                        }}
+                        className="text-destructive focus:text-destructive"
+                        disabled={list.isDefault}
+                      >
+                        <Trash className="mr-2 h-4 w-4" />
+                        Delete List
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               )}
             </div>
 
