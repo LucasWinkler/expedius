@@ -6,14 +6,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useWatch } from "react-hook-form";
 import type { UseFormReturn } from "react-hook-form";
 import type { SignUpInput } from "@/lib/validations/auth";
+import { PasswordRequirements } from "./PasswordRequirements";
 
 type CredentialsStepProps = {
   form: UseFormReturn<SignUpInput>;
 };
 
 export const CredentialsStep = ({ form }: CredentialsStepProps) => {
+  const password = useWatch({
+    control: form.control,
+    name: "password",
+    defaultValue: "",
+  });
+
   return (
     <>
       <FormField
@@ -38,6 +46,7 @@ export const CredentialsStep = ({ form }: CredentialsStepProps) => {
             <FormControl>
               <Input type="password" {...field} />
             </FormControl>
+            <PasswordRequirements password={password} />
             <FormMessage />
           </FormItem>
         )}

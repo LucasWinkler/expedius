@@ -5,6 +5,7 @@ import { SignUpInput, signUpSchema } from "@/lib/validations/auth";
 import { useUploadThing } from "@/lib/uploadthing";
 import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { checkUsernameAvailability } from "@/server/actions/user";
 
 export type SignUpStep = "credentials" | "profile" | "image";
 
@@ -37,6 +38,18 @@ export const useSignUpForm = () => {
     } else if (step === "profile") {
       const result = await form.trigger(["name", "username"]);
       if (!result) return;
+
+      const username = form.getValues("username");
+      const { available } = await checkUsernameAvailability(username);
+
+      if (!available) {
+        form.setError("username", {
+          type: "manual",
+          message: "This username is already taken",
+        });
+        return;
+      }
+
       setStep("image");
     }
   };
