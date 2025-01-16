@@ -23,7 +23,7 @@ export const UserMenu = ({ user, isPending }: UserMenuProps) => {
   if (isPending) {
     return (
       <Button variant="ghost" size="sm" disabled>
-        <Loader2 className="h-4 w-4 animate-spin" />
+        <Loader2 className="size-4 animate-spin" />
       </Button>
     );
   }
@@ -44,8 +44,8 @@ export const UserMenu = ({ user, isPending }: UserMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
+        <Button variant="ghost" className="relative size-8 rounded-full">
+          <Avatar className="size-8">
             <AvatarImage src={user.image ?? undefined} alt={user.name} />
             <AvatarFallback>{user.name[0]}</AvatarFallback>
           </Avatar>
@@ -54,13 +54,13 @@ export const UserMenu = ({ user, isPending }: UserMenuProps) => {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuItem asChild>
           <Link href={`/u/${user.username}`}>
-            <User className="mr-2 h-4 w-4" />
+            <User className="mr-2 size-4" />
             Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/settings">
-            <Settings className="mr-2 h-4 w-4" />
+            <Settings className="mr-2 size-4" />
             Settings
           </Link>
         </DropdownMenuItem>
@@ -69,7 +69,7 @@ export const UserMenu = ({ user, isPending }: UserMenuProps) => {
           onClick={() => void signOut()}
           className="text-destructive focus:text-destructive"
         >
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="mr-2 size-4" />
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

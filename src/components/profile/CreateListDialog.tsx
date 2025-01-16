@@ -71,6 +71,7 @@ export const CreateListDialog = ({
   onSuccess,
 }: CreateListDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [customColor, setCustomColor] = useState<string>(listColourPresets[0]);
   const { startUpload, isUploading } = useUploadThing("userListImage");
 
   const form = useForm<CreateListInput>({
@@ -82,6 +83,15 @@ export const CreateListDialog = ({
       colour: listColourPresets[0],
     },
   });
+
+  const handleCustomColorChange = useDebouncedCallback(
+    (color: string, onChange: (value: string) => void) => {
+      const formattedColor = color.toUpperCase();
+      setCustomColor(formattedColor);
+      onChange(formattedColor);
+    },
+    16,
+  );
 
   const onSubmit = async (data: CreateListInput) => {
     try {
@@ -113,7 +123,7 @@ export const CreateListDialog = ({
         form.reset();
         onSuccess?.(result.data);
       }
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
@@ -198,21 +208,6 @@ export const CreateListDialog = ({
                   control={form.control}
                   name="colour"
                   render={({ field }) => {
-                    const [customColor, setCustomColor] = useState<string>(
-                      field.value && !listColourPresets.includes(field.value)
-                        ? field.value
-                        : "#000000",
-                    );
-
-                    const handleCustomColorChange = useDebouncedCallback(
-                      (color: string) => {
-                        const formattedColor = color.toUpperCase();
-                        setCustomColor(formattedColor);
-                        field.onChange(formattedColor);
-                      },
-                      16,
-                    );
-
                     const isCustomSelected = !listColourPresets.includes(
                       field.value,
                     );
@@ -237,18 +232,20 @@ export const CreateListDialog = ({
                                 onClick={() => field.onChange(color)}
                               />
                             ))}
-                            <div className="relative h-8 w-8">
+                            <div className="relative size-8">
                               <Input
                                 type="color"
-                                className="absolute inset-0 h-8 w-8 cursor-pointer opacity-0"
+                                className="absolute inset-0 size-8 cursor-pointer opacity-0"
                                 value={customColor}
                                 onChange={(e) =>
-                                  handleCustomColorChange(e.target.value)
+                                  handleCustomColorChange(
+                                    e.target.value,
+                                    field.onChange,
+                                  )
                                 }
                                 disabled={isLoading}
                                 aria-label="Choose custom color"
                                 role="application"
-                                aria-description="Press Enter to open color picker, then use arrow keys to adjust color values"
                               />
                               <div
                                 className={cn(
@@ -260,9 +257,9 @@ export const CreateListDialog = ({
                                 aria-hidden="true"
                               >
                                 {isCustomSelected ? (
-                                  <Check className="h-4 w-4 text-white" />
+                                  <Check className="size-4 text-white" />
                                 ) : (
-                                  <Palette className="h-4 w-4 text-white" />
+                                  <Palette className="size-4 text-white" />
                                 )}
                               </div>
                             </div>
@@ -277,7 +274,7 @@ export const CreateListDialog = ({
                 <FormField
                   control={form.control}
                   name="image"
-                  render={({ field: { onChange, value, ...field } }) => (
+                  render={({ field: { onChange } }) => (
                     <FormItem>
                       <FormLabel>Cover Image (Optional)</FormLabel>
                       <FormControl>
@@ -309,7 +306,7 @@ export const CreateListDialog = ({
               <Button type="submit" disabled={isLoading || isUploading}>
                 {isLoading || isUploading ? (
                   <div className="flex items-center">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 size-4 animate-spin" />
                     {isUploading ? "Uploading..." : "Creating..."}
                   </div>
                 ) : (

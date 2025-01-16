@@ -51,10 +51,10 @@ export const generateMetadata = async ({ params }: ProfilePageProps) => {
   }
 
   if ("type" in user) {
-    return { title: `${user.username} (Private) | PoiToGo` };
+    return { title: `@${user.username} (Private) | PoiToGo` };
   }
 
-  return { title: `${user.name} (${user.username}) | PoiToGo` };
+  return { title: `${user.name} (@${user.username}) | PoiToGo` };
 };
 
 const ProfilePage = async ({ params }: ProfilePageProps) => {

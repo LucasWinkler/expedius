@@ -1,6 +1,6 @@
-import type { User, UserList } from "@/server/db/schema";
+import type { User } from "@/server/db/schema";
 import { db } from "@/server/db";
-import { user, userList } from "@/server/db/schema";
+import { user } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 
 export const userMutations = {

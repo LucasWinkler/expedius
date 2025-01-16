@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, MoreHorizontal, Edit, Trash } from "lucide-react";
 import type { UserList } from "@/server/db/schema";
 import Link from "next/link";
@@ -76,7 +71,10 @@ export const ListCard = ({
                   "object-cover transition-opacity duration-200",
                   imageLoaded ? "opacity-100" : "opacity-0",
                 )}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                quality={75}
                 onLoad={() => setImageLoaded(true)}
+                priority={false}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/50" />
             </>
@@ -110,7 +108,7 @@ export const ListCard = ({
                               : "bg-black/20 text-black hover:bg-black/30",
                         )}
                       >
-                        <MoreHorizontal className="h-4 w-4" />
+                        <MoreHorizontal className="size-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
@@ -120,7 +118,7 @@ export const ListCard = ({
                           onEdit(list);
                         }}
                       >
-                        <Edit className="mr-2 h-4 w-4" />
+                        <Edit className="mr-2 size-4" />
                         Edit List
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
@@ -132,7 +130,7 @@ export const ListCard = ({
                         className="text-destructive focus:text-destructive"
                         disabled={list.isDefault}
                       >
-                        <Trash className="mr-2 h-4 w-4" />
+                        <Trash className="mr-2 size-4" />
                         Delete List
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -152,7 +150,7 @@ export const ListCard = ({
                       : "bg-black/20 text-black hover:bg-black/30",
                 )}
               >
-                <MapPin className="mr-1 h-3 w-3" />
+                <MapPin className="mr-1 size-3" />
                 <span className="drop-shadow-sm">{placesCount}</span>
               </div>
 

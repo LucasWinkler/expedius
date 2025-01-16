@@ -16,7 +16,7 @@ export const ProfileHeader = async ({ user }: ProfileHeaderProps) => {
   return (
     <div className="flex flex-col items-center md:flex-row md:items-start md:justify-between">
       <div className="flex flex-col items-center md:flex-row md:items-center">
-        <Avatar className="h-32 w-32">
+        <Avatar className="size-32">
           <AvatarImage
             src={user.image || undefined}
             alt={user.name ?? user.username}

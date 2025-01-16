@@ -27,7 +27,7 @@ export const ListsClient = ({ userId, onSuccess }: ListsClientProps) => {
         size="sm"
         onClick={() => setIsCreateDialogOpen(true)}
       >
-        <Plus className="mr-2 h-4 w-4" />
+        <Plus className="mr-2 size-4" />
         New List
       </Button>
       <CreateListDialog

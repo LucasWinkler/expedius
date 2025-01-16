@@ -1,7 +1,6 @@
-import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export const middleware = async (request: NextRequest) => {
+export const middleware = async () => {
   // const session = await auth.api.getSession({
   //   headers: request.headers,
   // });

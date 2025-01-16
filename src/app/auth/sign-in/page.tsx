@@ -14,10 +14,7 @@ const SignInPage = () => {
       <SignInForm />
       <div className="flex flex-col space-y-4">
         <p className="px-8 text-center text-sm text-muted-foreground">
-          <Link
-            href="/auth/sign-up"
-            className="hover:text-brand underline underline-offset-4"
-          >
+          <Link href="/auth/sign-up" className="underline underline-offset-4">
             Don&apos;t have an account? Sign Up
           </Link>
         </p>
@@ -26,14 +23,14 @@ const SignInPage = () => {
             href="/"
             className="flex items-center gap-1 hover:text-foreground"
           >
-            <Home className="h-3 w-3" />
+            <Home className="size-3" />
             Home
           </Link>
           <Link
             href="/discover"
             className="flex items-center gap-1 hover:text-foreground"
           >
-            <Search className="h-3 w-3" />
+            <Search className="size-3" />
             <span>Discover</span>
           </Link>
         </div>

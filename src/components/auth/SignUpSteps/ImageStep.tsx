@@ -20,7 +20,7 @@ export const ImageStep = ({ form, isUploading }: ImageStepProps) => {
     <FormField
       control={form.control}
       name="image"
-      render={({ field: { onChange, value, ...field } }) => (
+      render={({ field: { onChange } }) => (
         <FormItem>
           <FormLabel>Profile Image (Optional)</FormLabel>
           <FormControl>

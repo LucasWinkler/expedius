@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Upload, X } from "lucide-react";
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 type FileInputProps = {
   onChange: (files: File[] | null | undefined) => void;
@@ -66,9 +67,10 @@ export const FileInput = ({
           disabled={disabled}
           onClick={() => inputRef.current?.click()}
         >
-          <Upload className="mr-2 h-4 w-4" />
+          <Upload className="mr-2 size-4" />
           {showPreview ? "Change Image" : "Upload Image"}
         </Button>
+
         {showPreview && (
           <Button
             type="button"
@@ -78,7 +80,7 @@ export const FileInput = ({
             onClick={handleClear}
             disabled={disabled}
           >
-            <X className="h-4 w-4" />
+            <X className="size-4" />
           </Button>
         )}
       </div>
@@ -98,10 +100,14 @@ export const FileInput = ({
             "w-full",
           )}
         >
-          <img
+          <Image
             src={previewUrl}
             alt="Preview"
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            quality={60}
+            priority={false}
           />
         </div>
       )}

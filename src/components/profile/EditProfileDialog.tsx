@@ -96,7 +96,7 @@ export const EditProfileDialog = ({
         onSuccess?.(result.data);
         onOpenChange(false);
       }
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
@@ -178,7 +178,7 @@ export const EditProfileDialog = ({
               <FormField
                 control={form.control}
                 name="image"
-                render={({ field: { onChange, value, ...field } }) => (
+                render={({ field: { onChange, value } }) => (
                   <FormItem>
                     <FormLabel>Profile Picture</FormLabel>
                     <FormControl>
@@ -241,7 +241,7 @@ export const EditProfileDialog = ({
               <Button type="submit" disabled={isLoading || isUploading}>
                 {isLoading || isUploading ? (
                   <div className="flex items-center">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 size-4 animate-spin" />
                     {isUploading ? "Uploading..." : "Saving..."}
                   </div>
                 ) : (

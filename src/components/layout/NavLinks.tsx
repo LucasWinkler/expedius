@@ -15,7 +15,7 @@ export const NavLinks = ({ user }: NavLinksProps) => {
         href="/discover"
         className="flex items-center space-x-1 transition-colors hover:text-foreground/80"
       >
-        <Search className="h-4 w-4" />
+        <Search className="size-4" />
         <span>Discover</span>
       </Link>
       {user ? (
@@ -23,7 +23,7 @@ export const NavLinks = ({ user }: NavLinksProps) => {
           href={`/u/${user.username}`}
           className="flex items-center space-x-1 transition-colors hover:text-foreground/80"
         >
-          <MapPin className="h-4 w-4" />
+          <MapPin className="size-4" />
           <span>My Places</span>
         </Link>
       ) : null}

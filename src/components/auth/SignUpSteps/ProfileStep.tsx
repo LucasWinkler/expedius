@@ -39,7 +39,7 @@ export const ProfileStep = ({ form }: ProfileStepProps) => {
     try {
       const { available } = await checkUsernameAvailability(value);
       setIsAvailable(available);
-    } catch (error) {
+    } catch {
       setIsAvailable(null);
     } finally {
       setIsChecking(false);
@@ -77,11 +77,11 @@ export const ProfileStep = ({ form }: ProfileStepProps) => {
                 {username.length >= 3 && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     {isChecking ? (
-                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
                     ) : isAvailable ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <CheckCircle2 className="size-4 text-green-500" />
                     ) : (
-                      <XCircle className="h-4 w-4 text-destructive" />
+                      <XCircle className="size-4 text-destructive" />
                     )}
                   </div>
                 )}

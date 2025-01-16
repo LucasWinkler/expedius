@@ -35,7 +35,7 @@ export const ColorSwatch = ({
           ? "Open color picker to choose custom color"
           : `Select ${color} color for list card`
       }
-      aria-pressed={selected}
+      aria-checked={selected}
       role="radio"
     >
       {selected ? (

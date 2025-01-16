@@ -33,7 +33,7 @@ export const DeleteListDialog = ({
       setIsLoading(true);
       await onDelete();
       onOpenChange(false);
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete list");
     } finally {
       setIsLoading(false);

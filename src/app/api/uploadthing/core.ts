@@ -17,18 +17,16 @@ export const ourFileRouter = {
       if (!session) throw new Error("Unauthorized");
       return { userId: session.user.id };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ file }) => {
       return { fileUrl: file.url };
     }),
-
   userListImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(async () => {
       const session = await getServerSession();
       if (!session) throw new Error("Unauthorized");
       return { userId: session.user.id };
     })
-
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ file }) => {
       return { fileUrl: file.url };
     }),
 } satisfies FileRouter;

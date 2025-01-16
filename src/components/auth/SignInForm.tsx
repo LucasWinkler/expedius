@@ -36,16 +36,16 @@ export const SignInForm = () => {
       await signIn.email(data, {
         onSuccess: () => {
           toast.success("Welcome back!", {
-            description: "You have been successfully signed in."
-          })
+            description: "You have been successfully signed in.",
+          });
         },
         onError: (ctx) => {
           toast.error("Sign in failed", {
-            description: ctx.error.message
-          })
+            description: ctx.error.message,
+          });
         },
       });
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
@@ -84,7 +84,7 @@ export const SignInForm = () => {
         <Button type="submit" disabled={isLoading}>
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 size-4 animate-spin" />
               Signing in...
             </>
           ) : (
