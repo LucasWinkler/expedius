@@ -7,6 +7,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { listColourPresets } from "@/constants";
+import { relations } from "drizzle-orm";
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -98,3 +99,21 @@ export const verification = pgTable("verification", {
 });
 
 export type Verification = typeof verification.$inferSelect;
+
+export const listPlace = pgTable("list_place", {
+  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
+  listId: uuid("list_id")
+    .notNull()
+    .references(() => userList.id, { onDelete: "cascade" }),
+  placeId: text("place_id").notNull(),
+  ...timestamps,
+});
+
+export const listPlaceRelations = relations(listPlace, ({ one }) => ({
+  list: one(userList, {
+    fields: [listPlace.listId],
+    references: [userList.id],
+  }),
+}));
+
+export type ListPlace = typeof listPlace.$inferSelect;

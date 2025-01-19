@@ -1,5 +1,23 @@
-const DiscoverPage = () => {
-  return <div>DiscoverPage</div>;
+import { SearchBar } from "@/components/search/SearchBar";
+import { SearchResults } from "@/components/search/SearchResults";
+
+const DiscoverPage = async ({
+  searchParams,
+}: {
+  searchParams: { q?: string };
+}) => {
+  const query = (await searchParams).q;
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8 flex flex-col items-center">
+        <h1 className="mb-4 text-3xl font-bold">Discover Places</h1>
+        <SearchBar initialQuery={query} />
+      </div>
+
+      <SearchResults  query={query} />
+    </div>
+  );
 };
 
 export default DiscoverPage;

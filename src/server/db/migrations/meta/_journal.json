@@ -50,6 +50,13 @@
       "when": 1736975207028,
       "tag": "0006_tranquil_queen_noir",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1737046356481,
+      "tag": "0007_huge_taskmaster",
+      "breakpoints": true
     }
   ]
 }
