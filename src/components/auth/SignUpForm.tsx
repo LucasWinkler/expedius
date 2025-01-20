@@ -9,10 +9,19 @@ import { CredentialsStep } from "./SignUpSteps/CredentialsStep";
 import { ProfileStep } from "./SignUpSteps/ProfileStep";
 import { ImageStep } from "./SignUpSteps/ImageStep";
 import { StepIndicator } from "./SignUpSteps/StepIndicator";
+import AuthCard from "./AuthCard";
 
 export const SignUpForm = () => {
-  const { form, step, isLoading, isUploading, nextStep, prevStep, onSubmit } =
-    useSignUpForm();
+  const {
+    form,
+    step,
+    isLoading,
+    isUploading,
+    nextStep,
+    prevStep,
+    onSubmit,
+    altActionLink,
+  } = useSignUpForm();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -39,60 +48,66 @@ export const SignUpForm = () => {
   }, [step]);
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-4">
-          <StepIndicator currentStep={step} />
+    <AuthCard
+      heading="Create an account"
+      subheading="Enter your details below to create your account"
+      altAction="Already have an account? Sign In"
+      altActionLink={altActionLink}
+    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-4">
+            <StepIndicator currentStep={step} />
+            {step === "credentials" && <CredentialsStep form={form} />}
+            {step === "profile" && <ProfileStep form={form} />}
+            {step === "image" && (
+              <ImageStep form={form} isUploading={isUploading} />
+            )}
+          </div>
 
-          {step === "credentials" && <CredentialsStep form={form} />}
-          {step === "profile" && <ProfileStep form={form} />}
-          {step === "image" && (
-            <ImageStep form={form} isUploading={isUploading} />
-          )}
-        </div>
+          <div className="flex justify-between">
+            {step !== "credentials" && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                className="w-[120px]"
+              >
+                <ArrowLeft className="mr-2 size-4" />
+                Back
+              </Button>
+            )}
 
-        <div className="flex justify-between">
-          {step !== "credentials" && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={prevStep}
-              className="w-[120px]"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-          )}
-
-          {step === "image" ? (
-            <Button
-              type="submit"
-              className="w-[120px]"
-              disabled={isLoading || isUploading}
-            >
-              {isLoading || isUploading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {isUploading ? "Uploading..." : "Creating..."}
-                </>
-              ) : (
-                "Create Account"
-              )}
-            </Button>
-          ) : (
-            <Button
-              type="button"
-              onClick={(e) => void nextStep(e)}
-              className="w-[120px]"
-              disabled={isLoading}
-            >
-              Next
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      </form>
-    </Form>
+            {step === "image" ? (
+              <Button
+                type="submit"
+                className="w-[120px]"
+                disabled={isLoading || isUploading}
+              >
+                {isLoading || isUploading ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    {isUploading ? "Uploading..." : "Creating..."}
+                  </>
+                ) : (
+                  "Create Account"
+                )}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={(e) => void nextStep(e)}
+                className="w-[120px]"
+                disabled={isLoading}
+              >
+                Next
+                <ArrowRight className="ml-2 size-4" />
+              </Button>
+            )}
+          </div>
+        </form>
+      </Form>
+    </AuthCard>
   );
 };
 

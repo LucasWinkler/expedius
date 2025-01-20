@@ -20,7 +20,7 @@ export const NavLinks = ({ user }: NavLinksProps) => {
       </Link>
       {user ? (
         <Link
-          href={`/u/${user.username}`}
+          href={`/u/${user.username}#lists`}
           className="flex items-center space-x-1 transition-colors hover:text-foreground/80"
         >
           <MapPin className="size-4" />

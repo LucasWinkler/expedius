@@ -3,7 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "@/server/db";
 import * as schema from "@/server/db/schema";
-import userListMutations from "../db/mutations/userList";
+import userLists from "@/server/data/userLists";
 
 export const authConfig = {
   database: drizzleAdapter(db, {
@@ -55,7 +55,7 @@ export const authConfig = {
     user: {
       create: {
         after: async (user) => {
-          await userListMutations.createDefault(user.id);
+          await userLists.mutations.createDefault(user.id);
         },
       },
     },

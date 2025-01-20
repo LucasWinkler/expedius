@@ -44,7 +44,7 @@ export const ListsSection = ({
   };
 
   return (
-    <Card>
+    <Card id="lists">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{isOwnProfile ? "My Lists" : "Their Lists"}</CardTitle>
         <ListsClient

@@ -6,6 +6,7 @@ import { useUploadThing } from "@/lib/uploadthing";
 import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { checkUsernameAvailability } from "@/server/actions/user";
+import { useSearchParams } from "next/navigation";
 
 export type SignUpStep = "credentials" | "profile" | "image";
 
@@ -13,6 +14,9 @@ export const useSignUpForm = () => {
   const [step, setStep] = useState<SignUpStep>("credentials");
   const [isLoading, setIsLoading] = useState(false);
   const { startUpload, isUploading } = useUploadThing("signUpImage");
+  const searchParams = useSearchParams();
+  const callbackURL = searchParams.get("callbackUrl") ?? undefined;
+  const altActionLink = `/auth/sign-in${callbackURL ? `?callbackUrl=${callbackURL}` : ""}`;
 
   const form = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
@@ -81,6 +85,7 @@ export const useSignUpForm = () => {
           name: data.name,
           username: data.username,
           image: imageUrl,
+          callbackURL,
         },
         {
           onSuccess: () => {
@@ -107,6 +112,7 @@ export const useSignUpForm = () => {
     step,
     isLoading,
     isUploading,
+    altActionLink,
     nextStep,
     prevStep,
     onSubmit,

@@ -1,10 +1,9 @@
 "use server";
 
-import { getServerSession } from "@/lib/auth/session";
+import { getServerSession } from "@/server/auth/session";
 import { UpdateProfileInput } from "@/lib/validations/user";
-import userQueries from "@/server/db/queries/user";
+import users from "@/server/data/users";
 import { revalidatePath } from "next/cache";
-import userMutations from "../db/mutations/user";
 import { auth } from "@/server/auth";
 import { headers } from "next/headers";
 
@@ -13,7 +12,7 @@ export const checkUsernameAvailability = async (username: string) => {
     return { available: false };
   }
 
-  const existingUser = await userQueries.getByUsername(username);
+  const existingUser = await users.queries.getByUsername(username);
 
   return { available: !existingUser };
 };
@@ -27,7 +26,7 @@ export const updateProfile = async (
       return { error: "Unauthorized" };
     }
 
-    const user = await userQueries.getById(session.user.id);
+    const user = await users.queries.getById(session.user.id);
     if (!user) {
       return { error: "User not found" };
     }
@@ -41,13 +40,13 @@ export const updateProfile = async (
         return { error: "You can only change your username every 30 days" };
       }
 
-      const existingUser = await userQueries.getByUsername(data.username);
+      const existingUser = await users.queries.getByUsername(data.username);
       if (existingUser) {
         return { error: "Username already taken" };
       }
     }
 
-    const updatedUser = await userMutations.update(user.id, {
+    const updatedUser = await users.mutations.update(user.id, {
       ...data,
     });
 

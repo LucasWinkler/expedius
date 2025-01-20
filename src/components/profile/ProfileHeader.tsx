@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { User } from "@/server/db/schema";
-import { userListQueries } from "@/server/db/queries/userList";
-import { getServerSession } from "@/lib/auth/session";
+import userLists from "@/server/data/userLists";
+import { getServerSession } from "@/server/auth/session";
 import { ProfileActionsWrapper } from "./ProfileActionsWrapper";
 
 type ProfileHeaderProps = {
@@ -9,8 +9,8 @@ type ProfileHeaderProps = {
 };
 
 export const ProfileHeader = async ({ user }: ProfileHeaderProps) => {
-  const listCount = await userListQueries.getListsCount(user.id);
   const session = await getServerSession();
+  const listCount = await userLists.queries.getCountByUserId(user.id);
   const isOwnProfile = session?.user.id === user.id;
 
   return (

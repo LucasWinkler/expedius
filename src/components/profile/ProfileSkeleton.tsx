@@ -6,7 +6,7 @@ export const ProfileSkeleton = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col items-center md:flex-row md:items-start md:justify-between">
         <div className="flex flex-col items-center md:flex-row md:items-center">
-          <Skeleton className="h-32 w-32 rounded-full" />
+          <Skeleton className="size-32 rounded-full" />
           <div className="mt-4 md:ml-6 md:mt-0">
             <div className="flex flex-col items-center md:items-start">
               <Skeleton className="h-8 w-48" />
@@ -34,7 +34,7 @@ export const ProfileSkeleton = () => {
           </Card>
         </div>
         <div className="md:col-span-2">
-          <Card>
+          <Card id="lists">
             <CardHeader>
               <Skeleton className="h-8 w-24" />
             </CardHeader>

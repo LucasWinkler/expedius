@@ -32,9 +32,9 @@ export const PasswordRequirements = ({
       {requirements.map((req, index) => (
         <div key={index} className="flex items-center space-x-2">
           {req.isMet ? (
-            <Check className="h-4 w-4 text-green-500" />
+            <Check className="size-4 text-green-500" />
           ) : (
-            <X className="h-4 w-4 text-destructive" />
+            <X className="size-4 text-destructive" />
           )}
           <span className="text-sm text-muted-foreground">{req.text}</span>
         </div>

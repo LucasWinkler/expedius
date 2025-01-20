@@ -2,9 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import type { UserList } from "@/server/db/schema";
-import userListMutations from "@/server/db/mutations/userList";
-import { getServerSession } from "@/lib/auth/session";
-import { userListQueries } from "@/server/db/queries/userList";
+import { getServerSession } from "@/server/auth/session";
+import userLists from "@/server/data/userLists";
 import type { CreateListInput } from "@/lib/validations/list";
 
 export const createUserList = async (data: {
@@ -18,7 +17,7 @@ export const createUserList = async (data: {
     const session = await getServerSession();
     if (!session) throw new Error("Unauthorized");
 
-    const list = await userListMutations.create({
+    const list = await userLists.mutations.create({
       ...data,
       userId: session.user.id,
       isPublic: data.isPublic ?? false,
@@ -43,7 +42,7 @@ export const updateUserList = async (
       return { error: "Not authenticated" };
     }
 
-    const list = await userListQueries.getById(listId);
+    const list = await userLists.queries.getById(listId);
     if (!list) {
       return { error: "List not found" };
     }
@@ -52,7 +51,7 @@ export const updateUserList = async (
       return { error: "Not authorized" };
     }
 
-    const updatedList = await userListMutations.update(listId, {
+    const updatedList = await userLists.mutations.update(listId, {
       name: data.name,
       description: data.description,
       colour: data.colour,
@@ -75,7 +74,7 @@ export const deleteUserList = async (listId: string) => {
       return { error: "Not authenticated" };
     }
 
-    const list = await userListQueries.getById(listId);
+    const list = await userLists.queries.getById(listId);
     if (!list) {
       return { error: "List not found" };
     }
@@ -88,7 +87,7 @@ export const deleteUserList = async (listId: string) => {
       return { error: "Cannot delete default list" };
     }
 
-    await userListMutations.delete(listId);
+    await userLists.mutations.delete(listId);
     revalidatePath(`/u/${session.user.username}`);
     return { success: true };
   } catch (error) {

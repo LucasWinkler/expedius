@@ -1,15 +1,15 @@
 import type { User } from "@/server/db/schema";
+import userLists from "@/server/data/userLists";
 import { ProfileHeader } from "./ProfileHeader";
 import { BiographySection } from "./BiographySection";
 import { ListsSection } from "./ListsSection";
-import { userListQueries } from "@/server/db/queries/userList";
 
 type ProfileViewProps = {
   user: User;
 };
 
 export const ProfileView = async ({ user }: ProfileViewProps) => {
-  const lists = await userListQueries.getListsByUserId(user.id);
+  const lists = await userLists.queries.getAllByUserId(user.id);
 
   return (
     <div className="container mx-auto px-4 py-8">

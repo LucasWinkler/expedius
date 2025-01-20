@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@/lib/auth/session";
+import { getServerSession } from "@/server/auth/session";
 import { env } from "@/env";
 
 const FIELD_MASK = [

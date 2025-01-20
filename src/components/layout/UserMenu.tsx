@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, LogOut, User, Settings } from "lucide-react";
+import { Loader2, LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "@/lib/auth-client";
 
@@ -56,12 +56,6 @@ export const UserMenu = ({ user, isPending }: UserMenuProps) => {
           <Link href={`/u/${user.username}`}>
             <User className="mr-2 size-4" />
             Profile
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/settings">
-            <Settings className="mr-2 size-4" />
-            Settings
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

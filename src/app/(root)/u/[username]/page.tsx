@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { ProfileView } from "@/components/profile/ProfileView";
 import { PrivateProfileView } from "@/components/profile/PrivateProfileView";
-import userQueries from "@/server/db/queries/user";
-import { getServerSession } from "@/lib/auth/session";
+import users from "@/server/data/users";
+import { getServerSession } from "@/server/auth/session";
 import { cache } from "react";
 import type { User } from "@/server/db/schema";
 
@@ -22,7 +22,7 @@ const getUser = cache(
   async (username: string): Promise<ProfileResponse | null> => {
     if (!username) return null;
 
-    const user = await userQueries.getByUsername(username);
+    const user = await users.queries.getByUsername(username);
     if (!user) return null;
 
     const session = await getServerSession();

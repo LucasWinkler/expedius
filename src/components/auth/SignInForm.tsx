@@ -17,9 +17,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
+import AuthCard from "./AuthCard";
 
 export const SignInForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const callbackURL = searchParams.get("callbackUrl") ?? undefined;
+  const altActionLink = `/auth/sign-up${callbackURL ? `?callbackUrl=${callbackURL}` : ""}`;
 
   const form = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
@@ -33,18 +38,21 @@ export const SignInForm = () => {
     setIsLoading(true);
 
     try {
-      await signIn.email(data, {
-        onSuccess: () => {
-          toast.success("Welcome back!", {
-            description: "You have been successfully signed in.",
-          });
+      await signIn.email(
+        { ...data, callbackURL },
+        {
+          onSuccess: () => {
+            toast.success("Welcome back!", {
+              description: "You have been successfully signed in.",
+            });
+          },
+          onError: (ctx) => {
+            toast.error("Sign in failed", {
+              description: ctx.error.message,
+            });
+          },
         },
-        onError: (ctx) => {
-          toast.error("Sign in failed", {
-            description: ctx.error.message,
-          });
-        },
-      });
+      );
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
@@ -53,51 +61,58 @@ export const SignInForm = () => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input type="email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+    <AuthCard
+      heading="Welcome back"
+      subheading="Enter your email to sign in to your account"
+      altAction="Don't have an account? Sign Up"
+      altActionLink={altActionLink}
+    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              "Sign in"
+            )}
+          </Button>
+          {form.formState.errors.root && (
+            <p className="text-sm text-destructive">
+              {form.formState.errors.root.message}
+            </p>
           )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 size-4 animate-spin" />
-              Signing in...
-            </>
-          ) : (
-            "Sign in"
-          )}
-        </Button>
-        {form.formState.errors.root && (
-          <p className="text-sm text-destructive">
-            {form.formState.errors.root.message}
-          </p>
-        )}
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </AuthCard>
   );
 };
 
