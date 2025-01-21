@@ -4,7 +4,7 @@ import { SearchResults } from "@/components/search/SearchResults";
 const DiscoverPage = async ({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) => {
   const query = (await searchParams).q;
 
@@ -15,7 +15,7 @@ const DiscoverPage = async ({
         <SearchBar initialQuery={query} />
       </div>
 
-      <SearchResults  query={query} />
+      <SearchResults query={query} />
     </div>
   );
 };

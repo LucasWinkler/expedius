@@ -3,7 +3,7 @@ import { env } from "@/env";
 
 export async function GET(
   request: Request,
-  { params }: { params: { ref: string } },
+  { params }: { params: Promise<{ ref: string }> },
 ) {
   try {
     const photoRef = decodeURIComponent((await params).ref);
