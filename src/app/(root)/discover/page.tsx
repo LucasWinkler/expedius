@@ -1,5 +1,10 @@
 import { SearchBar } from "@/components/search/SearchBar";
 import { SearchResults } from "@/components/search/SearchResults";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Discover | PoiTogo",
+};
 
 const DiscoverPage = async ({
   searchParams,
