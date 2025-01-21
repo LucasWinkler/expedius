@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { MapPin, Star, BookmarkPlus, Plus, Loader2 } from "lucide-react";
 import Image from "next/image";
@@ -22,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { UserList } from "@/server/db/schema";
 
 type PlaceCardProps = {
   place: {
@@ -32,33 +35,23 @@ type PlaceCardProps = {
     rating?: number;
     userRatingCount?: number;
     priceLevel?: number;
-    savedToLists?: string[]; // Array of list IDs this place is saved to
+    savedToLists?: string[];
   };
   onSave?: (placeId: string, listIds: string[]) => Promise<void>;
-  userLists?: Array<{ id: string; name: string; createdAt: Date }>;
+  userLists?: UserList[] | null;
 };
 
-const tempUserLists = [
-  { id: "1", name: "Favorites", createdAt: new Date() },
-  { id: "2", name: "Restaurants", createdAt: new Date() },
-  { id: "3", name: "Shopping", createdAt: new Date() },
-  { id: "4", name: "Travel", createdAt: new Date() },
-  { id: "5", name: "Travel", createdAt: new Date() },
-  { id: "6", name: "Travel", createdAt: new Date() },
-  { id: "7", name: "Travel", createdAt: new Date() },
-  { id: "8", name: "Travel", createdAt: new Date() },
-  { id: "9", name: "Travel", createdAt: new Date() },
-  { id: "10", name: "Travel", createdAt: new Date() },
-];
+type ImageResult = {
+  base64: string;
+  img: { src: string; width: number; height: number };
+};
 
 export const PlaceCard = ({
   place,
   onSave,
-  // userLists = [],
+  userLists = [],
 }: PlaceCardProps) => {
-  const [imageUrl, setImageUrl] = useState<string>();
   const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const [selectedLists, setSelectedLists] = useState<Set<string>>(
     new Set(place.savedToLists || []),
   );
@@ -66,10 +59,9 @@ export const PlaceCard = ({
   const [isCreateListOpen, setIsCreateListOpen] = useState(false);
   const [newListName, setNewListName] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [image, setImage] = useState<ImageResult | undefined>(undefined);
 
   useEffect(() => {
-    let objectUrl: string | undefined;
-
     const loadImage = async () => {
       if (place.photo && !imageError) {
         try {
@@ -78,9 +70,9 @@ export const PlaceCard = ({
           );
           if (!response.ok) throw new Error("Failed to load image");
 
-          const blob = await response.blob();
-          objectUrl = URL.createObjectURL(blob);
-          setImageUrl(objectUrl);
+          const image: ImageResult = await response.json();
+
+          setImage(image);
         } catch (err) {
           console.error("Error loading image:", err);
           setImageError(true);
@@ -89,12 +81,6 @@ export const PlaceCard = ({
     };
 
     loadImage();
-
-    return () => {
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
-    };
   }, [place.photo, imageError]);
 
   const renderPriceLevel = (level?: number) => {
@@ -127,26 +113,18 @@ export const PlaceCard = ({
       <Link href={`/place/${place.id}`} className="block">
         <Card className="overflow-hidden transition-all hover:shadow-lg">
           <div className="relative aspect-[3/2] overflow-hidden bg-muted">
-            {imageUrl && !imageError ? (
+            {image && !imageError ? (
               <>
                 <Image
-                  src={imageUrl}
+                  {...image.img}
+                  blurDataURL={image.base64}
+                  placeholder="blur"
                   alt={place.name}
-                  fill
-                  className={`object-cover transition-all duration-200 ${
-                    imageLoaded ? "opacity-100" : "opacity-0"
-                  } group-hover:scale-105`}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  onLoad={() => setImageLoaded(true)}
+                  className="h-full w-full object-cover duration-200 group-hover:scale-105"
                 />
-                {!imageLoaded ? (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Loader2 className="size-10 animate-spin" />
-                  </div>
-                ) : null}
               </>
             ) : null}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+            {/* <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" /> */}
             <div
               className="absolute right-2 top-2"
               onClick={(e) => e.preventDefault()}
@@ -180,59 +158,62 @@ export const PlaceCard = ({
                       <Plus className="size-4" />
                     </Button>
                   </div>
-                  {tempUserLists.length > 0 ? <DropdownMenuSeparator /> : null}
+                  {userLists && userLists.length > 0 ? (
+                    <DropdownMenuSeparator />
+                  ) : null}
                   <div
                     className={cn(
-                      tempUserLists.length > 0 ? "px-2 py-1.5" : "p-0",
+                      userLists && userLists.length > 0 ? "px-2 py-1.5" : "p-0",
                     )}
                   >
                     <ScrollArea
                       type="always"
                       className="h-[120px] pr-4 md:h-[160px]"
                     >
-                      {tempUserLists
-                        .sort(
-                          (a, b) =>
-                            b.createdAt.getTime() - a.createdAt.getTime(),
-                        )
-                        .map((list) => (
-                          <label
-                            key={list.id}
-                            htmlFor={`list-${list.id}`}
-                            className={cn(
-                              "mb-2 flex w-full cursor-pointer select-none items-center space-x-2 rounded-md px-2 py-1.5 transition-colors active:bg-accent/60",
-                              selectedLists.has(list.id) && "bg-accent/40",
-                              "[@media(hover:hover)]:hover:bg-accent/60",
-                            )}
-                            onClick={() => {
-                              const newSelected = new Set(selectedLists);
-                              if (selectedLists.has(list.id)) {
-                                newSelected.delete(list.id);
-                              } else {
-                                newSelected.add(list.id);
-                              }
-                              setSelectedLists(newSelected);
-                            }}
-                          >
-                            <Checkbox
-                              id={`list-${list.id}`}
-                              checked={selectedLists.has(list.id)}
-                              onCheckedChange={(checked) => {
+                      {userLists &&
+                        userLists
+                          .sort(
+                            (a, b) =>
+                              b.createdAt.getTime() - a.createdAt.getTime(),
+                          )
+                          .map((list) => (
+                            <label
+                              key={list.id}
+                              htmlFor={`list-${list.id}`}
+                              className={cn(
+                                "mb-2 flex w-full cursor-pointer select-none items-center space-x-2 rounded-md px-2 py-1.5 transition-colors active:bg-accent/60",
+                                selectedLists.has(list.id) && "bg-accent/40",
+                                "[@media(hover:hover)]:hover:bg-accent/60",
+                              )}
+                              onClick={() => {
                                 const newSelected = new Set(selectedLists);
-                                if (checked) {
-                                  newSelected.add(list.id);
-                                } else {
+                                if (selectedLists.has(list.id)) {
                                   newSelected.delete(list.id);
+                                } else {
+                                  newSelected.add(list.id);
                                 }
                                 setSelectedLists(newSelected);
                               }}
-                              className="size-4 rounded-[4px] border-2 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
-                            />
-                            <span className="text-sm font-medium leading-none transition-colors [@media(hover:hover)]:group-hover:text-primary">
-                              {list.name}
-                            </span>
-                          </label>
-                        ))}
+                            >
+                              <Checkbox
+                                id={`list-${list.id}`}
+                                checked={selectedLists.has(list.id)}
+                                onCheckedChange={(checked) => {
+                                  const newSelected = new Set(selectedLists);
+                                  if (checked) {
+                                    newSelected.add(list.id);
+                                  } else {
+                                    newSelected.delete(list.id);
+                                  }
+                                  setSelectedLists(newSelected);
+                                }}
+                                className="size-4 rounded-[4px] border-2 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+                              />
+                              <span className="text-sm font-medium leading-none transition-colors [@media(hover:hover)]:group-hover:text-primary">
+                                {list.name}
+                              </span>
+                            </label>
+                          ))}
                     </ScrollArea>
                   </div>
                   <DropdownMenuSeparator />

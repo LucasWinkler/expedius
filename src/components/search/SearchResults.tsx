@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { PlaceCard } from "@/components/places/PlaceCard";
+import { UserList } from "@/server/db/schema";
 
 type SearchResult = {
   id: string;
@@ -18,9 +19,10 @@ type SearchResult = {
 
 type SearchResultsProps = {
   query?: string;
+  userLists?: UserList[] | null;
 };
 
-export const SearchResults = ({ query }: SearchResultsProps) => {
+export const SearchResults = ({ query, userLists }: SearchResultsProps) => {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,7 +94,7 @@ export const SearchResults = ({ query }: SearchResultsProps) => {
       {results.map((place) => (
         <PlaceCard
           key={place.id}
-          // userLists={userLists}
+          userLists={userLists}
           place={{
             id: place.id,
             name: place.displayName.text,

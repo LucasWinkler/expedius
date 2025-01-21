@@ -18,7 +18,7 @@ export const SearchBar = ({ initialQuery }: { initialQuery?: string }) => {
   };
 
   return (
-    <form onSubmit={handleSearch} className="relative w-full max-w-2xl">
+    <form onSubmit={handleSearch} className="relative w-full">
       <Input
         value={query}
         onChange={(e) => setQuery(e.target.value)}

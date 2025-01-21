@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { env } from "@/env";
+import { getImage } from "@/lib/plaiceholder";
 
 export async function GET(
   request: Request,
@@ -21,15 +22,8 @@ export async function GET(
       throw new Error("Failed to fetch image");
     }
 
-    const arrayBuffer = await res.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    return new NextResponse(buffer, {
-      headers: {
-        "Content-Type": "image/jpeg",
-        "Cache-Control": "public, max-age=31536000",
-      },
-    });
+    const image = await getImage(res.url);
+    return NextResponse.json(image);
   } catch (error) {
     console.error("Photo API error:", error);
     return new NextResponse("Failed to fetch image", { status: 500 });

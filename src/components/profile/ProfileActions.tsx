@@ -7,6 +7,8 @@ import { useSession } from "@/lib/auth-client";
 import type { User } from "@/server/db/schema";
 import { useRouter } from "next/navigation";
 import EditProfileDialog from "./EditProfileDialog";
+import { toast } from "sonner";
+import copyTextToClipboard from "@uiw/copy-to-clipboard";
 
 type ProfileActionsProps = {
   user: User;
@@ -18,11 +20,22 @@ export const ProfileActions = ({ user }: ProfileActionsProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const isOwnProfile = session?.user.id === user.id;
 
-  const handleSuccess = async (updatedUser: User) => {
+  const handleEditSuccess = async (updatedUser: User) => {
     if (updatedUser.username !== user.username) {
       router.push(`/u/${updatedUser.username}`);
     } else {
       router.refresh();
+    }
+  };
+
+  const handleShare = () => {
+    try {
+      copyTextToClipboard(
+        `${window.location.origin}${window.location.pathname}`,
+      );
+      toast.success("Link copied to clipboard");
+    } catch {
+      toast.error("Failed to copy link to clipboard");
     }
   };
 
@@ -39,7 +52,7 @@ export const ProfileActions = ({ user }: ProfileActionsProps) => {
           <Edit className="mr-2 size-4" />
           Edit Profile
         </Button>
-        <Button variant="outline" size="sm">
+        <Button onClick={handleShare} variant="outline" size="sm">
           <Share2 className="mr-2 size-4" />
           Share
         </Button>
@@ -49,7 +62,7 @@ export const ProfileActions = ({ user }: ProfileActionsProps) => {
         user={user}
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
-        onSuccess={handleSuccess}
+        onSuccess={handleEditSuccess}
       />
     </>
   ) : null;
