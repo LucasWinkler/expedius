@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "@/server/auth/session";
 import { env } from "@/env";
+import type { PlaceSearchResponse } from "@/types";
 
 const FIELD_MASK = [
   "places.id",
@@ -12,22 +12,32 @@ const FIELD_MASK = [
   "places.priceLevel",
 ].join(",");
 
-export async function GET(request: Request) {
-  const session = await getServerSession();
-  if (!session) {
-    return new NextResponse("Unauthorized", { status: 401 });
+const cache = new Map<
+  string,
+  {
+    data: PlaceSearchResponse;
+    timestamp: number;
   }
+>();
+const CACHE_DURATION = 3600000; // 1 hour in milliseconds
 
+export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q");
-
+  const size = searchParams.get("size") ?? 10;
   if (!query) {
     return new NextResponse("Missing query parameter", { status: 400 });
   }
 
+  const cacheKey = `search:${query}`;
+  const cached = cache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    return NextResponse.json(cached.data);
+  }
+
   try {
     const res = await fetch(
-      `https://places.googleapis.com/v1/places:searchText`,
+      `${env.GOOGLE_PLACES_API_BASE_URL}/places:searchText`,
       {
         method: "POST",
         headers: {
@@ -38,11 +48,14 @@ export async function GET(request: Request) {
         body: JSON.stringify({
           textQuery: query,
           languageCode: "en",
+          pageSize: size,
         }),
       },
     );
 
-    const data = await res.json();
+    const data = (await res.json()) as PlaceSearchResponse;
+    cache.set(cacheKey, { data, timestamp: Date.now() });
+
     return NextResponse.json(data);
   } catch (error) {
     console.error("Places API error:", error);

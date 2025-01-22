@@ -3,6 +3,7 @@ import userLists from "@/server/data/userLists";
 import { ProfileHeader } from "./ProfileHeader";
 import { BiographySection } from "./BiographySection";
 import { ListsSection } from "./ListsSection";
+import { getServerSession } from "@/server/auth/session";
 
 type ProfileViewProps = {
   user: User;
@@ -10,6 +11,8 @@ type ProfileViewProps = {
 
 export const ProfileView = async ({ user }: ProfileViewProps) => {
   const lists = await userLists.queries.getAllByUserId(user.id);
+  const session = await getServerSession();
+  const isOwnProfile = session?.user.id === user.id;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -20,7 +23,11 @@ export const ProfileView = async ({ user }: ProfileViewProps) => {
           <BiographySection bio={user.bio ?? ""} />
         </div>
         <div className="md:col-span-2">
-          <ListsSection userId={user.id} initialLists={lists} />
+          <ListsSection
+            userId={user.id}
+            initialLists={lists}
+            isOwnProfile={isOwnProfile}
+          />
         </div>
       </div>
     </div>

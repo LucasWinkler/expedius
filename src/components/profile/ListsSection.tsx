@@ -5,7 +5,6 @@ import type { User, UserList } from "@/server/db/schema";
 import { ListCard } from "./ListCard";
 import ListsClient from "./ListsClient";
 import { useState } from "react";
-import { useSession } from "@/lib/auth-client";
 import { EditListDialog } from "./EditListDialog";
 import { deleteUserList } from "@/server/actions/userList";
 import { toast } from "sonner";
@@ -13,16 +12,16 @@ import { toast } from "sonner";
 type ListsSectionProps = {
   userId: User["id"];
   initialLists?: UserList[];
+  isOwnProfile: boolean;
 };
 
 export const ListsSection = ({
   userId,
   initialLists = [],
+  isOwnProfile,
 }: ListsSectionProps) => {
   const [lists, setLists] = useState(initialLists);
   const [editingList, setEditingList] = useState<UserList | null>(null);
-  const { data: session } = useSession();
-  const isOwnProfile = session?.user.id === userId;
 
   const handleEdit = async (list: UserList) => {
     setEditingList(list);
@@ -49,6 +48,7 @@ export const ListsSection = ({
         <CardTitle>{isOwnProfile ? "My Lists" : "Their Lists"}</CardTitle>
         <ListsClient
           userId={userId}
+          isOwnProfile={isOwnProfile}
           onSuccess={(newList) => setLists([newList, ...lists])}
         />
       </CardHeader>

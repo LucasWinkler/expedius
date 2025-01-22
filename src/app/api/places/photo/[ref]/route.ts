@@ -1,16 +1,23 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/env";
-import { getImage } from "@/lib/plaiceholder";
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ ref: string }> },
 ) {
   try {
-    const photoRef = decodeURIComponent((await params).ref);
+    const photoRef = (await params).ref;
+
+    if (!photoRef) {
+      return new NextResponse("Photo reference required", { status: 400 });
+    }
+
+    const searchParams = request.nextUrl.searchParams;
+    const width = searchParams.get("maxWidthPx") ?? 400;
+    const height = searchParams.get("maxHeightPx") ?? 400;
 
     const res = await fetch(
-      `https://places.googleapis.com/v1/${photoRef}/media?maxHeightPx=400&maxWidthPx=400`,
+      `${env.GOOGLE_PLACES_API_BASE_URL}/${photoRef}/media?maxHeightPx=${height}&maxWidthPx=${width}`,
       {
         headers: {
           "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
@@ -19,13 +26,20 @@ export async function GET(
     );
 
     if (!res.ok) {
-      throw new Error("Failed to fetch image");
+      throw new Error(`Failed to fetch photo: ${res.statusText}`);
     }
 
-    const image = await getImage(res.url);
-    return NextResponse.json(image);
+    const contentType = res.headers.get("content-type");
+
+    return new NextResponse(res.body, {
+      headers: {
+        "content-type": contentType || "image/jpeg",
+        "cache-control": "public, max-age=604800, stale-while-revalidate=86400",
+        etag: res.headers.get("etag") || crypto.randomUUID(),
+      },
+    });
   } catch (error) {
-    console.error("Photo API error:", error);
-    return new NextResponse("Failed to fetch image", { status: 500 });
+    console.error("Error fetching place photo:", error);
+    return new NextResponse("Failed to fetch photo", { status: 500 });
   }
 }

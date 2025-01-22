@@ -5,6 +5,15 @@ export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
 
+export const getPlacePhotoUrl = (
+  photoRef: string,
+  width = 400,
+  height = 400,
+) => {
+  const encodedRef = encodeURIComponent(photoRef);
+  return `/api/places/photo/${encodedRef}?maxHeightPx=${height}&maxWidthPx=${width}`;
+};
+
 export const convertImageToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

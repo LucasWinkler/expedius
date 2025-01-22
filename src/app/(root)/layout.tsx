@@ -1,4 +1,4 @@
-import { Nav } from "@/components/layout/Nav";
+import Nav from "@/components/layout/nav";
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (

@@ -50,6 +50,10 @@ export const middleware = async (req: NextRequest) => {
     );
   }
 
+  if (pathname === "/discover" && !req.nextUrl.searchParams.has("q")) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
+  }
+
   return NextResponse.next();
 };
 

@@ -6,16 +6,11 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 
 export const getServerSession = cache(async () => {
-  try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-    return session;
-  } catch (error) {
-    console.error("Failed to get session:", error);
-    return null;
-  }
+  return session;
 });
 
 export const requireSession = cache(

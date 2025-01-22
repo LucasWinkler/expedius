@@ -6,18 +6,20 @@ import type { User, UserList } from "@/server/db/schema";
 import { userList } from "@/server/db/schema";
 import { getServerSession } from "@/server/auth/session";
 import { withErrorHandling } from "@/server/utils/error";
+import { cache } from "react";
 
 export const userLists = {
   queries: {
-    getById: async (id: string) =>
+    getById: cache(async (id: string) =>
       withErrorHandling(async () => {
         const list = await db.query.userList.findFirst({
           where: eq(userList.id, id),
         });
         return list;
       }, "Failed to fetch list"),
+    ),
 
-    getAllByUserId: async (userId: User["id"]) =>
+    getAllByUserId: cache(async (userId: User["id"]) =>
       withErrorHandling(async () => {
         const session = await getServerSession();
         const isOwnProfile = session?.user.id === userId;
@@ -30,8 +32,9 @@ export const userLists = {
         });
         return userLists;
       }, "Failed to fetch lists"),
+    ),
 
-    getCountByUserId: async (userId: User["id"]) =>
+    getCountByUserId: cache(async (userId: User["id"]) =>
       withErrorHandling(async () => {
         const session = await getServerSession();
         const isOwnProfile = session?.user.id === userId;
@@ -46,6 +49,7 @@ export const userLists = {
           );
         return userLists.count;
       }, "Failed to fetch lists count"),
+    ),
   },
 
   mutations: {

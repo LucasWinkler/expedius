@@ -1,35 +1,40 @@
-import { SearchBar } from "@/components/search/SearchBar";
-import { SearchResults } from "@/components/search/SearchResults";
-import { getServerSession } from "@/server/auth/session";
-import userLists from "@/server/data/userLists";
-import { Metadata } from "next";
-import { cache } from "react";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import SearchBar from "@/components/discover/SearchBar";
+import SearchResults from "@/components/discover/SearchResults";
+import SearchSkeleton from "@/components/discover/SearchSkeleton";
 
-export const metadata: Metadata = {
-  title: "Discover | PoiTogo",
+type DiscoverPageProps = {
+  searchParams: Promise<{ q?: string }>;
 };
 
-const getUserLists = cache(async (userId: string) => {
-  return await userLists.queries.getAllByUserId(userId);
-});
-
-const DiscoverPage = async ({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string }>;
-}) => {
+export const generateMetadata = async ({ searchParams }: DiscoverPageProps) => {
   const query = (await searchParams).q;
-  const session = await getServerSession();
-  const lists = session && (await getUserLists(session.user.id));
+  if (!query) return { title: "Find Your Next Adventure | PoiToGo" };
+  return { title: `${query} - Search Results | PoiToGo` };
+};
+
+const DiscoverPage = async ({ searchParams }: DiscoverPageProps) => {
+  const query = (await searchParams).q;
+
+  if (!query) {
+    redirect("/");
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex flex-col items-center">
-        <h1 className="mb-4 text-3xl font-bold">Discover Places</h1>
+    <div className="container mx-auto px-4 py-6 sm:py-8 md:py-10">
+      <div className="mb-8 space-y-4">
         <SearchBar initialQuery={query} />
+        <p className="text-sm text-muted-foreground">
+          Showing results for &quot;{query}&quot;
+        </p>
       </div>
 
-      <SearchResults query={query} userLists={lists} />
+      <div className="mt-6">
+        <Suspense fallback={<SearchSkeleton />}>
+          <SearchResults query={query} />
+        </Suspense>
+      </div>
     </div>
   );
 };
