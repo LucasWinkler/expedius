@@ -75,7 +75,7 @@ export const getPopularCityPlaces = async (userLocation?: {
   }
 
   // Otherwise, return curated list of popular cities
-  return searchPlaces("popular parks near me", 5);
+  return searchPlaces("popular parks near me", 6);
 };
 
 export const getBestRatedRestaurants = async (userLocation?: {
@@ -95,7 +95,7 @@ export const getBestRatedRestaurants = async (userLocation?: {
   }
 
   // Default to highly-rated restaurants in popular areas
-  return searchPlaces("best rated restaurants near me", 5);
+  return searchPlaces("best rated restaurants near me", 6);
 };
 
 export const getPopularAttractions = async (userLocation?: {
@@ -114,66 +114,64 @@ export const getPopularAttractions = async (userLocation?: {
   }
 
   // Default to famous landmarks and attractions
-  return searchPlaces("famous landmarks and tourist attractions near me", 5);
+  return searchPlaces("famous landmarks and tourist attractions near me", 6);
 };
 
-// Helper function for nearby searches
-type SearchOptions = {
-  type: string;
-  rankBy?: "rating" | "distance";
-  minRating?: number;
-};
+// type SearchOptions = {
+//   type: string;
+//   rankBy?: "rating" | "distance";
+//   minRating?: number;
+// };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const searchNearbyPlaces = async (
-  location: { lat: number; lng: number },
-  options: SearchOptions,
-  limit: number = 3,
-): Promise<Place[] | null> => {
-  try {
-    const params = new URLSearchParams({
-      location: `${location.lat},${location.lng}`,
-      type: options.type,
-      rankby: options.rankBy || "rating",
-      ...(options.minRating && { min_rating: options.minRating.toString() }),
-    });
+// const searchNearbyPlaces = async (
+//   location: { lat: number; lng: number },
+//   options: SearchOptions,
+//   limit: number = 3,
+// ): Promise<Place[] | null> => {
+//   try {
+//     const params = new URLSearchParams({
+//       location: `${location.lat},${location.lng}`,
+//       type: options.type,
+//       rankby: options.rankBy || "rating",
+//       ...(options.minRating && { min_rating: options.minRating.toString() }),
+//     });
 
-    const res = await fetch(
-      `${env.BETTER_AUTH_URL}/api/places/nearby?${params.toString()}`,
-      {
-        next: { revalidate: 3600 }, // 1 hour
-      },
-    );
+//     const res = await fetch(
+//       `${env.BETTER_AUTH_URL}/api/places/nearby?${params.toString()}`,
+//       {
+//         next: { revalidate: 3600 }, // 1 hour
+//       },
+//     );
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch nearby places");
-    }
+//     if (!res.ok) {
+//       throw new Error("Failed to fetch nearby places");
+//     }
 
-    const data = await res.json();
-    const validated = placeSearchResponseSchema.parse(data);
-    if (!validated.places) {
-      return null;
-    }
+//     const data = await res.json();
+//     const validated = placeSearchResponseSchema.parse(data);
+//     if (!validated.places) {
+//       return null;
+//     }
 
-    // Process photos and limit results
-    const places = await Promise.all(
-      validated.places.slice(0, limit).map(async (place) => {
-        if (!place.photos?.[0]) {
-          return place;
-        }
+//     // Process photos and limit results
+//     const places = await Promise.all(
+//       validated.places.slice(0, limit).map(async (place) => {
+//         if (!place.photos?.[0]) {
+//           return place;
+//         }
 
-        const photo = await getEnhancedPlacePhoto(place.photos[0].name);
+//         const photo = await getEnhancedPlacePhoto(place.photos[0].name);
 
-        return {
-          ...place,
-          image: photo,
-        };
-      }),
-    );
+//         return {
+//           ...place,
+//           image: photo,
+//         };
+//       }),
+//     );
 
-    return places;
-  } catch (error) {
-    console.error("Failed to fetch nearby places:", error);
-    return null;
-  }
-};
+//     return places;
+//   } catch (error) {
+//     console.error("Failed to fetch nearby places:", error);
+//     return null;
+//   }
+// };

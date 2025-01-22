@@ -112,7 +112,7 @@ export const PlaceCard = ({
     <div className="group relative">
       <Link href={`/place/${place.id}`} className="block">
         <Card className="overflow-hidden transition-all hover:shadow-lg">
-          <div className="relative aspect-[3/2] overflow-hidden bg-muted">
+          <div className="relative aspect-[4/3] overflow-hidden bg-muted">
             {image && !imageError ? (
               <>
                 <Image

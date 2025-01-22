@@ -31,7 +31,7 @@ const DiscoverPage = async ({ searchParams }: DiscoverPageProps) => {
       </div>
 
       <div className="mt-6">
-        <Suspense fallback={<SearchSkeleton />}>
+        <Suspense key={query} fallback={<SearchSkeleton />}>
           <SearchResults query={query} />
         </Suspense>
       </div>

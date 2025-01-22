@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { User, UserList } from "@/server/db/schema";
+import type { UserList } from "@/server/db/schema";
 import { ListCard } from "./ListCard";
 import ListsClient from "./ListsClient";
 import { useState } from "react";
@@ -10,13 +10,11 @@ import { deleteUserList } from "@/server/actions/userList";
 import { toast } from "sonner";
 
 type ListsSectionProps = {
-  userId: User["id"];
   initialLists?: UserList[];
   isOwnProfile: boolean;
 };
 
 export const ListsSection = ({
-  userId,
   initialLists = [],
   isOwnProfile,
 }: ListsSectionProps) => {
@@ -47,7 +45,6 @@ export const ListsSection = ({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{isOwnProfile ? "My Lists" : "Their Lists"}</CardTitle>
         <ListsClient
-          userId={userId}
           isOwnProfile={isOwnProfile}
           onSuccess={(newList) => setLists([newList, ...lists])}
         />

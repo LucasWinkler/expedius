@@ -23,11 +23,7 @@ export const ProfileView = async ({ user }: ProfileViewProps) => {
           <BiographySection bio={user.bio ?? ""} />
         </div>
         <div className="md:col-span-2">
-          <ListsSection
-            userId={user.id}
-            initialLists={lists}
-            isOwnProfile={isOwnProfile}
-          />
+          <ListsSection initialLists={lists} isOwnProfile={isOwnProfile} />
         </div>
       </div>
     </div>
