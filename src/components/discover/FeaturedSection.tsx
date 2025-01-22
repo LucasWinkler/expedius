@@ -91,14 +91,14 @@ export const FeaturedSection = ({
           <CarouselNext className="absolute -right-3 top-1/2 z-10 h-8 w-8 -translate-y-1/2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background" />
         </Carousel>
       </div>
-      <div className="flex justify-start gap-1 px-4 py-2">
+      <div className="flex justify-center gap-1 py-2">
         {Array.from({ length: count }).map((_, index) => (
           <button
             key={index}
-            className={`h-2 rounded-full transition-all ${
+            className={`h-2 rounded-full transition-all sm:h-3 ${
               index === current - 1
-                ? "w-4 bg-zinc-800 dark:bg-zinc-200"
-                : "w-2 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600"
+                ? "w-4 bg-zinc-800 dark:bg-zinc-200 sm:w-6"
+                : "w-2 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 sm:w-3"
             }`}
             onClick={() => api?.scrollTo(index)}
             aria-label={`Go to slide ${index + 1}`}

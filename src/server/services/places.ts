@@ -75,7 +75,7 @@ export const getPopularCityPlaces = async (userLocation?: {
   }
 
   // Otherwise, return curated list of popular cities
-  return searchPlaces("popular parks near me", 6);
+  return searchPlaces("popular parks near me", 5);
 };
 
 export const getBestRatedRestaurants = async (userLocation?: {
@@ -95,7 +95,7 @@ export const getBestRatedRestaurants = async (userLocation?: {
   }
 
   // Default to highly-rated restaurants in popular areas
-  return searchPlaces("best rated restaurants near me", 6);
+  return searchPlaces("best rated restaurants near me", 5);
 };
 
 export const getPopularAttractions = async (userLocation?: {
@@ -114,7 +114,7 @@ export const getPopularAttractions = async (userLocation?: {
   }
 
   // Default to famous landmarks and attractions
-  return searchPlaces("famous landmarks and tourist attractions near me", 6);
+  return searchPlaces("famous landmarks and tourist attractions near me", 5);
 };
 
 // type SearchOptions = {
