@@ -10,6 +10,8 @@ import FeaturedSection from "@/components/discover/FeaturedSection";
 import { Card } from "@/components/ui/card";
 import HeaderWithSearch from "@/components/discover/HeaderWithSearch";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Find Your Next Adventure | PoiToGo",
 };
