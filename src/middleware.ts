@@ -4,7 +4,7 @@ import { betterFetch } from "@better-fetch/fetch";
 
 type Session = typeof auth.$Infer.Session;
 
-const PUBLIC_PATHS = ["/", "/u/"] as const;
+const PUBLIC_PATHS = ["/", "/discover", "/u/"] as const;
 const AUTH_PATHS = ["/auth/sign-in", "/auth/sign-up"] as const;
 const AUTH_API_PREFIX = "/api/auth";
 const UT_API_PREFIX = "/api/uploadthing";
@@ -48,10 +48,6 @@ export const middleware = async (req: NextRequest) => {
     return NextResponse.redirect(
       new URL(`/auth/sign-in?callbackUrl=${redirectUrl}`, req.nextUrl),
     );
-  }
-
-  if (pathname === "/discover" && !req.nextUrl.searchParams.has("q")) {
-    return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
   return NextResponse.next();
