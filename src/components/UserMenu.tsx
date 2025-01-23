@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "@/lib/auth-client";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "./ui/skeleton";
 
 type UserMenuProps = {
   user: Session["user"] | null | undefined;
@@ -24,8 +24,8 @@ export const UserMenu = ({ user, isPending }: UserMenuProps) => {
   if (isPending) {
     return (
       <div className="flex items-center gap-2">
-        <Skeleton className="h-9 w-[67px]" /> {/* Matches "Sign in" button */}
-        <Skeleton className="h-9 w-[68px]" /> {/* Matches "Sign up" button */}
+        <Skeleton className="h-9 w-[67px]" />
+        <Skeleton className="h-9 w-[68px]" />
       </div>
     );
   }

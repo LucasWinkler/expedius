@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, MapPin, LogIn, UserPlus, LogOut } from "lucide-react";
 import { NavLink } from "./nav-link";
 import type { Session } from "@/lib/auth-client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { signOut } from "@/lib/auth-client";
 import Link from "next/link";
@@ -24,6 +24,19 @@ type MobileNavProps = {
 
 export const MobileNav = ({ session, isPending }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>

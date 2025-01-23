@@ -53,42 +53,42 @@ export const SearchBar = ({ initialQuery = "" }: { initialQuery?: string }) => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex w-full gap-2"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="query"
           render={({ field }) => (
-            <FormItem className="flex-1">
+            <FormItem>
               <FormControl>
                 <div className="relative">
-                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Pizza in Austin TX"
-                    className="bg-white pl-10 pr-10"
+                    placeholder="Search for places..."
+                    className="w-full rounded-full border-muted-foreground/20 bg-white py-6 pl-12 pr-32 shadow-lg"
                     {...field}
                     ref={inputRef}
                   />
-
                   {field.value && (
-                    <button
+                    <Button
                       type="button"
                       onClick={handleClear}
-                      className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-[5.5rem] top-1/2 -translate-y-1/2 p-0 text-muted-foreground hover:text-foreground"
                     >
                       <XCircle className="h-4 w-4" />
                       <span className="sr-only">Clear search</span>
-                    </button>
+                    </Button>
                   )}
+                  <Button className="absolute right-0 top-0 h-full rounded-l-none rounded-r-full px-4 py-2 text-sm">
+                    Search
+                  </Button>
                 </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Search</Button>
       </form>
     </Form>
   );
