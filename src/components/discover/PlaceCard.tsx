@@ -7,6 +7,7 @@ import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { UserList } from "@/server/db/schema";
 import BookmarkButton from "./BookmarkButton";
+import { getPriceLevelDisplay } from "@/lib/utils";
 
 export const PlaceCard = ({
   place,
@@ -17,11 +18,7 @@ export const PlaceCard = ({
   priority?: boolean;
   userLists?: UserList[];
 }) => {
-  // rework to use the string (make enum to map it)
-  // const renderPriceLevel = (level?: number) => {
-  //   if (!level) return null;
-  //   return "$$$$".slice(0, level);
-  // };
+  const renderPriceLevel = (level?: string) => getPriceLevelDisplay(level);
 
   return (
     <li className="group list-none">
@@ -52,9 +49,9 @@ export const PlaceCard = ({
               <CardTitle className="line-clamp-1 text-lg group-hover:underline group-hover:underline-offset-4">
                 {place.displayName.text}
               </CardTitle>
-              {/* <span className="text-sm font-medium text-muted-foreground">
-                {place.priceLevel}
-              </span> */}
+              <span className="text-sm font-medium text-muted-foreground">
+                {renderPriceLevel(place.priceLevel)}
+              </span>
             </div>
             {place.rating && (
               <div className="flex items-center gap-1.5">

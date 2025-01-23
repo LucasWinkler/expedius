@@ -43,3 +43,15 @@ export const shouldUseWhiteText = (hexColor: string): boolean => {
   const luminance = getLuminance(hexColor);
   return luminance < 0.6;
 };
+
+export const getPriceLevelDisplay = (level?: string): string | null => {
+  const priceLevelMap: Record<string, string> = {
+    PRICE_LEVEL_FREE: "Free",
+    PRICE_LEVEL_INEXPENSIVE: "$",
+    PRICE_LEVEL_MODERATE: "$$",
+    PRICE_LEVEL_EXPENSIVE: "$$$",
+    PRICE_LEVEL_VERY_EXPENSIVE: "$$$$",
+  };
+
+  return level ? priceLevelMap[level] : null;
+};
