@@ -1,4 +1,4 @@
-import { PlaceCard } from "./PlaceCard";
+import { PlaceCard } from "../places/PlaceCard";
 import { NoResults } from "./NoResults";
 import { searchPlaces } from "@/server/services/places";
 import { getServerSession } from "@/server/auth/session";
@@ -12,7 +12,7 @@ export const SearchResults = async ({ query }: SearchResultsProps) => {
   const places = await searchPlaces(query, 15);
   const session = await getServerSession();
   const lists = session?.user.id
-    ? await userLists.queries.getAllByUserId(session.user.id)
+    ? await userLists.queries.getAllByUserIdWithPlaces(session.user.id)
     : undefined;
 
   if (!places || (places.length === 0 && query)) {

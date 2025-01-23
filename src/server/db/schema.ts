@@ -109,6 +109,18 @@ export const listPlace = pgTable("list_place", {
   ...timestamps,
 });
 
+export const userRelations = relations(user, ({ many }) => ({
+  lists: many(userList),
+}));
+
+export const userListRelations = relations(userList, ({ one, many }) => ({
+  user: one(user, {
+    fields: [userList.userId],
+    references: [user.id],
+  }),
+  places: many(listPlace),
+}));
+
 export const listPlaceRelations = relations(listPlace, ({ one }) => ({
   list: one(userList, {
     fields: [listPlace.listId],

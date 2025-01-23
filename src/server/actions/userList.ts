@@ -95,3 +95,37 @@ export const deleteUserList = async (listId: string) => {
     return { error: "Failed to delete list" };
   }
 };
+
+export const updateUserLists = async ({
+  placeId,
+  selectedLists,
+}: {
+  placeId: string;
+  selectedLists: string[];
+}) => {
+  try {
+    const session = await getServerSession();
+    if (!session) throw new Error("Unauthorized");
+
+    const result = await userLists.mutations.updateSelectedLists(
+      session.user.id,
+      placeId,
+      selectedLists,
+    );
+
+    if (!result.success) {
+      return { error: "Failed to update lists" };
+    }
+
+    const updatedLists = await userLists.queries.getAllByUserIdWithPlaces(
+      session.user.id,
+    );
+
+    return { data: updatedLists };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Something went wrong",
+    };
+  }
+
+};

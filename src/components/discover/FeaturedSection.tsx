@@ -9,7 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { PlaceCard } from "./PlaceCard";
+import { PlaceCard } from "../places/PlaceCard";
 import type { Place } from "@/types";
 import { useEffect, useState } from "react";
 
