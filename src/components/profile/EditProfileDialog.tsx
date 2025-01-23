@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -47,12 +47,8 @@ export const EditProfileDialog = ({
   onOpenChange,
   onSuccess,
 }: EditProfileDialogProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const { startUpload, isUploading } = useUploadThing("updateProfileImage");
-
-  const canChangeUsername =
-    !user.usernameUpdatedAt ||
-    user.usernameUpdatedAt < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
   const form = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
@@ -64,43 +60,47 @@ export const EditProfileDialog = ({
     },
   });
 
+  const isDisabled = isUploading || isPending;
+  const canChangeUsername =
+    !user.usernameUpdatedAt ||
+    user.usernameUpdatedAt < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
   const onSubmit = async (data: UpdateProfileInput) => {
-    try {
-      setIsLoading(true);
+    startTransition(async () => {
+      try {
+        let imageUrl: string | null | undefined = user.image;
 
-      let imageUrl: string | null | undefined = user.image;
+        if (data.image && Array.isArray(data.image)) {
+          const uploadResult = await startUpload([data.image[0]]);
+          if (!uploadResult) {
+            toast.error("Failed to upload image");
+            return;
+          }
+          imageUrl = uploadResult[0].url;
+        } else if (data.image === null) {
+          imageUrl = null;
+        }
 
-      if (data.image && Array.isArray(data.image)) {
-        const uploadResult = await startUpload([data.image[0]]);
-        if (!uploadResult) {
-          toast.error("Failed to upload image");
+        const result = await updateProfile({
+          ...data,
+          image: imageUrl,
+        });
+
+        if (result.error) {
+          toast.error(result.error);
           return;
         }
-        imageUrl = uploadResult[0].url;
-      } else if (data.image === null) {
-        imageUrl = null;
-      }
 
-      const result = await updateProfile({
-        ...data,
-        image: imageUrl,
-      });
-
-      if (result.error) {
-        toast.error(result.error);
-        return;
+        if (result.data) {
+          onSuccess?.(result.data);
+          onOpenChange(false);
+          toast.success("Profile updated successfully");
+          form.reset();
+        }
+      } catch {
+        toast.error("Something went wrong");
       }
-
-      if (result.data) {
-        toast.success("Profile updated successfully");
-        onSuccess?.(result.data);
-        onOpenChange(false);
-      }
-    } catch {
-      toast.error("Something went wrong");
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   return (
@@ -122,7 +122,7 @@ export const EditProfileDialog = ({
                     <FormControl>
                       <Input
                         {...field}
-                        disabled={!canChangeUsername || isLoading}
+                        disabled={!canChangeUsername || isDisabled}
                       />
                     </FormControl>
                     <FormDescription>
@@ -141,7 +141,6 @@ export const EditProfileDialog = ({
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="name"
@@ -149,13 +148,12 @@ export const EditProfileDialog = ({
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input {...field} disabled={isLoading} />
+                      <Input {...field} disabled={isDisabled} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="bio"
@@ -165,7 +163,7 @@ export const EditProfileDialog = ({
                     <FormControl>
                       <Textarea
                         {...field}
-                        disabled={isLoading}
+                        disabled={isDisabled}
                         className="resize-none"
                         rows={4}
                       />
@@ -174,7 +172,6 @@ export const EditProfileDialog = ({
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="image"
@@ -191,7 +188,7 @@ export const EditProfileDialog = ({
                             onChange(null);
                           }
                         }}
-                        disabled={isLoading}
+                        disabled={isDisabled}
                         existingImage={user.image}
                         variant="square"
                       />
@@ -203,7 +200,6 @@ export const EditProfileDialog = ({
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="isPublic"
@@ -221,7 +217,7 @@ export const EditProfileDialog = ({
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        disabled={isLoading}
+                        disabled={isDisabled}
                       />
                     </FormControl>
                   </FormItem>
@@ -234,12 +230,12 @@ export const EditProfileDialog = ({
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                disabled={isLoading}
+                disabled={isDisabled}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading || isUploading}>
-                {isLoading || isUploading ? (
+              <Button type="submit" disabled={isDisabled}>
+                {isDisabled ? (
                   <div className="flex items-center">
                     <Loader2 className="mr-2 size-4 animate-spin" />
                     {isUploading ? "Uploading..." : "Saving..."}

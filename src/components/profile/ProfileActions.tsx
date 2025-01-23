@@ -1,18 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit, Share2 } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import type { User } from "@/server/db/schema";
 import { useRouter } from "next/navigation";
-import EditProfileDialog from "./EditProfileDialog";
 import { toast } from "sonner";
 import copyTextToClipboard from "@uiw/copy-to-clipboard";
 
 type ProfileActionsProps = {
   user: User;
 };
+
+const EditProfileDialog = lazy(() => import("./EditProfileDialog"));
 
 export const ProfileActions = ({ user }: ProfileActionsProps) => {
   const { data: session, isPending } = useSession();
@@ -58,12 +59,16 @@ export const ProfileActions = ({ user }: ProfileActionsProps) => {
         </Button>
       </div>
 
-      <EditProfileDialog
-        user={user}
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        onSuccess={handleEditSuccess}
-      />
+      {isEditDialogOpen && (
+        <Suspense fallback={null}>
+          <EditProfileDialog
+            user={user}
+            open={isEditDialogOpen}
+            onOpenChange={setIsEditDialogOpen}
+            onSuccess={handleEditSuccess}
+          />
+        </Suspense>
+      )}
     </>
   ) : null;
 };

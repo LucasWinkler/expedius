@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import type { Place } from "@/types";
 import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import BookmarkButton from "./BookmarkButton";
 import { getPriceLevelDisplay } from "@/lib/utils";
 import { UserListForPlaceCard } from "@/server/data/userLists";
+import placeImageFallback from "../../../public/place-image-fallback.webp";
 
 export const PlaceCard = ({
   place,
@@ -18,6 +20,17 @@ export const PlaceCard = ({
   priority?: boolean;
   userLists?: UserListForPlaceCard[];
 }) => {
+  const [selectedLists, setSelectedLists] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const initialLists = new Set(
+      userLists
+        ?.filter((list) => list.places.some((p) => p.placeId === place.id))
+        .map((list) => list.id),
+    );
+    setSelectedLists(initialLists);
+  }, [userLists, place.id]);
+
   const renderPriceLevel = (level?: string) => getPriceLevelDisplay(level);
 
   return (
@@ -25,7 +38,7 @@ export const PlaceCard = ({
       <Link href={`/place/${place.id}`} className="block">
         <Card className="overflow-hidden bg-muted shadow-none transition-all hover:shadow-md">
           <div className="relative m-4 overflow-hidden rounded-lg">
-            {place.image && (
+            {place.image ? (
               <Image
                 className="aspect-[4/3] h-full w-full rounded-lg object-cover duration-200 ease-in-out group-hover:scale-105"
                 src={place.image.url}
@@ -36,12 +49,25 @@ export const PlaceCard = ({
                 alt={place.displayName.text}
                 priority={priority}
               />
+            ) : (
+              <Image
+                className="aspect-[4/3] h-full w-full rounded-lg object-cover duration-200 ease-in-out group-hover:scale-105"
+                src={placeImageFallback}
+                placeholder="blur"
+                alt=""
+                priority={priority}
+              />
             )}
             <div
               className="absolute right-2 top-2"
               onClick={(e) => e.stopPropagation()}
             >
-              <BookmarkButton placeId={place.id} userLists={userLists} />
+              <BookmarkButton
+                placeId={place.id}
+                userLists={userLists}
+                selectedLists={selectedLists}
+                setSelectedLists={setSelectedLists}
+              />
             </div>
           </div>
           <CardHeader className="space-y-2 p-4 pb-2 pt-0">

@@ -10,13 +10,17 @@ type ProfileViewProps = {
 };
 
 export const ProfileView = async ({ user }: ProfileViewProps) => {
-  const lists = await userLists.queries.getAllByUserId(user.id);
   const session = await getServerSession();
+  const lists = await userLists.queries.getAllByUserId(user.id);
   const isOwnProfile = session?.user.id === user.id;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ProfileHeader user={user} />
+      <ProfileHeader
+        user={user}
+        isOwnProfile={isOwnProfile}
+        listCount={lists.length}
+      />
 
       <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
         <div className="md:col-span-1">
