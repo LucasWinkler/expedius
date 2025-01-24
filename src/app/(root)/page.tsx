@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import DiscoverHero from "@/components/discover/DiscoverHero";
 import FeaturedSections from "@/components/discover/FeaturedSections";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Find Your Next Adventure | PoiToGo",

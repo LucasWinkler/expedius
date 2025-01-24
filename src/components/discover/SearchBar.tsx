@@ -1,7 +1,7 @@
 "use client";
 
 import { z } from "zod";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Search, XCircle } from "lucide-react";
@@ -27,7 +27,6 @@ type SearchFormValues = z.infer<typeof searchSchema>;
 
 export const SearchBar = ({ initialQuery = "" }: { initialQuery?: string }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<SearchFormValues>({
@@ -38,12 +37,19 @@ export const SearchBar = ({ initialQuery = "" }: { initialQuery?: string }) => {
   });
 
   function onSubmit(data: SearchFormValues) {
-    const params = new URLSearchParams(searchParams);
+    const searchParams = new URLSearchParams(window.location.search);
     if (data.query) {
-      params.set("q", data.query);
+      searchParams.set("q", data.query);
+    } else {
+      searchParams.delete("q");
     }
 
-    router.push(`/discover?${params.toString()}`);
+    const newUrl = `/discover${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+
+    // Only navigate if the URL actually changes
+    if (newUrl !== window.location.pathname + window.location.search) {
+      router.push(newUrl, { scroll: false });
+    }
   }
 
   const handleClear = () => {

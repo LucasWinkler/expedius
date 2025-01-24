@@ -3,6 +3,8 @@ import SearchBar from "@/components/discover/SearchBar";
 import SearchResults from "@/components/discover/SearchResults";
 import SearchSkeleton from "@/components/discover/SearchSkeleton";
 
+export const experimental_ppr = false;
+
 type DiscoverPageProps = {
   searchParams: Promise<{ q?: string }>;
 };
