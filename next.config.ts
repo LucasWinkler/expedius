@@ -11,9 +11,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    ppr: "incremental",
-  },
 };
 
 export default withPlaiceholder(nextConfig);

@@ -4,8 +4,6 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { Toaster } from "sonner";
 
-export const experimental_ppr = true;
-
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",

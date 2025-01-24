@@ -6,8 +6,6 @@ import { getServerSession } from "@/server/auth/session";
 import { cache } from "react";
 import type { User } from "@/server/db/schema";
 
-export const experimental_ppr = false;
-
 type ProfilePageProps = {
   params: Promise<{ username: string }>;
 };
