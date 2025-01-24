@@ -2,7 +2,7 @@
 
 import Nav from "@/components/layout/nav";
 import Footer from "@/components/layout/footer";
-import { LocationProvider } from "@/context/location-context";
+import { LocationProvider } from "@/context/LocationContext";
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (

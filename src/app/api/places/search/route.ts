@@ -24,18 +24,55 @@ const CACHE_DURATION = 3600000; // 1 hour in milliseconds
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q");
-  const size = searchParams.get("size") ?? 10;
+  const size = searchParams.get("size") ?? "10";
+  const lat = searchParams.get("lat");
+  const lng = searchParams.get("lng");
+
   if (!query) {
     return new NextResponse("Missing query parameter", { status: 400 });
   }
 
-  const cacheKey = `search:${query}`;
+  const cacheKey =
+    lat && lng
+      ? `search:${query}:${lat}:${lng}:${size}`
+      : `search:${query}:${size}`;
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     return NextResponse.json(cached.data);
   }
 
   try {
+    const body: {
+      textQuery: string;
+      languageCode: string;
+      pageSize: number;
+      locationBias?: {
+        circle: {
+          center: {
+            latitude: number;
+            longitude: number;
+          };
+          radius: number;
+        };
+      };
+    } = {
+      textQuery: query,
+      languageCode: "en",
+      pageSize: Number(size),
+    };
+
+    if (lat && lng) {
+      body.locationBias = {
+        circle: {
+          center: {
+            latitude: Number(lat),
+            longitude: Number(lng),
+          },
+          radius: 0,
+        },
+      };
+    }
+
     const res = await fetch(
       `${env.GOOGLE_PLACES_API_BASE_URL}/places:searchText`,
       {
@@ -45,11 +82,7 @@ export async function GET(request: Request) {
           "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
           "X-Goog-FieldMask": FIELD_MASK,
         },
-        body: JSON.stringify({
-          textQuery: query,
-          languageCode: "en",
-          pageSize: size,
-        }),
+        body: JSON.stringify(body),
       },
     );
 

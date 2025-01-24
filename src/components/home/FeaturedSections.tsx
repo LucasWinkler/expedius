@@ -1,40 +1,82 @@
-import FeaturedSection from "@/components/home/FeaturedSection";
+"use client";
+
+import { useEffect, useState, useTransition } from "react";
+import FeaturedSection from "./FeaturedSection";
 import { FeaturedSectionError } from "./FeaturedSectionError";
-import { searchPlaces } from "@/server/services/places";
 import { FEATURED_SECTIONS } from "@/constants";
+import { searchPlacesClient } from "@/lib/search";
+import { useLocation } from "@/context/LocationContext";
+import type { Place } from "@/types";
+import { FeaturedSectionSkeleton } from "./FeaturedSectionSkeleton";
 
-const FeaturedSections = async () => {
-  return (
-    <div className="space-y-12">
-      {await Promise.all(
-        FEATURED_SECTIONS.map(async ({ title, query, emptyMessage }) => {
-          try {
-            const places = await searchPlaces(query, 5);
+const FeaturedSections = () => {
+  const { coords, isLoading: isLoadingLocation } = useLocation();
+  const [sectionPlaces, setSectionPlaces] = useState<Record<string, Place[]>>(
+    {},
+  );
+  const [isPending, startTransition] = useTransition();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-            if (!places || places.length === 0) {
-              return (
-                <FeaturedSectionError
-                  key={title}
-                  title={title}
-                  emptyMessage={emptyMessage}
-                />
-              );
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        const searchResults = await Promise.all(
+          FEATURED_SECTIONS.map(({ query }) =>
+            searchPlacesClient(query, 5, coords),
+          ),
+        );
+
+        const placesBySection = searchResults.reduce<Record<string, Place[]>>(
+          (acc, data, index) => {
+            const query = FEATURED_SECTIONS[index].query;
+
+            if (data?.places) {
+              acc[query] = data.places;
             }
 
-            return (
-              <FeaturedSection key={title} title={title} places={places} />
-            );
-          } catch {
-            return (
-              <FeaturedSectionError
-                key={title}
-                title={title}
-                emptyMessage={emptyMessage}
-              />
-            );
-          }
-        }),
-      )}
+            return acc;
+          },
+          {},
+        );
+
+        startTransition(() => {
+          setSectionPlaces(placesBySection);
+          setIsInitialLoad(false);
+        });
+      } catch (error) {
+        console.error("Failed to fetch featured sections:", error);
+        setIsInitialLoad(false);
+      }
+    };
+
+    // Always fetch results, whether we have coords or not
+    if (!isLoadingLocation) {
+      fetchResults();
+    }
+  }, [coords, isLoadingLocation]);
+
+  // Show loading state only during initial load or transitions
+  if (isInitialLoad || isPending) {
+    return <FeaturedSectionSkeleton />;
+  }
+
+  return (
+    <div className="space-y-12">
+      {FEATURED_SECTIONS.map(({ title, query, emptyMessage }) => {
+        const places = sectionPlaces[query];
+
+        if (!places || places.length === 0) {
+          return (
+            <FeaturedSectionError
+              key={title}
+              title={title}
+              emptyMessage={emptyMessage}
+            />
+          );
+        }
+
+        return <FeaturedSection key={title} title={title} places={places} />;
+      })}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/env";
+import { getPlaiceholder } from "plaiceholder";
 
 export async function GET(
   request: NextRequest,
@@ -29,12 +30,16 @@ export async function GET(
       throw new Error(`Failed to fetch photo: ${res.statusText}`);
     }
 
+    const buffer = Buffer.from(await res.arrayBuffer());
+    const { base64 } = await getPlaiceholder(buffer);
+
     const contentType = res.headers.get("content-type");
 
-    return new NextResponse(res.body, {
+    return new NextResponse(buffer, {
       headers: {
         "content-type": contentType || "image/jpeg",
         "cache-control": "public, max-age=604800, stale-while-revalidate=86400",
+        "x-blur-data": base64,
         etag: res.headers.get("etag") || crypto.randomUUID(),
       },
     });

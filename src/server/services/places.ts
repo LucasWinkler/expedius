@@ -34,10 +34,26 @@ const processPlacePhotos = async (places: Place[]) => {
 };
 
 export const searchPlaces = cache(
-  async (query: string, size = 10): Promise<Place[] | null> => {
+  async (
+    query: string,
+    size = 10,
+    lat?: number,
+    lng?: number,
+  ): Promise<Place[] | null> => {
     try {
+      const searchParams = new URLSearchParams({
+        q: query,
+        size: size.toString(),
+      });
+
+      if (lat && lng) {
+        searchParams.append("lat", lat.toString());
+        searchParams.append("lng", lng.toString());
+      }
+
       const res = await fetch(
-        `${env.BETTER_AUTH_URL}/api/places/search?q=${encodeURIComponent(query)}&size=${encodeURIComponent(size)}`,
+        `${env.BETTER_AUTH_URL}/api/places/search?${searchParams.toString()}`,
+
         {
           next: { revalidate: 86400 }, // 24 hours
         },
