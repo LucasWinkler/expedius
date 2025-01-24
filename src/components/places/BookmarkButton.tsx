@@ -23,6 +23,7 @@ type BookmarkButtonProps = {
   userLists?: UserListForPlaceCard[];
   selectedLists: Set<string>;
   setSelectedLists: React.Dispatch<React.SetStateAction<Set<string>>>;
+  onListsUpdate?: (lists: UserListForPlaceCard[]) => void;
 };
 
 export const BookmarkButton = ({
@@ -30,11 +31,24 @@ export const BookmarkButton = ({
   userLists,
   selectedLists,
   setSelectedLists,
+  onListsUpdate,
 }: BookmarkButtonProps) => {
   const { data: session, isPending } = useSession();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isActionPending, startTransition] = useTransition();
+
+  const refreshLists = async () => {
+    try {
+      const response = await fetch("/api/lists/user");
+      const data = await response.json();
+      if (data.lists) {
+        onListsUpdate?.(data.lists);
+      }
+    } catch (error) {
+      console.error("Failed to refresh lists:", error);
+    }
+  };
 
   const handleClick = () => {
     if (isPending) {
@@ -162,6 +176,7 @@ export const BookmarkButton = ({
         <SaveListDialogForm
           isOpen={isDialogOpen}
           onOpenChange={setIsDialogOpen}
+          onSuccess={refreshLists}
         />
       </DropdownMenu>
     </>

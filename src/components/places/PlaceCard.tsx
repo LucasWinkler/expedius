@@ -14,13 +14,16 @@ import placeImageFallback from "../../../public/place-image-fallback.webp";
 export const PlaceCard = ({
   place,
   priority = false,
-  userLists,
+  userLists: initialUserLists,
 }: {
   place: Place;
   priority?: boolean;
   userLists?: UserListForPlaceCard[];
 }) => {
   const [selectedLists, setSelectedLists] = useState<Set<string>>(new Set());
+  const [userLists, setUserLists] = useState<
+    UserListForPlaceCard[] | undefined
+  >(initialUserLists);
 
   useEffect(() => {
     const initialLists = new Set(
@@ -30,6 +33,10 @@ export const PlaceCard = ({
     );
     setSelectedLists(initialLists);
   }, [userLists, place.id]);
+
+  const handleListsUpdate = (newLists: UserListForPlaceCard[]) => {
+    setUserLists(newLists);
+  };
 
   const renderPriceLevel = (level?: string) => getPriceLevelDisplay(level);
 
@@ -67,6 +74,7 @@ export const PlaceCard = ({
                 userLists={userLists}
                 selectedLists={selectedLists}
                 setSelectedLists={setSelectedLists}
+                onListsUpdate={handleListsUpdate}
               />
             </div>
           </div>

@@ -31,11 +31,13 @@ const createListSchema = z.object({
 type SaveListDialogFormProps = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 };
 
 const SaveListDialogForm = ({
   isOpen,
   onOpenChange,
+  onSuccess,
 }: SaveListDialogFormProps) => {
   const [isPending, startTransition] = useTransition();
 
@@ -57,6 +59,7 @@ const SaveListDialogForm = ({
           onOpenChange(false);
           form.reset();
           toast.success("List created successfully");
+          onSuccess?.();
         }
       } catch (error) {
         console.error("Error occurred while creating the list:", error);
