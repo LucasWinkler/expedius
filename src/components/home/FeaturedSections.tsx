@@ -2,32 +2,37 @@ import FeaturedSection from "@/components/home/FeaturedSection";
 import { FeaturedSectionError } from "./FeaturedSectionError";
 import { searchPlaces } from "@/server/services/places";
 
-export const FEATURED_SECTIONS = [
+const FEATURED_SECTIONS: FeaturedSection[] = [
   {
     title: "Best Rated Restaurants",
-    fetch: () => searchPlaces("best rated restaurants near me", 5),
+    query: "best rated restaurants near me",
     emptyMessage: "No restaurants found in your area",
   },
   {
     title: "Popular Attractions",
-    fetch: () =>
-      searchPlaces("famous landmarks and tourist attractions near me", 5),
+    query: "famous landmarks and tourist attractions near me",
     emptyMessage: "No attractions found in your area",
   },
   {
     title: "Local Parks",
-    fetch: () => searchPlaces("popular parks near me", 5),
+    query: "popular parks near me",
     emptyMessage: "No parks found in your area",
   },
-] as const;
+];
+
+export type FeaturedSection = {
+  title: string;
+  query: string;
+  emptyMessage: string;
+};
 
 const FeaturedSections = async () => {
   return (
     <div className="space-y-12">
       {await Promise.all(
-        FEATURED_SECTIONS.map(async ({ title, fetch, emptyMessage }) => {
+        FEATURED_SECTIONS.map(async ({ title, query, emptyMessage }) => {
           try {
-            const places = await fetch();
+            const places = await searchPlaces(query, 5);
 
             if (!places || places.length === 0) {
               return (

@@ -1,9 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { MapPinOff } from "lucide-react";
-import { FEATURED_SECTIONS } from "@/constants";
 
 type FeaturedSectionErrorProps = {
-  title: (typeof FEATURED_SECTIONS)[number]["title"];
+  title: string;
   emptyMessage?: string;
 };
 
