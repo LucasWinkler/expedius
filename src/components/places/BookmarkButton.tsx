@@ -50,17 +50,17 @@ export const BookmarkButton = ({
     }
   };
 
-  const handleClick = () => {
+  const handleOpenChange = (open: boolean) => {
     if (isPending) {
       return;
     }
 
-    if (!session) {
+    if (!session && open) {
       toast.error("Please sign in to save places to lists");
       return;
     }
 
-    setIsDropdownOpen(true);
+    setIsDropdownOpen(open);
   };
 
   const toggleListSelection = (listId: string) => {
@@ -103,13 +103,16 @@ export const BookmarkButton = ({
 
   return (
     <>
-      <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+      <DropdownMenu open={isDropdownOpen} onOpenChange={handleOpenChange}>
         <DropdownMenuTrigger asChild>
           <Button
             size="icon"
             variant="secondary"
             className="size-10 bg-white/20 text-white shadow-md backdrop-blur-md hover:bg-white/30 [&_svg]:size-5"
-            onClick={handleClick}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
           >
             <BookmarkPlus />
           </Button>
@@ -125,32 +128,45 @@ export const BookmarkButton = ({
               <Plus className="size-4" />
             </Button>
           </div>
-          {userLists ? <DropdownMenuSeparator /> : null}
-          <div className={cn(userLists ? "px-2 py-1.5" : "p-0")}>
-            <ScrollArea type="always" className="h-[120px] pr-4 md:h-[160px]">
-              {userLists?.map((list) => (
-                <label
-                  key={list.id}
-                  htmlFor={`list-${list.id}`}
-                  className={cn(
-                    "mb-2 flex w-full cursor-pointer select-none items-center space-x-2 rounded-md px-2 py-1.5 transition-colors active:bg-accent/60",
-                    selectedLists.has(list.id) && "bg-accent/40",
-                    "[@media(hover:hover)]:hover:bg-accent/60",
-                  )}
+          {userLists && userLists.length > 0 ? (
+            <>
+              <DropdownMenuSeparator />
+              <div className="px-2 py-1.5">
+                <ScrollArea
+                  type="always"
+                  className="h-[120px] pr-4 md:h-[160px]"
                 >
-                  <Checkbox
-                    id={`list-${list.id}`}
-                    checked={selectedLists.has(list.id)}
-                    onCheckedChange={() => toggleListSelection(list.id)}
-                    className="size-4 rounded-[4px] border-2 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
-                  />
-                  <span className="text-sm font-medium leading-none transition-colors [@media(hover:hover)]:group-hover:text-primary">
-                    {list.name}
-                  </span>
-                </label>
-              ))}
-            </ScrollArea>
-          </div>
+                  {userLists.map((list) => (
+                    <label
+                      key={list.id}
+                      htmlFor={`list-${list.id}`}
+                      className={cn(
+                        "mb-2 flex w-full cursor-pointer select-none items-center space-x-2 rounded-md px-2 py-1.5 transition-colors active:bg-accent/60",
+                        selectedLists.has(list.id) && "bg-accent/40",
+                        "[@media(hover:hover)]:hover:bg-accent/60",
+                      )}
+                    >
+                      <Checkbox
+                        id={`list-${list.id}`}
+                        checked={selectedLists.has(list.id)}
+                        onCheckedChange={() => toggleListSelection(list.id)}
+                        className="size-4 rounded-[4px] border-2 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+                      />
+                      <span className="text-sm font-medium leading-none transition-colors [@media(hover:hover)]:group-hover:text-primary">
+                        {list.name}
+                      </span>
+                    </label>
+                  ))}
+                </ScrollArea>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="px-2 py-1.5 text-sm text-muted-foreground">
+                No lists found
+              </p>
+            </>
+          )}
           <DropdownMenuSeparator />
           <div className="p-2">
             <Button
