@@ -15,10 +15,9 @@ const processPlacePhotos = async (places: Place[]) => {
             return place;
           }
 
-          const photo = await getEnhancedPlacePhoto(place.photos[0].name);
           return {
             ...place,
-            image: photo,
+            image: await getEnhancedPlacePhoto(place.photos[0].name),
           };
         } catch (error) {
           console.warn(`Failed to process photo for place ${place.id}:`, error);

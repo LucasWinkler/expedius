@@ -37,23 +37,17 @@ export const SearchBar = ({ initialQuery = "" }: { initialQuery?: string }) => {
   });
 
   function onSubmit(data: SearchFormValues) {
-    const searchParams = new URLSearchParams(window.location.search);
-    if (data.query) {
-      searchParams.set("q", data.query);
-    } else {
-      searchParams.delete("q");
-    }
+    const newUrl = data.query
+      ? `/discover?q=${encodeURIComponent(data.query)}`
+      : "/discover";
 
-    const newUrl = `/discover${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-
-    // Only navigate if the URL actually changes
     if (newUrl !== window.location.pathname + window.location.search) {
       router.push(newUrl, { scroll: false });
     }
   }
 
   const handleClear = () => {
-    form.reset({ query: "" });
+    form.reset();
     inputRef.current?.focus();
   };
 

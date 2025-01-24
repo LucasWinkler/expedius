@@ -4,6 +4,9 @@ import type { Metadata } from "next";
 import DiscoverHero from "@/components/discover/DiscoverHero";
 import FeaturedSections from "@/components/discover/FeaturedSections";
 
+// Optimize for static rendering and revalidate every hour
+export const revalidate = 3600;
+
 // export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {

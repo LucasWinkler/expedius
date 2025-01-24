@@ -1,5 +1,6 @@
 import SearchBar from "@/components/discover/SearchBar";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const DiscoverHero = () => {
   return (
@@ -15,25 +16,22 @@ const DiscoverHero = () => {
           </p>
           <div className="animate-fade-up animation-delay-300 mt-8 opacity-0">
             <div className="relative mx-auto max-w-2xl">
-              {/* <Suspense fallback={<SearchBarSkeleton />}> */}
               <SearchBar />
-              {/* </Suspense> */}
             </div>
-
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               {[
                 "Best Pizza in New York",
                 "Hidden Waterfalls",
                 "Local Food Markets",
               ].map((suggestion) => (
-                <a
+                <Link
                   key={suggestion}
                   href={`/discover?q=${encodeURIComponent(suggestion)}`}
                   className="inline-flex items-center rounded-full px-3 py-1.5 text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
                 >
                   {suggestion}
                   <ArrowRight className="ml-1 size-3" />
-                </a>
+                </Link>
               ))}
             </div>
           </div>

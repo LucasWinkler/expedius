@@ -17,13 +17,13 @@ export const Footer = () => {
             <nav className="flex space-x-4">
               <Link
                 href="/"
-                className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground hover:no-underline"
               >
                 Home
               </Link>
               <Link
                 href="/discover"
-                className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground hover:no-underline"
               >
                 Discover
               </Link>
@@ -34,7 +34,7 @@ export const Footer = () => {
                 href="https://github.com/lucaswinkler"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                className="text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground hover:no-underline"
               >
                 Lucas Winkler
               </Link>
