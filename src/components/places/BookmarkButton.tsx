@@ -37,6 +37,9 @@ export const BookmarkButton = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isActionPending, startTransition] = useTransition();
+  const [initialSelectedLists, setInitialSelectedLists] = useState<Set<string>>(
+    new Set(),
+  );
 
   const refreshLists = async () => {
     try {
@@ -60,6 +63,9 @@ export const BookmarkButton = ({
       return;
     }
 
+    if (open) {
+      setInitialSelectedLists(new Set(selectedLists));
+    }
     setIsDropdownOpen(open);
   };
 
@@ -82,11 +88,24 @@ export const BookmarkButton = ({
       return;
     }
 
+    const selectedListsArray = Array.from(selectedLists);
+    const initialListsArray = Array.from(initialSelectedLists);
+
+    const noChanges =
+      initialSelectedLists.size === selectedLists.size &&
+      selectedListsArray.every((listId) => initialSelectedLists.has(listId)) &&
+      initialListsArray.every((listId) => selectedLists.has(listId));
+
+    if (noChanges) {
+      setIsDropdownOpen(false);
+      return;
+    }
+
     try {
       startTransition(async () => {
         const result = await updateUserLists({
           placeId,
-          selectedLists: Array.from(selectedLists),
+          selectedLists: selectedListsArray,
         });
 
         if (result.error) {
