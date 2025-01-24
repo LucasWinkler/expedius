@@ -1,6 +1,5 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import {
   Carousel,
   CarouselApi,
@@ -15,15 +14,10 @@ import { useEffect, useState } from "react";
 
 type FeaturedSectionProps = {
   title: string;
-  places: Place[] | null;
-  emptyMessage?: string;
+  places: Place[];
 };
 
-export const FeaturedSection = ({
-  title,
-  places,
-  emptyMessage = "No places found",
-}: FeaturedSectionProps) => {
+export const FeaturedSection = ({ title, places }: FeaturedSectionProps) => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
@@ -53,17 +47,6 @@ export const FeaturedSection = ({
       api.off("resize", updateSnapPoints);
     };
   }, [api]);
-
-  if (!places || places.length === 0) {
-    return (
-      <section className="py-4">
-        <h2 className="mb-4 text-2xl font-semibold">{title}</h2>
-        <Card className="flex h-48 items-center justify-center text-muted-foreground">
-          {emptyMessage}
-        </Card>
-      </section>
-    );
-  }
 
   return (
     <section className="space-y-2">

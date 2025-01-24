@@ -1,13 +1,10 @@
 import { Suspense } from "react";
-import FeaturedSectionSkeleton from "@/components/discover/FeaturedSectionSkeleton";
+import FeaturedSectionSkeleton from "@/components/home/FeaturedSectionSkeleton";
 import type { Metadata } from "next";
-import DiscoverHero from "@/components/discover/DiscoverHero";
-import FeaturedSections from "@/components/discover/FeaturedSections";
+import HomeHero from "@/components/home/HomeHero";
+import FeaturedSections from "@/components/home/FeaturedSections";
 
-// Optimize for static rendering and revalidate every hour
 export const revalidate = 3600;
-
-// export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Find Your Next Adventure | PoiToGo",
@@ -16,7 +13,7 @@ export const metadata: Metadata = {
 const Home = () => {
   return (
     <>
-      <DiscoverHero />
+      <HomeHero />
       <div className="container mx-auto px-4 py-8 md:py-12">
         <Suspense fallback={<FeaturedSectionSkeleton />}>
           <FeaturedSections />

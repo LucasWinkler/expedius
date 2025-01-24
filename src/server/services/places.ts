@@ -60,15 +60,3 @@ export const searchPlaces = cache(
     }
   },
 );
-
-export const getPopularCityPlaces = () => {
-  return searchPlaces("popular parks near me", 5);
-};
-
-export const getBestRatedRestaurants = () => {
-  return searchPlaces("best rated restaurants near me", 5);
-};
-
-export const getPopularAttractions = () => {
-  return searchPlaces("famous landmarks and tourist attractions near me", 5);
-};

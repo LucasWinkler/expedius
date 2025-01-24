@@ -1,8 +1,9 @@
-import SearchBar from "@/components/discover/SearchBar";
+import SearchBar from "@/components/search/SearchBar";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { SEARCH_SUGGESTIONS } from "@/constants";
 
-const DiscoverHero = () => {
+const HomeHero = () => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted pb-32 pt-24">
       <div className="container relative z-10 mx-auto px-4">
@@ -19,11 +20,7 @@ const DiscoverHero = () => {
               <SearchBar />
             </div>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
-              {[
-                "Best Pizza in New York",
-                "Hidden Waterfalls",
-                "Local Food Markets",
-              ].map((suggestion) => (
+              {SEARCH_SUGGESTIONS.map((suggestion) => (
                 <Link
                   key={suggestion}
                   href={`/discover?q=${encodeURIComponent(suggestion)}`}
@@ -42,4 +39,4 @@ const DiscoverHero = () => {
   );
 };
 
-export default DiscoverHero;
+export default HomeHero;
