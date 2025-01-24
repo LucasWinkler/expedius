@@ -21,24 +21,24 @@ const DiscoverHero = () => {
             </div>
 
             <div className="mt-4 flex flex-wrap justify-center gap-2">
-              {["Pizza in New York", "Coffee shops", "Parks near me"].map(
-                (suggestion) => (
-                  <a
-                    key={suggestion}
-                    href={`/discover?q=${encodeURIComponent(suggestion)}`}
-                    className="inline-flex items-center rounded-full px-3 py-1.5 text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-                  >
-                    {suggestion}
-                    <ArrowRight className="ml-1 size-3" />
-                  </a>
-                ),
-              )}
+              {[
+                "Best Pizza in New York",
+                "Hidden Waterfalls",
+                "Local Food Markets",
+              ].map((suggestion) => (
+                <a
+                  key={suggestion}
+                  href={`/discover?q=${encodeURIComponent(suggestion)}`}
+                  className="inline-flex items-center rounded-full px-3 py-1.5 text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                >
+                  {suggestion}
+                  <ArrowRight className="ml-1 size-3" />
+                </a>
+              ))}
             </div>
           </div>
         </div>
       </div>
-
-      {/* Background Pattern */}
       <div className="bg-grid-white/10 absolute inset-0 bg-[size:60px_60px] opacity-10" />
     </section>
   );
