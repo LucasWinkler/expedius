@@ -11,12 +11,12 @@ export const listColourPresets = [
 ];
 
 export const SEARCH_SUGGESTIONS = [
-  { title: "Popular Restaurants", query: "popular restaurants" },
-  { title: "Cafes & Bakeries", query: "cafes bakeries" },
-  { title: "Museums & Galleries", query: "museums art galleries" },
-  { title: "Shopping Centers", query: "shopping malls shopping centers" },
-  { title: "Historic Sites", query: "historic sites landmarks" },
-  { title: "Public Parks", query: "public parks gardens" },
+  { title: "Restaurants", query: "restaurants" },
+  { title: "Cafes & Bakeries", query: "cafe bakery" },
+  { title: "Museums", query: "museums" },
+  { title: "Shopping", query: "shopping" },
+  { title: "Tourist Attractions", query: "tourist attractions" },
+  { title: "Parks", query: "parks" },
 ] as const;
 
 export const FEATURED_SECTIONS = [

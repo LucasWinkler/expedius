@@ -13,11 +13,11 @@ export const FeaturedSectionError = ({
   return (
     <section className="py-4">
       <h2 className="mb-4 text-2xl font-semibold">{title}</h2>
-      <Card className="flex h-48 flex-col items-center justify-center gap-4 text-muted-foreground">
-        <MapPinOff className="size-8" />
-        <p>{emptyMessage}</p>
-        <p className="text-sm">
-          Try adjusting your location settings then refreshing the page
+      <Card className="flex h-48 flex-col items-center justify-center gap-4 p-6 text-muted-foreground">
+        <MapPinOff className="h-8 w-8" />
+        <p className="max-w-[250px] text-center">{emptyMessage}</p>
+        <p className="max-w-[250px] text-center text-sm">
+          Try granting location permissions then refreshing the page.
         </p>
       </Card>
     </section>
