@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const passwordSchema = z
   .string()
+  .trim()
   .min(8, "Password must be at least 8 characters")
   .max(100, "Password must be less than 100 characters")
   .regex(/\d/, "Password must contain at least one number")
@@ -12,15 +13,17 @@ const passwordSchema = z
 
 export const signUpSchema = z
   .object({
-    email: z.string().email("Please enter a valid email address"),
+    email: z.string().trim().email("Please enter a valid email address"),
     password: passwordSchema,
-    confirmPassword: z.string().min(1, "Please confirm your password"),
+    confirmPassword: z.string().trim().min(1, "Please confirm your password"),
     name: z
       .string()
+      .trim()
       .min(2, "Name must be at least 2 characters")
       .max(50, "Name must be less than 50 characters"),
     username: z
       .string()
+      .trim()
       .min(3, "Username must be at least 3 characters")
       .max(30, "Username must be less than 30 characters")
       .regex(
@@ -46,8 +49,8 @@ export const signUpSchema = z
   });
 
 export const signInSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(1, "Please enter your password"),
+  email: z.string().trim().email("Please enter a valid email address"),
+  password: z.string().trim().min(1, "Please enter your password"),
 });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;

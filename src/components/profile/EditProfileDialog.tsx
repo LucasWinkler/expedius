@@ -1,7 +1,7 @@
 "use client";
 
-import { useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { useTransition, useState, useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { FileInput } from "@/components/ui/file-input";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useUploadThing } from "@/lib/uploadthing";
 import type { User } from "@/server/db/schema";
 import {
@@ -33,6 +33,8 @@ import {
   type UpdateProfileInput,
 } from "@/lib/validations/user";
 import { updateProfile } from "@/server/actions/user";
+import { useDebouncedCallback } from "use-debounce";
+import { checkUsernameAvailability } from "@/server/actions/user";
 
 type EditProfileDialogProps = {
   user: User;
@@ -49,6 +51,8 @@ export const EditProfileDialog = ({
 }: EditProfileDialogProps) => {
   const [isPending, startTransition] = useTransition();
   const { startUpload, isUploading } = useUploadThing("updateProfileImage");
+  const [isChecking, setIsChecking] = useState(false);
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
 
   const form = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
@@ -60,29 +64,92 @@ export const EditProfileDialog = ({
     },
   });
 
+  const username = useWatch({
+    control: form.control,
+    name: "username",
+    defaultValue: user.username,
+  });
+
   const isDisabled = isUploading || isPending;
   const canChangeUsername =
     !user.usernameUpdatedAt ||
     user.usernameUpdatedAt < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
+  const checkUsername = useDebouncedCallback(async (value: string) => {
+    if (value === user.username) {
+      setIsAvailable(null);
+      return;
+    }
+
+    const validationResult =
+      updateProfileSchema.shape.username.safeParse(value);
+    if (!validationResult.success) {
+      setIsAvailable(false);
+      return;
+    }
+
+    setIsChecking(true);
+    try {
+      const { available } = await checkUsernameAvailability(value);
+      setIsAvailable(available);
+      if (!available) {
+        form.setError("username", {
+          message: "Username is already taken",
+        });
+      }
+    } catch {
+      setIsAvailable(null);
+    } finally {
+      setIsChecking(false);
+    }
+  }, 500);
+
+  useEffect(() => {
+    void checkUsername(username);
+  }, [username, checkUsername]);
+
   const onSubmit = async (data: UpdateProfileInput) => {
+    // Create an object containing only the changed fields
+    const changedFields: Partial<UpdateProfileInput> = {};
+
+    if (data.username !== user.username) {
+      const result = await checkUsernameAvailability(data.username);
+      if (!result.available) {
+        form.setError("username", {
+          message: "Username is already taken",
+        });
+        return;
+      }
+      changedFields.username = data.username;
+    }
+
+    if (data.name !== user.name) changedFields.name = data.name;
+    if (data.bio !== user.bio) changedFields.bio = data.bio;
+    if (data.isPublic !== user.isPublic) changedFields.isPublic = data.isPublic;
+    if (data.image !== undefined) changedFields.image = data.image;
+
+    if (Object.keys(changedFields).length === 0) {
+      toast.info("No changes to save");
+      return;
+    }
+
     startTransition(async () => {
       try {
         let imageUrl: string | null | undefined = user.image;
 
-        if (data.image && Array.isArray(data.image)) {
-          const uploadResult = await startUpload([data.image[0]]);
+        if (changedFields.image && Array.isArray(changedFields.image)) {
+          const uploadResult = await startUpload([changedFields.image[0]]);
           if (!uploadResult) {
             toast.error("Failed to upload image");
             return;
           }
           imageUrl = uploadResult[0].url;
-        } else if (data.image === null) {
+        } else if (changedFields.image === null) {
           imageUrl = null;
         }
 
         const result = await updateProfile({
-          ...data,
+          ...changedFields,
           image: imageUrl,
         });
 
@@ -120,10 +187,23 @@ export const EditProfileDialog = ({
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        disabled={!canChangeUsername || isDisabled}
-                      />
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          disabled={!canChangeUsername || isDisabled}
+                        />
+                        {canChangeUsername && username !== user.username && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {isChecking ? (
+                              <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                            ) : isAvailable ? (
+                              <CheckCircle2 className="size-4 text-green-500" />
+                            ) : (
+                              <XCircle className="size-4 text-destructive" />
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </FormControl>
                     <FormDescription>
                       {canChangeUsername

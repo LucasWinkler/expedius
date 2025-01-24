@@ -18,7 +18,7 @@ export const checkUsernameAvailability = async (username: string) => {
 };
 
 export const updateProfile = async (
-  data: UpdateProfileInput & { image?: string | null },
+  data: Partial<UpdateProfileInput> & { image?: string | null },
 ) => {
   try {
     const session = await getServerSession();
@@ -31,7 +31,8 @@ export const updateProfile = async (
       return { error: "User not found" };
     }
 
-    if (data.username !== user.username) {
+    // If username is being updated, validate it
+    if (data.username && data.username !== user.username) {
       if (
         user.usernameUpdatedAt &&
         new Date(user.usernameUpdatedAt) >
@@ -46,9 +47,22 @@ export const updateProfile = async (
       }
     }
 
-    const updatedUser = await users.mutations.update(user.id, {
-      ...data,
-    });
+    // Only update fields that were actually changed
+    const updateData: typeof data = {};
+    if (data.username && data.username !== user.username)
+      updateData.username = data.username;
+    if (data.name && data.name !== user.name) updateData.name = data.name;
+    if (data.bio !== undefined && data.bio !== user.bio)
+      updateData.bio = data.bio;
+    if (data.isPublic !== undefined && data.isPublic !== user.isPublic)
+      updateData.isPublic = data.isPublic;
+    if (data.image !== undefined) updateData.image = data.image;
+
+    if (Object.keys(updateData).length === 0) {
+      return { data: user };
+    }
+
+    const updatedUser = await users.mutations.update(user.id, updateData);
 
     await auth.api.updateUser({
       body: {

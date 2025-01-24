@@ -12,8 +12,19 @@ import { useWatch } from "react-hook-form";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 import { checkUsernameAvailability } from "@/server/actions/user";
+import { z } from "zod";
 import type { UseFormReturn } from "react-hook-form";
 import type { SignUpInput } from "@/lib/validations/auth";
+
+const usernameSchema = z
+  .string()
+  .trim()
+  .min(3, "Username must be at least 3 characters")
+  .max(30, "Username must be less than 30 characters")
+  .regex(
+    /^[a-zA-Z0-9_-]+$/,
+    "Username can only contain letters, numbers, underscores and dashes",
+  );
 
 type ProfileStepProps = {
   form: UseFormReturn<SignUpInput>;
@@ -30,8 +41,9 @@ export const ProfileStep = ({ form }: ProfileStepProps) => {
   });
 
   const checkUsername = useDebouncedCallback(async (value: string) => {
-    if (!value || value.length < 3) {
-      setIsAvailable(null);
+    const validationResult = usernameSchema.safeParse(value);
+    if (!validationResult.success) {
+      setIsAvailable(false);
       return;
     }
 
@@ -39,6 +51,11 @@ export const ProfileStep = ({ form }: ProfileStepProps) => {
     try {
       const { available } = await checkUsernameAvailability(value);
       setIsAvailable(available);
+      if (!available) {
+        form.setError("username", {
+          message: "Username is already taken",
+        });
+      }
     } catch {
       setIsAvailable(null);
     } finally {
@@ -74,17 +91,15 @@ export const ProfileStep = ({ form }: ProfileStepProps) => {
             <FormControl>
               <div className="relative">
                 <Input {...field} />
-                {username.length >= 3 && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    {isChecking ? (
-                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                    ) : isAvailable ? (
-                      <CheckCircle2 className="size-4 text-green-500" />
-                    ) : (
-                      <XCircle className="size-4 text-destructive" />
-                    )}
-                  </div>
-                )}
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {isChecking ? (
+                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                  ) : isAvailable ? (
+                    <CheckCircle2 className="size-4 text-green-500" />
+                  ) : (
+                    <XCircle className="size-4 text-destructive" />
+                  )}
+                </div>
               </div>
             </FormControl>
             <FormDescription>
