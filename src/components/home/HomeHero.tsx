@@ -19,14 +19,14 @@ const HomeHero = () => {
             <div className="relative mx-auto max-w-2xl">
               <SearchBar />
             </div>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <div className="mx-auto mt-4 flex max-w-xl flex-wrap justify-center gap-2">
               {SEARCH_SUGGESTIONS.map((suggestion) => (
                 <Link
-                  key={suggestion}
-                  href={`/discover?q=${encodeURIComponent(suggestion)}`}
+                  key={suggestion.title}
+                  href={`/discover?q=${encodeURIComponent(suggestion.query)}`}
                   className="inline-flex items-center rounded-full px-3 py-1.5 text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
                 >
-                  {suggestion}
+                  {suggestion.title}
                   <ArrowRight className="ml-1 size-3" />
                 </Link>
               ))}

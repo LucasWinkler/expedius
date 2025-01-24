@@ -11,25 +11,28 @@ export const listColourPresets = [
 ];
 
 export const SEARCH_SUGGESTIONS = [
-  "Best Pizza in New York",
-  "Hidden Waterfalls",
-  "Local Food Markets",
+  { title: "Popular Restaurants", query: "popular restaurants" },
+  { title: "Cafes & Bakeries", query: "cafes bakeries" },
+  { title: "Museums & Galleries", query: "museums art galleries" },
+  { title: "Shopping Centers", query: "shopping malls shopping centers" },
+  { title: "Historic Sites", query: "historic sites landmarks" },
+  { title: "Public Parks", query: "public parks gardens" },
 ] as const;
 
 export const FEATURED_SECTIONS = [
   {
-    title: "Best Rated Restaurants",
-    query: "best rated restaurants near me",
-    emptyMessage: "No restaurants found in your area",
+    title: "Places to Eat",
+    query: "restaurants",
+    emptyMessage: "No restaurants found nearby",
   },
   {
-    title: "Popular Attractions",
-    query: "famous landmarks and tourist attractions near me",
-    emptyMessage: "No attractions found in your area",
+    title: "Explore & Discover",
+    query: "attractions points of interest",
+    emptyMessage: "No attractions found nearby",
   },
   {
-    title: "Local Parks",
-    query: "popular parks near me",
-    emptyMessage: "No parks found in your area",
+    title: "Parks & Nature",
+    query: "parks",
+    emptyMessage: "No outdoor spaces found nearby",
   },
 ] as const;
