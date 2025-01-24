@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 type BiographySectionProps = {
-  bio: string;
+  bio?: string | null;
 };
 
 export const BiographySection = ({ bio }: BiographySectionProps) => {

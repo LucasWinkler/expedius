@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { CreateListDialog } from "./CreateListDialog";
-import type {  UserList } from "@/server/db/schema";
+import type { UserList } from "@/server/db/schema";
 
 type ListsClientProps = {
   isOwnProfile: boolean;

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,7 +34,7 @@ import { FileInput } from "@/components/ui/file-input";
 import { Palette } from "lucide-react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { UserList } from "@/server/db/schema";
+import type { UserList } from "@/server/db/schema";
 import { useDebouncedCallback } from "use-debounce";
 
 const createListSchema = z.object({

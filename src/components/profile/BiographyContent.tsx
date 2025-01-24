@@ -5,5 +5,5 @@ export const BiographyContent = async ({ username }: { username: string }) => {
   const user = await getUser(username);
   if (!user || "type" in user) return null;
 
-  return <BiographySection bio={user.bio ?? ""} />;
+  return <BiographySection bio={user.bio} />;
 };
