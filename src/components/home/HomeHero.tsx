@@ -19,7 +19,7 @@ const HomeHero = () => {
             <div className="relative mx-auto max-w-2xl">
               <SearchBar />
             </div>
-            <div className="mx-auto mt-4 flex max-w-xl flex-wrap justify-center gap-2">
+            <div className="mx-auto mt-4 flex max-w-md flex-wrap justify-center gap-2">
               {SEARCH_SUGGESTIONS.map((suggestion) => (
                 <Link
                   key={suggestion.title}
