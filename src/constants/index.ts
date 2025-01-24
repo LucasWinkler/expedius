@@ -1,5 +1,3 @@
-import { searchPlaces } from "@/server/services/places";
-
 export const listColourPresets = [
   "#EF4444", // red
   "#F97316", // orange
@@ -16,23 +14,4 @@ export const SEARCH_SUGGESTIONS = [
   "Best Pizza in New York",
   "Hidden Waterfalls",
   "Local Food Markets",
-] as const;
-
-export const FEATURED_SECTIONS = [
-  {
-    title: "Best Rated Restaurants",
-    fetch: () => searchPlaces("best rated restaurants near me", 5),
-    emptyMessage: "No restaurants found in your area",
-  },
-  {
-    title: "Popular Attractions",
-    fetch: () =>
-      searchPlaces("famous landmarks and tourist attractions near me", 5),
-    emptyMessage: "No attractions found in your area",
-  },
-  {
-    title: "Local Parks",
-    fetch: () => searchPlaces("popular parks near me", 5),
-    emptyMessage: "No parks found in your area",
-  },
 ] as const;
