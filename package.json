@@ -44,6 +44,7 @@
     "plaiceholder": "^3.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-geolocated": "^4.3.0",
     "react-hook-form": "^7.54.2",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.6.0",

@@ -1,13 +1,16 @@
+"use client";
+
 import Nav from "@/components/layout/nav";
 import Footer from "@/components/layout/footer";
+import { LocationProvider } from "@/context/location-context";
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <>
+    <LocationProvider>
       <Nav />
       <main>{children}</main>
       <Footer />
-    </>
+    </LocationProvider>
   );
 };
 
