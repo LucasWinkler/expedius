@@ -1,7 +1,5 @@
-import React, { Suspense } from "react";
 import SearchBar from "@/components/discover/SearchBar";
 import { ArrowRight } from "lucide-react";
-import SearchBarSkeleton from "@/components/discover/SearchBarSkeleton";
 
 const DiscoverHero = () => {
   return (
@@ -17,9 +15,9 @@ const DiscoverHero = () => {
           </p>
           <div className="animate-fade-up animation-delay-300 mt-8 opacity-0">
             <div className="relative mx-auto max-w-2xl">
-              <Suspense fallback={<SearchBarSkeleton />}>
-                <SearchBar />
-              </Suspense>
+              {/* <Suspense fallback={<SearchBarSkeleton />}> */}
+              <SearchBar />
+              {/* </Suspense> */}
             </div>
 
             <div className="mt-4 flex flex-wrap justify-center gap-2">
