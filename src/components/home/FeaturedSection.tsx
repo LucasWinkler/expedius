@@ -11,13 +11,19 @@ import {
 import { PlaceCard } from "../places/PlaceCard";
 import type { Place } from "@/types";
 import { useEffect, useState } from "react";
+import { UserListForPlaceCard } from "@/server/data/userLists";
 
 type FeaturedSectionProps = {
   title: string;
   places: Place[];
+  userLists?: UserListForPlaceCard[];
 };
 
-export const FeaturedSection = ({ title, places }: FeaturedSectionProps) => {
+export const FeaturedSection = ({
+  title,
+  places,
+  userLists,
+}: FeaturedSectionProps) => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
@@ -66,7 +72,11 @@ export const FeaturedSection = ({ title, places }: FeaturedSectionProps) => {
                 key={place.id}
                 className="basis-full pl-2 sm:basis-1/2 md:pl-4 lg:basis-1/3"
               >
-                <PlaceCard place={place} priority={index < 3} />
+                <PlaceCard
+                  place={place}
+                  priority={index < 3}
+                  userLists={userLists}
+                />
               </CarouselItem>
             ))}
           </CarouselContent>

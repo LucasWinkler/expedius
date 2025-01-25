@@ -153,14 +153,14 @@ export const BookmarkButton = ({
               <div className="px-2 py-1.5">
                 <ScrollArea
                   type="always"
-                  className="h-[120px] pr-4 md:h-[160px]"
+                  className="flex max-h-[120px] flex-col pr-4 md:max-h-[160px]"
                 >
                   {userLists.map((list) => (
                     <label
                       key={list.id}
                       htmlFor={`list-${list.id}`}
                       className={cn(
-                        "mb-2 flex w-full cursor-pointer select-none items-center space-x-2 rounded-md px-2 py-1.5 transition-colors active:bg-accent/60",
+                        "mb-1 flex w-full cursor-pointer select-none items-center space-x-2 rounded-md px-2 py-1.5 transition-colors last:mb-0 active:bg-accent/60",
                         selectedLists.has(list.id) && "bg-accent/40",
                         "[@media(hover:hover)]:hover:bg-accent/60",
                       )}

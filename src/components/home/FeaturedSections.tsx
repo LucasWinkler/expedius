@@ -8,14 +8,31 @@ import { searchPlacesClient } from "@/lib/search";
 import { useLocation } from "@/context/LocationContext";
 import type { Place } from "@/types";
 import { FeaturedSectionSkeleton } from "./FeaturedSectionSkeleton";
+import { useSession } from "@/lib/auth-client";
+import { UserListForPlaceCard } from "@/server/data/userLists";
 
 const FeaturedSections = () => {
   const { coords, isLoading: isLoadingLocation } = useLocation();
+  const { data: session } = useSession();
+  const [userLists, setLists] = useState<UserListForPlaceCard[] | undefined>(
+    undefined,
+  );
+
   const [sectionPlaces, setSectionPlaces] = useState<Record<string, Place[]>>(
     {},
   );
   const [isPending, startTransition] = useTransition();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  useEffect(() => {
+    if (session?.user.id) {
+      fetch("/api/lists/user")
+        .then((res) => res.json())
+        .then((data) => {
+          setLists(data.lists);
+        });
+    }
+  }, [session]);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -49,13 +66,11 @@ const FeaturedSections = () => {
       }
     };
 
-    // Always fetch results, whether we have coords or not
     if (!isLoadingLocation) {
       fetchResults();
     }
   }, [coords, isLoadingLocation]);
 
-  // Show loading state only during initial load or transitions
   if (isInitialLoad || isPending) {
     return <FeaturedSectionSkeleton />;
   }
@@ -75,7 +90,14 @@ const FeaturedSections = () => {
           );
         }
 
-        return <FeaturedSection key={title} title={title} places={places} />;
+        return (
+          <FeaturedSection
+            key={title}
+            title={title}
+            places={places}
+            userLists={userLists}
+          />
+        );
       })}
     </div>
   );
