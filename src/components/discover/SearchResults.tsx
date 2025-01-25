@@ -9,7 +9,6 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPinOff } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
-import type { UserListForPlaceCard } from "@/server/data/userLists";
 
 type SearchResultsProps = {
   query: string;
@@ -52,9 +51,6 @@ export const SearchResults = ({ query }: SearchResultsProps) => {
   const { coords, isLoading: isLoadingLocation } = useLocation();
   const { data: session } = useSession();
   const [places, setPlaces] = useState<Place[]>([]);
-  const [lists, setLists] = useState<UserListForPlaceCard[] | undefined>(
-    undefined,
-  );
   const [isPending, startTransition] = useTransition();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [error, setError] = useState(false);
@@ -62,16 +58,10 @@ export const SearchResults = ({ query }: SearchResultsProps) => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const [searchData, listsData] = await Promise.all([
-          searchPlacesClient(query, 15, coords),
-          session?.user.id
-            ? fetch("/api/lists/user").then((res) => res.json())
-            : { lists: [] },
-        ]);
+        const searchData = await searchPlacesClient(query, 15, coords);
 
         startTransition(() => {
           setPlaces(searchData?.places || []);
-          setLists(listsData.lists);
           setIsInitialLoad(false);
           setError(false);
         });
@@ -100,12 +90,7 @@ export const SearchResults = ({ query }: SearchResultsProps) => {
   return (
     <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {places.map((place, index) => (
-        <PlaceCard
-          key={place.id}
-          place={place}
-          priority={index < 3}
-          userLists={lists}
-        />
+        <PlaceCard key={place.id} place={place} priority={index < 3} />
       ))}
     </ul>
   );
