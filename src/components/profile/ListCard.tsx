@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { DeleteListDialog } from "./DeleteListDialog";
+import { EditListDialog } from "./EditListDialog";
 
 type ListCardProps = {
   list: UserList;
@@ -37,6 +38,7 @@ export const ListCard = ({
   showPrivacyBadge,
 }: ListCardProps) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
@@ -94,7 +96,7 @@ export const ListCard = ({
 
               {showActions && (
                 <div onClick={(e) => e.preventDefault()}>
-                  <DropdownMenu>
+                  <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="secondary"
@@ -115,7 +117,7 @@ export const ListCard = ({
                       <DropdownMenuItem
                         onClick={(e) => {
                           e.preventDefault();
-                          onEdit(list);
+                          setIsEditDialogOpen(true);
                         }}
                       >
                         <Edit className="mr-2 size-4" />
@@ -173,6 +175,14 @@ export const ListCard = ({
           </CardHeader>
         </Card>
       </Link>
+
+      <EditListDialog
+        list={list}
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onSuccess={onEdit}
+      />
+
       <DeleteListDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}

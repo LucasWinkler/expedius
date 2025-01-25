@@ -5,7 +5,6 @@ import type { UserList } from "@/server/db/schema";
 import { ListCard } from "./ListCard";
 import ListsClient from "./ListsClient";
 import { useState } from "react";
-import { EditListDialog } from "./EditListDialog";
 import { deleteUserList } from "@/server/actions/userList";
 import { toast } from "sonner";
 
@@ -19,7 +18,6 @@ export const ListsSection = ({
   isOwnProfile,
 }: ListsSectionProps) => {
   const [lists, setLists] = useState(initialLists);
-  const [editingList, setEditingList] = useState<UserList | null>(null);
 
   // Separate likes list and other lists
   const likesLists = lists.filter((list) => list.isDefault);
@@ -30,18 +28,10 @@ export const ListsSection = ({
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
-  const handleEdit = async (list: UserList) => {
-    setEditingList(list);
-  };
-
   const handleEditSuccess = (updatedList: UserList) => {
     setLists((currentLists) =>
       currentLists.map((l) => (l.id === updatedList.id ? updatedList : l)),
     );
-  };
-
-  const handleEditDialogClose = () => {
-    setEditingList(null);
   };
 
   const handleDelete = async (listId: UserList["id"]) => {
@@ -71,7 +61,7 @@ export const ListsSection = ({
                 list={list}
                 showActions={isOwnProfile}
                 showPrivacyBadge={isOwnProfile}
-                onEdit={() => handleEdit(list)}
+                onEdit={handleEditSuccess}
                 onDelete={() => handleDelete(list.id)}
                 isDefault={true}
               />
@@ -98,7 +88,7 @@ export const ListsSection = ({
                 list={list}
                 showActions={isOwnProfile}
                 showPrivacyBadge={isOwnProfile}
-                onEdit={() => handleEdit(list)}
+                onEdit={handleEditSuccess}
                 onDelete={() => handleDelete(list.id)}
                 isDefault={false}
               />
@@ -112,17 +102,6 @@ export const ListsSection = ({
           )}
         </div>
       </CardContent>
-      {editingList && (
-        <EditListDialog
-          list={editingList}
-          open={!!editingList}
-          onOpenChange={handleEditDialogClose}
-          onSuccess={(list) => {
-            handleEditSuccess(list);
-            handleEditDialogClose();
-          }}
-        />
-      )}
     </Card>
   );
 };

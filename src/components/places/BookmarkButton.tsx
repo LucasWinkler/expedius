@@ -135,8 +135,12 @@ export const BookmarkButton = ({
   };
 
   return (
-    <>
-      <DropdownMenu open={isDropdownOpen} onOpenChange={handleOpenChange}>
+    <div className="relative">
+      <DropdownMenu
+        modal={false}
+        open={isDropdownOpen}
+        onOpenChange={handleOpenChange}
+      >
         <DropdownMenuTrigger asChild>
           <Button
             size="icon"
@@ -156,7 +160,10 @@ export const BookmarkButton = ({
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setIsDialogOpen(true)}
+              onClick={() => {
+                setIsDialogOpen(true);
+                setIsDropdownOpen(false);
+              }}
             >
               <Plus className="size-4" />
             </Button>
@@ -232,13 +239,19 @@ export const BookmarkButton = ({
             </Button>
           </div>
         </DropdownMenuContent>
-        <SaveListDialogForm
-          isOpen={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          onSuccess={refreshLists}
-        />
       </DropdownMenu>
-    </>
+
+      <SaveListDialogForm
+        isOpen={isDialogOpen}
+        onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) {
+            setIsDropdownOpen(true);
+          }
+        }}
+        onSuccess={refreshLists}
+      />
+    </div>
   );
 };
 
