@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { BookmarkPlus, Loader2, Plus } from "lucide-react";
+import { BookmarkPlus, Loader2, Plus, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
@@ -81,6 +81,17 @@ export const BookmarkButton = ({
     });
   };
 
+  const hasListChanges = () => {
+    const selectedListsArray = Array.from(selectedLists);
+    const initialListsArray = Array.from(initialSelectedLists);
+
+    return !(
+      initialSelectedLists.size === selectedLists.size &&
+      selectedListsArray.every((listId) => initialSelectedLists.has(listId)) &&
+      initialListsArray.every((listId) => selectedLists.has(listId))
+    );
+  };
+
   const handleSave = async () => {
     if (isPending) return;
     if (!session) {
@@ -88,15 +99,7 @@ export const BookmarkButton = ({
       return;
     }
 
-    const selectedListsArray = Array.from(selectedLists);
-    const initialListsArray = Array.from(initialSelectedLists);
-
-    const noChanges =
-      initialSelectedLists.size === selectedLists.size &&
-      selectedListsArray.every((listId) => initialSelectedLists.has(listId)) &&
-      initialListsArray.every((listId) => selectedLists.has(listId));
-
-    if (noChanges) {
+    if (!hasListChanges()) {
       setIsDropdownOpen(false);
       return;
     }
@@ -105,7 +108,7 @@ export const BookmarkButton = ({
       startTransition(async () => {
         const result = await updateUserLists({
           placeId,
-          selectedLists: selectedListsArray,
+          selectedLists: Array.from(selectedLists),
         });
 
         if (result.error) {
@@ -191,6 +194,7 @@ export const BookmarkButton = ({
             <Button
               size="sm"
               className="w-full"
+              variant={hasListChanges() ? "default" : "secondary"}
               disabled={isActionPending}
               onClick={handleSave}
             >
@@ -201,8 +205,17 @@ export const BookmarkButton = ({
                 </>
               ) : (
                 <>
-                  <BookmarkPlus className="size-4" />
-                  Save
+                  {hasListChanges() ? (
+                    <>
+                      <BookmarkPlus className="size-4" />
+                      Save
+                    </>
+                  ) : (
+                    <>
+                      <X className="size-4" />
+                      Close
+                    </>
+                  )}
                 </>
               )}
             </Button>
