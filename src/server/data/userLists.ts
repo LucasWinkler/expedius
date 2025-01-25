@@ -10,7 +10,7 @@ import { cache } from "react";
 
 export type UserListFieldsForPlaceCard = Pick<
   InferSelectModel<typeof userList>,
-  "id" | "name" | "userId"
+  "id" | "name" | "userId" | "isDefault"
 >;
 export type ListPlaceFieldsForPlaceCard = Pick<
   InferSelectModel<typeof listPlace>,
@@ -18,6 +18,21 @@ export type ListPlaceFieldsForPlaceCard = Pick<
 >;
 export type UserListForPlaceCard = UserListFieldsForPlaceCard & {
   places: ListPlaceFieldsForPlaceCard[];
+};
+
+type Queries = {
+  getById: ReturnType<
+    typeof cache<(id: string) => Promise<UserList | undefined>>
+  >;
+  getAllByUserId: ReturnType<
+    typeof cache<(userId: User["id"]) => Promise<UserList[]>>
+  >;
+  getAllByUserIdWithPlaces: ReturnType<
+    typeof cache<(userId: User["id"]) => Promise<UserListForPlaceCard[]>>
+  >;
+  getCountByUserId: ReturnType<
+    typeof cache<(userId: User["id"]) => Promise<number>>
+  >;
 };
 
 export const userLists = {
@@ -46,28 +61,27 @@ export const userLists = {
       }, "Failed to fetch lists"),
     ),
 
-    getAllByUserIdWithPlaces: cache(
-      async (userId: User["id"]): Promise<UserListForPlaceCard[]> =>
-        withErrorHandling(async () => {
-          const session = await getServerSession();
-          const isOwnProfile = session?.user.id === userId;
+    getAllByUserIdWithPlaces: cache(async (userId: User["id"]) =>
+      withErrorHandling(async () => {
+        const session = await getServerSession();
+        const isOwnProfile = session?.user.id === userId;
 
-          const userLists = await db.query.userList.findMany({
-            where: isOwnProfile
-              ? eq(userList.userId, userId)
-              : and(eq(userList.userId, userId), eq(userList.isPublic, true)),
-
-            with: {
-              places: true,
-            },
-            columns: {
-              id: true,
-              name: true,
-              userId: true,
-            },
-          });
-          return userLists;
-        }, "Failed to fetch lists"),
+        const userLists = await db.query.userList.findMany({
+          where: isOwnProfile
+            ? eq(userList.userId, userId)
+            : and(eq(userList.userId, userId), eq(userList.isPublic, true)),
+          with: {
+            places: true,
+          },
+          columns: {
+            id: true,
+            name: true,
+            userId: true,
+            isDefault: true,
+          },
+        });
+        return userLists;
+      }, "Failed to fetch lists"),
     ),
 
     getCountByUserId: cache(async (userId: User["id"]) =>
@@ -86,7 +100,7 @@ export const userLists = {
         return userLists.count;
       }, "Failed to fetch lists count"),
     ),
-  },
+  } satisfies Queries,
 
   mutations: {
     create: async (data: {
@@ -112,13 +126,13 @@ export const userLists = {
     createDefault: async (userId: User["id"]) =>
       withErrorHandling(async () => {
         const newList = await userLists.mutations.create({
-          name: "Quick Saves",
-          description: "Your default collection for quickly saving places",
+          name: "Likes",
+          description: "Your default collection for quickly saving places.",
           userId,
           isDefault: true,
         });
         return newList;
-      }, "Failed to create default list"),
+      }, "Failed to create default list (likes)"),
 
     update: async (
       listId: string,
@@ -194,7 +208,7 @@ export const userLists = {
         );
 
         return { success: true };
-      }, "Failed to update selected lists"),
+      }, "Failed to update lists"),
 
     delete: async (listId: string) =>
       withErrorHandling(async () => {

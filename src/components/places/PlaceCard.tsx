@@ -7,6 +7,7 @@ import type { Place } from "@/types";
 import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import BookmarkButton from "./BookmarkButton";
+import LikeButton from "./LikeButton";
 import { getPriceLevelDisplay } from "@/lib/utils";
 import { UserListForPlaceCard } from "@/server/data/userLists";
 import placeImageFallback from "../../../public/place-image-fallback.webp";
@@ -66,9 +67,18 @@ export const PlaceCard = ({
               />
             )}
             <div
-              className="absolute right-2 top-2"
+              className="absolute right-2 top-2 flex flex-col gap-2"
               onClick={(e) => e.stopPropagation()}
             >
+              <LikeButton
+                placeId={place.id}
+                initialIsLiked={userLists?.some(
+                  (list) =>
+                    list.isDefault &&
+                    list.places.some((p) => p.placeId === place.id),
+                )}
+              />
+
               <BookmarkButton
                 placeId={place.id}
                 userLists={userLists}

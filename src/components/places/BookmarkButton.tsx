@@ -130,7 +130,7 @@ export const BookmarkButton = ({
           <Button
             size="icon"
             variant="secondary"
-            className="size-10 bg-white/20 text-white shadow-md backdrop-blur-md hover:bg-white/30 [&_svg]:size-5"
+            className="size-10 bg-white/20 text-white shadow-md backdrop-blur-md transition-all duration-200 ease-out hover:bg-white/30 active:scale-90 [&_svg]:size-5"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
