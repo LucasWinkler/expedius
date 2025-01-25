@@ -14,9 +14,7 @@ import { UserListForPlaceCard } from "@/server/data/userLists";
 const FeaturedSections = () => {
   const { coords, isLoading: isLoadingLocation } = useLocation();
   const { data: session } = useSession();
-  const [userLists, setLists] = useState<UserListForPlaceCard[] | undefined>(
-    undefined,
-  );
+  const [userLists, setLists] = useState<UserListForPlaceCard[]>([]);
 
   const [sectionPlaces, setSectionPlaces] = useState<Record<string, Place[]>>(
     {},
