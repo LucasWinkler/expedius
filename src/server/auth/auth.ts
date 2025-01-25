@@ -1,16 +1,14 @@
-import { BetterAuthOptions } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { betterAuth, BetterAuthOptions } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
+import userLists from "../data/userLists";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/server/db";
 import * as schema from "@/server/db/schema";
-import userLists from "@/server/data/userLists";
 
-export const authConfig = {
+export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
-    schema: {
-      ...schema,
-    },
+    schema: schema,
   }),
   trustedOrigins: [
     "http://192.168.86.96:3000",
@@ -18,6 +16,14 @@ export const authConfig = {
   ],
   user: {
     additionalFields: {
+      isPublic: {
+        type: "boolean",
+        required: true,
+        defaultValue() {
+          return false;
+        },
+        input: true,
+      },
       username: {
         type: "string",
         required: true,
@@ -26,7 +32,7 @@ export const authConfig = {
       },
       role: {
         type: "string",
-        required: false,
+        required: true,
         input: false,
         defaultValue: "user",
       },
@@ -34,13 +40,6 @@ export const authConfig = {
         type: "string",
         required: false,
         input: false,
-      },
-      isPublic: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-        input: false,
-        fieldName: "is_public",
       },
     },
   },
@@ -67,4 +66,4 @@ export const authConfig = {
     },
   },
   plugins: [nextCookies()],
-} satisfies BetterAuthOptions;
+} satisfies BetterAuthOptions);

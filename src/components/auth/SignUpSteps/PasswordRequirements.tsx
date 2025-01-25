@@ -18,12 +18,12 @@ export const PasswordRequirements = ({
       isMet: password.length >= 8,
     },
     {
-      text: "Contains a number",
-      isMet: /\d/.test(password),
+      text: "Contains an uppercase letter",
+      isMet: /[A-Z]/.test(password),
     },
     {
-      text: "Contains a special character",
-      isMet: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      text: "Contains a number",
+      isMet: /[0-9]/.test(password),
     },
   ];
 

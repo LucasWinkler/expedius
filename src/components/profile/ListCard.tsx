@@ -1,13 +1,13 @@
 "use client";
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, MoreHorizontal, Edit, Trash } from "lucide-react";
+import { MapPin, MoreHorizontal, Edit, Trash, Loader2 } from "lucide-react";
 import type { UserList } from "@/server/db/schema";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { cn, shouldUseWhiteText } from "@/lib/utils";
+import { cn, shouldUseWhiteText, getImageAverageColor } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,9 +15,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DeleteListDialog } from "./DeleteListDialog";
 import { EditListDialog } from "./EditListDialog";
+
+// Cache for image colors to avoid recalculating
+const imageColorCache = new Map<string, { color: string; isDark: boolean }>();
 
 type ListCardProps = {
   list: UserList;
@@ -26,7 +29,59 @@ type ListCardProps = {
   showActions?: boolean;
   showPrivacyBadge?: boolean;
   placesCount?: number;
-  isDefault: boolean;
+  priority?: boolean;
+};
+
+// Custom hook for handling image color analysis
+const useImageColor = (imageUrl: string | null) => {
+  const [imageColor, setImageColor] = useState<{
+    color: string;
+    isDark: boolean;
+  } | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(!imageUrl);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!imageUrl) {
+      setImageColor(null);
+      setImageLoaded(true);
+      return;
+    }
+
+    // Check cache first
+    const cached = imageColorCache.get(imageUrl);
+    if (cached) {
+      setImageColor(cached);
+      return;
+    }
+
+    // Always set image as not loaded when URL changes
+    setImageLoaded(false);
+
+    getImageAverageColor(imageUrl)
+      .then((result) => {
+        if (!isMounted.current) return;
+        imageColorCache.set(imageUrl, result);
+        setImageColor(result);
+      })
+      .catch((error) => {
+        console.error("Error analyzing image color:", error);
+        if (!isMounted.current) return;
+        setImageColor(null);
+      });
+  }, [imageUrl]);
+
+  return {
+    imageColor,
+    imageLoaded,
+    setImageLoaded,
+  };
 };
 
 export const ListCard = ({
@@ -36,10 +91,17 @@ export const ListCard = ({
   onDelete,
   placesCount = 0,
   showPrivacyBadge,
+  priority = false,
 }: ListCardProps) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const { imageColor, imageLoaded, setImageLoaded } = useImageColor(list.image);
+
+  // Simple calculation, no need for useMemo
+  const useWhiteText = list.image
+    ? (imageColor?.isDark ?? true) // Default to white text while loading
+    : shouldUseWhiteText(list.colour);
 
   return (
     <div className="group relative">
@@ -52,16 +114,9 @@ export const ListCard = ({
           )}
         >
           <div
-            className={cn(
-              "absolute inset-0 transition-opacity duration-200",
-              imageLoaded ? "opacity-0" : "opacity-100",
-            )}
+            className={cn("absolute inset-0")}
             style={{ backgroundColor: list.colour }}
           />
-
-          {/* {!list.image && (
-            <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/50" />
-          )} */}
 
           {list.image && (
             <>
@@ -70,15 +125,27 @@ export const ListCard = ({
                 alt={list.name}
                 fill
                 className={cn(
-                  "object-cover transition-opacity duration-200",
-                  imageLoaded ? "opacity-100" : "opacity-0",
+                  "object-cover",
+                  !imageLoaded && "opacity-0",
+                  "transition-opacity duration-300",
                 )}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 quality={75}
+                priority={priority || list.isDefault}
                 onLoad={() => setImageLoaded(true)}
-                priority={false}
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/50" />
+              {!imageLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Loader2
+                    className={cn(
+                      "size-6 animate-spin",
+                      shouldUseWhiteText(list.colour)
+                        ? "text-white/70"
+                        : "text-black/70",
+                    )}
+                  />
+                </div>
+              )}
             </>
           )}
 
@@ -87,8 +154,7 @@ export const ListCard = ({
               <CardTitle
                 className={cn(
                   "line-clamp-2 flex-1 text-lg font-bold leading-tight drop-shadow-sm",
-                  shouldUseWhiteText(list.colour) ? "text-white" : "text-black",
-                  list.image && "text-white",
+                  useWhiteText ? "text-white" : "text-black",
                 )}
               >
                 {list.name}
@@ -103,11 +169,9 @@ export const ListCard = ({
                         size="icon"
                         className={cn(
                           "ml-2 h-8 w-8 shrink-0",
-                          list.image
+                          useWhiteText
                             ? "bg-white/20 text-white hover:bg-white/30"
-                            : shouldUseWhiteText(list.colour)
-                              ? "bg-white/20 text-white hover:bg-white/30"
-                              : "bg-black/20 text-black hover:bg-black/30",
+                            : "bg-black/20 text-black hover:bg-black/30",
                         )}
                       >
                         <MoreHorizontal className="size-4" />
@@ -145,11 +209,9 @@ export const ListCard = ({
               <div
                 className={cn(
                   "flex items-center rounded-md px-2 py-1 text-sm",
-                  list.image
+                  useWhiteText
                     ? "bg-white/20 text-white hover:bg-white/30"
-                    : shouldUseWhiteText(list.colour)
-                      ? "bg-white/20 text-white hover:bg-white/30"
-                      : "bg-black/20 text-black hover:bg-black/30",
+                    : "bg-black/20 text-black hover:bg-black/30",
                 )}
               >
                 <MapPin className="mr-1 size-3" />
@@ -161,11 +223,9 @@ export const ListCard = ({
                   variant="secondary"
                   className={cn(
                     "h-5 text-xs font-normal",
-                    list.image
+                    useWhiteText
                       ? "bg-white/20 text-white hover:bg-white/30"
-                      : shouldUseWhiteText(list.colour)
-                        ? "bg-white/20 text-white hover:bg-white/30"
-                        : "bg-black/20 text-black hover:bg-black/30",
+                      : "bg-black/20 text-black hover:bg-black/30",
                   )}
                 >
                   {list.isPublic ? "Public" : "Private"}

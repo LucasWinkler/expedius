@@ -28,13 +28,11 @@ import { toast } from "sonner";
 import { updateUserList } from "@/server/actions/userList";
 import { useUploadThing } from "@/lib/uploadthing";
 import type { UserList } from "@/server/db/schema";
-import { createListSchema, type CreateListInput } from "@/lib/validations/list";
+import { editListSchema, type EditListInput } from "@/lib/validations/list";
 import { ColorSwatch } from "./ColorSwatch";
-import { Palette, Check, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { listColourPresets } from "@/constants";
-import { cn } from "@/lib/utils";
 import { FileInput } from "@/components/ui/file-input";
-import { useDebouncedCallback } from "use-debounce";
 
 type EditListDialogProps = {
   list: UserList;
@@ -50,15 +48,11 @@ export const EditListDialog = ({
   onSuccess,
 }: EditListDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [customColor, setCustomColor] = useState<string>(
-    list.colour && !listColourPresets.includes(list.colour)
-      ? list.colour
-      : "#000000",
-  );
+  const [customColor, setCustomColor] = useState<string>("#FF0000"); // Default to red for custom color
   const { startUpload, isUploading } = useUploadThing("userListImage");
 
-  const form = useForm<CreateListInput>({
-    resolver: zodResolver(createListSchema),
+  const form = useForm<EditListInput>({
+    resolver: zodResolver(editListSchema),
     defaultValues: {
       name: list.name,
       description: list.description ?? "",
@@ -67,19 +61,10 @@ export const EditListDialog = ({
     },
   });
 
-  const handleCustomColorChange = useDebouncedCallback(
-    (color: string, onChange: (value: string) => void) => {
-      const formattedColor = color.toUpperCase();
-      setCustomColor(formattedColor);
-      onChange(formattedColor);
-    },
-    16,
-  );
-
-  const onSubmit = async (data: CreateListInput) => {
+  const onSubmit = async (data: EditListInput) => {
     try {
       setIsLoading(true);
-      let imageUrl: string | null | undefined = list.image;
+      let imageUrl: string | null = list.image;
 
       if (data.image && Array.isArray(data.image)) {
         const uploadResult = await startUpload([data.image[0]]);
@@ -149,8 +134,9 @@ export const EditListDialog = ({
                         <FormControl>
                           <Textarea
                             className="min-h-[120px] resize-none"
-                            {...field}
+                            placeholder="A collection of my favourite spots..."
                             disabled={isLoading}
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
@@ -188,10 +174,6 @@ export const EditListDialog = ({
                     control={form.control}
                     name="colour"
                     render={({ field }) => {
-                      const isCustomSelected = !listColourPresets.includes(
-                        field.value,
-                      );
-
                       return (
                         <FormItem>
                           <FormLabel>Color</FormLabel>
@@ -210,39 +192,20 @@ export const EditListDialog = ({
                                   color={color}
                                   selected={field.value === color}
                                   onClick={() => field.onChange(color)}
+                                  disabled={isLoading}
                                 />
                               ))}
-                              <div className="relative size-8">
-                                <Input
-                                  type="color"
-                                  className="absolute inset-0 size-8 cursor-pointer opacity-0"
-                                  value={customColor}
-                                  onChange={(e) =>
-                                    handleCustomColorChange(
-                                      e.target.value,
-                                      field.onChange,
-                                    )
-                                  }
-                                  disabled={isLoading}
-                                  aria-label="Choose custom color"
-                                  role="application"
-                                />
-                                <div
-                                  className={cn(
-                                    "pointer-events-none absolute inset-0 flex items-center justify-center rounded-md border transition-all",
-                                    isCustomSelected &&
-                                      "ring-2 ring-primary ring-offset-2",
-                                  )}
-                                  style={{ backgroundColor: customColor }}
-                                  aria-hidden="true"
-                                >
-                                  {isCustomSelected ? (
-                                    <Check className="size-4 text-white" />
-                                  ) : (
-                                    <Palette className="size-4 text-white" />
-                                  )}
-                                </div>
-                              </div>
+                              <ColorSwatch
+                                color={customColor}
+                                selected={field.value === customColor}
+                                onClick={() => {}}
+                                onCustomColorChange={(color) => {
+                                  setCustomColor(color);
+                                  field.onChange(color);
+                                }}
+                                isCustom
+                                disabled={isLoading}
+                              />
                             </div>
                           </div>
                           <FormMessage />

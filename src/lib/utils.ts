@@ -1,5 +1,14 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import {
+  hex2rgb,
+  rgb2oklch,
+  hex2oklch,
+  luminance,
+  textColor,
+  convert,
+} from "colorizr";
+import { FastAverageColor } from "fast-average-color";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -25,23 +34,32 @@ export const convertImageToBase64 = (file: File): Promise<string> => {
   });
 };
 
-export const getLuminance = (hexColor: string): number => {
-  const hex = hexColor.replace("#", "");
-  const [r, g, b] = [
-    parseInt(hex.slice(0, 2), 16) / 255,
-    parseInt(hex.slice(2, 4), 16) / 255,
-    parseInt(hex.slice(4, 6), 16) / 255,
-  ];
-
-  const toSRGB = (c: number) =>
-    c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-
-  return 0.2126 * toSRGB(r) + 0.7152 * toSRGB(g) + 0.0722 * toSRGB(b);
+export const hexToRgb = (hex: string): [number, number, number] => {
+  const rgb = hex2rgb(hex);
+  return [rgb.r / 255, rgb.g / 255, rgb.b / 255];
 };
 
-export const shouldUseWhiteText = (hexColor: string): boolean => {
-  const luminance = getLuminance(hexColor);
-  return luminance < 0.6;
+export const rgbToOklch = (r: number, g: number, b: number): string => {
+  const rgb = { r: r * 255, g: g * 255, b: b * 255 };
+  const oklch = rgb2oklch(rgb);
+  return `oklch(${oklch.l} ${oklch.c} ${oklch.h})`;
+};
+
+export const oklchToHex = (oklch: string): string => {
+  return convert(oklch, "hex");
+};
+
+export const hexToOklch = (hex: string): string => {
+  const oklch = hex2oklch(hex);
+  return `oklch(${oklch.l} ${oklch.c} ${oklch.h})`;
+};
+
+export const getLuminance = (color: string): number => {
+  return luminance(color);
+};
+
+export const shouldUseWhiteText = (color: string): boolean => {
+  return textColor(color) === "#ffffff";
 };
 
 export const getPriceLevelDisplay = (level?: string): string | null => {
@@ -54,4 +72,29 @@ export const getPriceLevelDisplay = (level?: string): string | null => {
   };
 
   return level ? priceLevelMap[level] : null;
+};
+
+export const getImageAverageColor = async (
+  imageUrl: string,
+): Promise<{ color: string; isDark: boolean }> => {
+  const fac = new FastAverageColor();
+
+  try {
+    const result = await fac.getColorAsync(imageUrl);
+    const hex = result.hex;
+    // Use our existing textColor function to determine if we should use white text
+    const isDark = textColor(hex) === "#ffffff";
+
+    return {
+      color: hex,
+      isDark,
+    };
+  } catch (error) {
+    console.error("Error getting average color:", error);
+    // Return a safe default
+    return {
+      color: "#000000",
+      isDark: true,
+    };
+  }
 };

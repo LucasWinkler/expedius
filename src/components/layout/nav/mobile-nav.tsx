@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, MapPin, LogIn, UserPlus, LogOut } from "lucide-react";
 import { NavLink } from "./nav-link";
 import type { Session } from "@/lib/auth-client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { signOut } from "@/lib/auth-client";
 import Link from "next/link";
@@ -25,44 +25,25 @@ type MobileNavProps = {
 export const MobileNav = ({ session, isPending }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsOpen(false);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild className="ml-auto md:hidden">
+      <SheetTrigger asChild>
         <Button
           variant="ghost"
           size="sm"
-          className="ml-auto"
-          aria-label="Open navigation menu"
+          className="ml-auto flex md:hidden"
+          aria-label="Open menu"
         >
           <Menu className="size-5" />
+          <VisuallyHidden.Root>Menu</VisuallyHidden.Root>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[80vw] max-w-[400px] p-4">
-        <VisuallyHidden.Root>
-          <SheetTitle>Navigation Menu</SheetTitle>
-          <SheetDescription>
-            Access navigation links and account options
-          </SheetDescription>
-        </VisuallyHidden.Root>
-
-        <nav
-          className="flex flex-col space-y-2"
-          role="navigation"
-          aria-label="Mobile navigation"
-        >
+      <SheetContent side="right" className="w-72">
+        <SheetTitle className="text-left text-lg font-bold">PoiToGo</SheetTitle>
+        <SheetDescription className="text-left">
+          Discover and save your favourite places
+        </SheetDescription>
+        <div className="mt-8 flex flex-col gap-2">
           {isPending ? (
             <>
               <Skeleton className="h-9 w-full" />
@@ -87,7 +68,7 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
                 className="h-9 w-full justify-start text-destructive hover:text-destructive [@media(hover:hover)]:hover:bg-destructive/10"
               >
                 <LogOut className="size-4" />
-                <span>Sign out</span>
+                <span>Sign Out</span>
               </Button>
             </>
           ) : (
@@ -97,13 +78,19 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
                 size="sm"
                 className="h-9 w-full justify-start"
                 asChild
+                onClick={() => setIsOpen(false)}
               >
                 <Link href="/auth/sign-in" className="flex items-center gap-2">
                   <LogIn className="size-4" />
                   <span>Sign in</span>
                 </Link>
               </Button>
-              <Button size="sm" className="h-9 w-full justify-start" asChild>
+              <Button
+                size="sm"
+                className="h-9 w-full justify-start"
+                asChild
+                onClick={() => setIsOpen(false)}
+              >
                 <Link href="/auth/sign-up" className="flex items-center gap-2">
                   <UserPlus className="size-4" />
                   <span>Sign up</span>
@@ -111,7 +98,7 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
               </Button>
             </>
           )}
-        </nav>
+        </div>
       </SheetContent>
     </Sheet>
   );

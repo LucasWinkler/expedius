@@ -7,7 +7,7 @@ import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 import { useSignUpForm } from "@/hooks/useSignUpForm";
 import { CredentialsStep } from "./SignUpSteps/CredentialsStep";
 import { ProfileStep } from "./SignUpSteps/ProfileStep";
-import { ImageStep } from "./SignUpSteps/ImageStep";
+import { FinalStep } from "./SignUpSteps/FinalStep";
 import { StepIndicator } from "./SignUpSteps/StepIndicator";
 import AuthCard from "./AuthCard";
 
@@ -27,7 +27,7 @@ export const SignUpForm = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        if (step === "image") {
+        if (step === "final") {
           const submitButton = document.querySelector<HTMLButtonElement>(
             'button[type="submit"]',
           );
@@ -60,8 +60,8 @@ export const SignUpForm = () => {
             <StepIndicator currentStep={step} />
             {step === "credentials" && <CredentialsStep form={form} />}
             {step === "profile" && <ProfileStep form={form} />}
-            {step === "image" && (
-              <ImageStep form={form} isUploading={isUploading} />
+            {step === "final" && (
+              <FinalStep form={form} isUploading={isUploading} />
             )}
           </div>
 
@@ -78,7 +78,7 @@ export const SignUpForm = () => {
               </Button>
             )}
 
-            {step === "image" ? (
+            {step === "final" ? (
               <Button
                 type="submit"
                 className="w-[120px]"

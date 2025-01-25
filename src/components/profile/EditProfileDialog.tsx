@@ -242,12 +242,14 @@ export const EditProfileDialog = ({
                     <FormLabel>Bio</FormLabel>
                     <FormControl>
                       <Textarea
-                        {...field}
                         disabled={isDisabled}
                         className="resize-none"
                         rows={4}
+                        placeholder="Add a bio to your profile"
+                        {...field}
                       />
                     </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}

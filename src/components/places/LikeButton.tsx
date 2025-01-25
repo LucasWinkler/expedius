@@ -5,14 +5,10 @@ import { useLike } from "@/hooks/useLike";
 
 interface LikeButtonProps {
   placeId: string;
-  initialIsLiked?: boolean;
 }
 
-export const LikeButton = ({
-  placeId,
-  initialIsLiked = false,
-}: LikeButtonProps) => {
-  const { isLiked, isLoading, toggleLike } = useLike(placeId, initialIsLiked);
+export const LikeButton = ({ placeId }: LikeButtonProps) => {
+  const { isLiked, isLoading, toggleLike } = useLike(placeId);
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();

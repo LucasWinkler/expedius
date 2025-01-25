@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useMemo } from "react";
+import { useState, useTransition, useMemo, useEffect } from "react";
 import { BookmarkPlus, Loader2, Plus, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
@@ -21,9 +21,9 @@ import SaveListDialogForm from "./SaveListDialogForm";
 type BookmarkButtonProps = {
   placeId: string;
   userLists?: UserListForPlaceCard[];
-  selectedLists: Set<string>;
-  setSelectedLists: React.Dispatch<React.SetStateAction<Set<string>>>;
-  onListsUpdate?: (lists: UserListForPlaceCard[]) => void;
+  selectedLists: Set<string>; // Lists currently selected from parent/context
+  setSelectedLists: (lists: Set<string>) => void; // Callback to update parent/context state
+  onListsUpdate?: () => void; // Callback to refresh lists data after changes
 };
 
 export const BookmarkButton = ({
@@ -37,10 +37,30 @@ export const BookmarkButton = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isActionPending, startTransition] = useTransition();
+
+  // State Management:
+  // We use three states to handle different scenarios and prevent UI flicker:
+  // 1. selectedLists (prop): The source of truth from the parent/context
+  // 2. initialSelectedLists: Snapshot of lists when dropdown opens or external changes occur
+  // 3. localSelectedLists: Temporary state for changes made in the dropdown before saving
   const [initialSelectedLists, setInitialSelectedLists] = useState<Set<string>>(
-    new Set(),
+    new Set(selectedLists),
+  );
+  const [localSelectedLists, setLocalSelectedLists] = useState<Set<string>>(
+    new Set(selectedLists),
   );
 
+  // This effect handles external state changes (e.g., from like button)
+  // By updating both local states, we ensure:
+  // 1. The UI immediately reflects external changes
+  // 2. The save button doesn't appear for changes we didn't make
+  // 3. We don't lose external updates while the dropdown is open
+  useEffect(() => {
+    setInitialSelectedLists(new Set(selectedLists));
+    setLocalSelectedLists(new Set(selectedLists));
+  }, [selectedLists]);
+
+  // Sort lists to ensure consistent order with default list first
   const sortedLists = useMemo(() => {
     if (!userLists) return [];
     return [...userLists].sort((a, b) => {
@@ -52,18 +72,7 @@ export const BookmarkButton = ({
     });
   }, [userLists]);
 
-  const refreshLists = async () => {
-    try {
-      const response = await fetch("/api/lists/user");
-      const data = await response.json();
-      if (data.lists) {
-        onListsUpdate?.(data.lists);
-      }
-    } catch (error) {
-      console.error("Failed to refresh lists:", error);
-    }
-  };
-
+  // Handles dropdown open/close with auth check
   const handleOpenChange = (open: boolean) => {
     if (isPending) {
       return;
@@ -74,35 +83,39 @@ export const BookmarkButton = ({
       return;
     }
 
-    if (open) {
-      setInitialSelectedLists(new Set(selectedLists));
-    }
     setIsDropdownOpen(open);
   };
 
+  // Updates localSelectedLists when user toggles checkboxes
+  // Only affects local state - changes aren't saved until user clicks "Save"
   const toggleListSelection = (listId: string) => {
-    setSelectedLists((prev) => {
-      const newSelectedLists = new Set(prev);
-      if (newSelectedLists.has(listId)) {
-        newSelectedLists.delete(listId);
-      } else {
-        newSelectedLists.add(listId);
-      }
-      return newSelectedLists;
-    });
+    const newSelectedLists = new Set(localSelectedLists);
+    if (newSelectedLists.has(listId)) {
+      newSelectedLists.delete(listId);
+    } else {
+      newSelectedLists.add(listId);
+    }
+    setLocalSelectedLists(newSelectedLists);
   };
 
+  // Compares local changes against initial state to determine if save is needed
+  // This prevents unnecessary API calls and controls save/close button state
   const hasListChanges = () => {
-    const selectedListsArray = Array.from(selectedLists);
+    const selectedListsArray = Array.from(localSelectedLists);
     const initialListsArray = Array.from(initialSelectedLists);
 
     return !(
-      initialSelectedLists.size === selectedLists.size &&
+      initialSelectedLists.size === localSelectedLists.size &&
       selectedListsArray.every((listId) => initialSelectedLists.has(listId)) &&
-      initialListsArray.every((listId) => selectedLists.has(listId))
+      initialListsArray.every((listId) => localSelectedLists.has(listId))
     );
   };
 
+  // Handles saving changes to the server with optimistic updates
+  // 1. Prevents double submissions
+  // 2. Handles auth check
+  // 3. Implements optimistic updates with rollback on error
+  // 4. Updates all relevant states on success
   const handleSave = async () => {
     if (isPending) return;
     if (!session) {
@@ -115,22 +128,36 @@ export const BookmarkButton = ({
       return;
     }
 
+    // Store current state for potential rollback
+    const previousLists = new Set(initialSelectedLists);
+
     try {
       startTransition(async () => {
         const result = await updateUserLists({
           placeId,
-          selectedLists: Array.from(selectedLists),
+          selectedLists: Array.from(localSelectedLists),
         });
 
         if (result.error) {
           toast.error(result.error);
+          // Rollback all states on error
+          setLocalSelectedLists(previousLists);
+          setSelectedLists(previousLists);
         } else {
           setIsDropdownOpen(false);
           toast.success("Lists updated successfully");
+          // Sync all states with the new selection
+          setInitialSelectedLists(new Set(localSelectedLists));
+          setSelectedLists(localSelectedLists);
+          // Refresh lists data in parent/context
+          onListsUpdate?.();
         }
       });
     } catch {
       toast.error("Failed to save place to lists");
+      // Rollback all states on error
+      setLocalSelectedLists(previousLists);
+      setSelectedLists(previousLists);
     }
   };
 
@@ -182,13 +209,13 @@ export const BookmarkButton = ({
                       htmlFor={`list-${list.id}`}
                       className={cn(
                         "mb-1 flex w-full cursor-pointer select-none items-center space-x-2 rounded-md px-2 py-1.5 transition-colors last:mb-0 active:bg-accent/60",
-                        selectedLists.has(list.id) && "bg-accent/40",
+                        localSelectedLists.has(list.id) && "bg-accent/40",
                         "[@media(hover:hover)]:hover:bg-accent/60",
                       )}
                     >
                       <Checkbox
                         id={`list-${list.id}`}
-                        checked={selectedLists.has(list.id)}
+                        checked={localSelectedLists.has(list.id)}
                         onCheckedChange={() => toggleListSelection(list.id)}
                         className="size-4 rounded-[4px] border-2 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
                       />
@@ -249,7 +276,7 @@ export const BookmarkButton = ({
             setIsDropdownOpen(true);
           }
         }}
-        onSuccess={refreshLists}
+        onSuccess={onListsUpdate}
       />
     </div>
   );

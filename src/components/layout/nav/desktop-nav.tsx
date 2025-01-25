@@ -28,45 +28,46 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
         role="navigation"
         aria-label="Main navigation"
       >
-        {isPending ? (
-          <div className="flex gap-2">
-            <Skeleton className="h-9 w-24" />
-            <Skeleton className="h-9 w-24" />
-          </div>
-        ) : session?.user ? (
-          <div className="flex items-center gap-2">
-            <NavLink
-              href={`/u/${session.user.username}`}
-              icon={MapPin}
-              label="My Lists"
-              className="w-full justify-start"
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => void signOut()}
-              className="h-9 text-destructive transition-colors hover:text-destructive [@media(hover:hover)]:hover:bg-destructive/10"
-            >
-              <LogOut className="size-4" />
-              <span>Sign out</span>
-            </Button>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="h-9" asChild>
-              <Link href="/auth/sign-in" className="flex items-center gap-2">
-                <LogIn className="size-4" />
-                <span>Sign in</span>
-              </Link>
-            </Button>
-            <Button size="sm" className="h-9" asChild>
-              <Link href="/auth/sign-up" className="flex items-center gap-2">
-                <UserPlus className="size-4" />
-                <span>Sign up</span>
-              </Link>
-            </Button>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {isPending ? (
+            <>
+              <Skeleton className="h-9 w-24" />
+              <Skeleton className="h-9 w-24" />
+            </>
+          ) : session?.user ? (
+            <>
+              <NavLink
+                href={`/u/${session.user.username}`}
+                icon={MapPin}
+                label="My Lists"
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => void signOut()}
+                className="h-9 text-destructive transition-colors hover:text-destructive [@media(hover:hover)]:hover:bg-destructive/10"
+              >
+                <LogOut className="size-4" />
+                <span>Sign Out</span>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" className="h-9" asChild>
+                <Link href="/auth/sign-in" className="flex items-center gap-2">
+                  <LogIn className="size-4" />
+                  <span>Sign in</span>
+                </Link>
+              </Button>
+              <Button size="sm" className="h-9" asChild>
+                <Link href="/auth/sign-up" className="flex items-center gap-2">
+                  <UserPlus className="size-4" />
+                  <span>Sign up</span>
+                </Link>
+              </Button>
+            </>
+          )}
+        </div>
       </nav>
     </div>
   );

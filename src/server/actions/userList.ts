@@ -1,26 +1,24 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { UserList } from "@/server/db/schema";
 import { getServerSession } from "@/server/auth/session";
 import userLists from "@/server/data/userLists";
-import type { CreateListInput } from "@/lib/validations/list";
+import type { CreateListInput, EditListInput } from "@/lib/validations/list";
 
-export const createUserList = async (data: {
-  name: UserList["name"];
-  description?: UserList["description"];
-  isPublic?: UserList["isPublic"];
-  colour?: UserList["colour"];
-  image?: UserList["image"];
-}) => {
+export const createUserList = async (
+  data: Omit<CreateListInput, "image"> & { image?: string },
+) => {
   try {
     const session = await getServerSession();
     if (!session) throw new Error("Unauthorized");
 
     const list = await userLists.mutations.create({
-      ...data,
-      userId: session.user.id,
+      name: data.name,
+      description: data.description,
+      colour: data.colour,
       isPublic: data.isPublic ?? false,
+      userId: session.user.id,
+      image: data.image, // Now we're passing the uploaded image URL
     });
 
     revalidatePath(`/u/${session.user.username}`);
@@ -34,7 +32,7 @@ export const createUserList = async (data: {
 
 export const updateUserList = async (
   listId: string,
-  data: CreateListInput & { image?: string | null },
+  data: EditListInput & { image?: string | null },
 ) => {
   try {
     const session = await getServerSession();
@@ -127,5 +125,4 @@ export const updateUserLists = async ({
       error: error instanceof Error ? error.message : "Something went wrong",
     };
   }
-
 };

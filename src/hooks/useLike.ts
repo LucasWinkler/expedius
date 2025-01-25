@@ -1,57 +1,20 @@
-import { useOptimistic, useTransition, useEffect, useState } from "react";
+import { useTransition, useOptimistic } from "react";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
+import { useLists } from "@/contexts/ListsContext";
 
-export const useLike = (placeId: string, initialIsLiked: boolean = false) => {
+export const useLike = (placeId: string) => {
   const { data: session } = useSession();
-  const [baseIsLiked, setBaseIsLiked] = useState(initialIsLiked);
+  const { isPlaceLiked, updatePlaceLikeStatus } = useLists();
   const [isPending, startTransition] = useTransition();
-  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Use the context's state as the base state
   const [optimisticLiked, addOptimisticLike] = useOptimistic(
-    baseIsLiked,
-    (_currentState: boolean, newState: boolean) => newState,
+    isPlaceLiked(placeId),
+    (currentState: boolean, newState: boolean) => newState,
   );
 
-  useEffect(() => {
-    const fetchInitialState = async () => {
-      // Don't fetch if not authenticated
-      if (!session?.user.id) {
-        setIsInitialized(true);
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `/api/places/like/status?placeId=${placeId}`,
-          {
-            method: "GET",
-          },
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch like status");
-        }
-
-        const { isLiked } = await response.json();
-
-        setBaseIsLiked(isLiked);
-        startTransition(() => {
-          addOptimisticLike(isLiked);
-        });
-      } catch (error) {
-        console.error("Failed to fetch initial like state:", error);
-      } finally {
-        setIsInitialized(true);
-      }
-    };
-
-    fetchInitialState();
-  }, [placeId, addOptimisticLike, session?.user.id]);
-
   const toggleLike = async () => {
-    if (!isInitialized) return;
-
     // Require authentication to like
     if (!session?.user.id) {
       toast.error("Please sign in to save places");
@@ -62,6 +25,7 @@ export const useLike = (placeId: string, initialIsLiked: boolean = false) => {
 
     startTransition(async () => {
       try {
+        // Update optimistically first
         addOptimisticLike(newState);
 
         const response = await fetch("/api/places/like", {
@@ -76,8 +40,10 @@ export const useLike = (placeId: string, initialIsLiked: boolean = false) => {
           throw new Error("Failed to toggle like");
         }
 
-        setBaseIsLiked(newState);
+        // Update context state directly
+        updatePlaceLikeStatus(placeId, newState);
       } catch (error) {
+        // Revert optimistic update on error
         addOptimisticLike(!newState);
         toast.error("Failed to save place");
         console.error(error);
@@ -87,7 +53,7 @@ export const useLike = (placeId: string, initialIsLiked: boolean = false) => {
 
   return {
     isLiked: optimisticLiked,
-    isLoading: !isInitialized || isPending,
+    isLoading: isPending,
     toggleLike,
   };
 };

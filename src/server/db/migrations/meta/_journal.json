@@ -57,6 +57,41 @@
       "when": 1737046356481,
       "tag": "0007_huge_taskmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1737795827308,
+      "tag": "0008_outgoing_madame_hydra",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1737796849087,
+      "tag": "0009_little_talisman",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1737797402824,
+      "tag": "0010_bouncy_bastion",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1737797617645,
+      "tag": "0011_familiar_luminals",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1737798085509,
+      "tag": "0012_polite_hiroim",
+      "breakpoints": true
     }
   ]
 }

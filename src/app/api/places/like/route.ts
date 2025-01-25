@@ -28,9 +28,24 @@ export async function POST(request: Request) {
       defaultList = await userLists.mutations.createDefault(session.user.id);
     }
 
-    await userLists.mutations.updateSelectedLists(session.user.id, placeId, [
-      defaultList.id,
-    ]);
+    // Get current like status
+    const currentLists = await userLists.queries.getAllByUserIdWithPlaces(
+      session.user.id,
+    );
+    const isCurrentlyLiked = currentLists.some(
+      (list) =>
+        list.isDefault && list.places.some((p) => p.placeId === placeId),
+    );
+
+    // If currently liked, remove from likes list (unlike)
+    // If not currently liked, add to likes list (like)
+    const selectedLists = isCurrentlyLiked ? [] : [defaultList.id];
+
+    await userLists.mutations.updateSelectedLists(
+      session.user.id,
+      placeId,
+      selectedLists,
+    );
 
     return new NextResponse(null, { status: 200 });
   } catch (error) {

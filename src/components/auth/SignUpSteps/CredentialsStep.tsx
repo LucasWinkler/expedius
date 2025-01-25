@@ -47,7 +47,6 @@ export const CredentialsStep = ({ form }: CredentialsStepProps) => {
               <Input type="password" {...field} />
             </FormControl>
             <PasswordRequirements password={password} />
-            <FormMessage />
           </FormItem>
         )}
       />

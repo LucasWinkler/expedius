@@ -1,6 +1,6 @@
 "server-only";
 
-import { auth } from "@/server/auth";
+import { auth } from "@/server/auth/auth";
 import { headers } from "next/headers";
 import { cache } from "react";
 import { redirect } from "next/navigation";

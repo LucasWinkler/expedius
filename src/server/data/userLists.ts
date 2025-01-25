@@ -129,6 +129,7 @@ export const userLists = {
           name: "Likes",
           description: "Your default collection for quickly saving places.",
           userId,
+          colour: "oklch(.645 .246 16.439)",
           isDefault: true,
         });
         return newList;

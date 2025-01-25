@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { checkUsernameAvailability } from "@/server/actions/user";
 import { useSearchParams } from "next/navigation";
 
-export type SignUpStep = "credentials" | "profile" | "image";
+export type SignUpStep = "credentials" | "profile" | "final";
 
 export const useSignUpForm = () => {
   const [step, setStep] = useState<SignUpStep>("credentials");
@@ -26,6 +26,7 @@ export const useSignUpForm = () => {
       confirmPassword: "",
       name: "",
       username: "",
+      isPublic: false,
     },
   });
 
@@ -54,13 +55,13 @@ export const useSignUpForm = () => {
         return;
       }
 
-      setStep("image");
+      setStep("final");
     }
   };
 
   const prevStep = () => {
     if (step === "profile") setStep("credentials");
-    if (step === "image") setStep("profile");
+    if (step === "final") setStep("profile");
   };
 
   const onSubmit = async (data: SignUpInput) => {
@@ -77,7 +78,6 @@ export const useSignUpForm = () => {
         }
         imageUrl = uploadResult[0].url;
       }
-
       await signUp.email(
         {
           email: data.email,
@@ -85,6 +85,7 @@ export const useSignUpForm = () => {
           name: data.name,
           username: data.username,
           image: imageUrl,
+          isPublic: data.isPublic,
           callbackURL,
         },
         {

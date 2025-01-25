@@ -4,7 +4,7 @@ import { getServerSession } from "@/server/auth/session";
 import { UpdateProfileInput } from "@/lib/validations/user";
 import users from "@/server/data/users";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/server/auth";
+import { auth } from "@/server/auth/auth";
 import { headers } from "next/headers";
 
 export const checkUsernameAvailability = async (username: string) => {

@@ -1,13 +1,12 @@
 export const listColourPresets = [
-  "#EF4444", // red
-  "#F97316", // orange
-  "#EAB308", // yellow
-  "#22C55E", // green
-  "#3B82F6", // blue
-  "#6366F1", // indigo
-  "#A855F7", // purple
-  "#EC4899", // pink
-  "#6B7280", // gray
+  "oklch(0.6 0.25 230)", // vibrant blue
+  "oklch(0.7 0.25 30)", // bright orange
+  "oklch(0.65 0.25 140)", // emerald green
+  "oklch(0.6 0.28 0)", // vivid red
+  "oklch(0.6 0.26 300)", // rich purple
+  "oklch(0.7 0.2 190)", // cyan
+  "oklch(0.75 0.22 90)", // chartreuse
+  "oklch(0.65 0.25 60)", // coral
 ];
 
 export const SEARCH_SUGGESTIONS = [

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -31,35 +30,8 @@ import { ColorSwatch } from "./ColorSwatch";
 import { listColourPresets } from "@/constants";
 import { useUploadThing } from "@/lib/uploadthing";
 import { FileInput } from "@/components/ui/file-input";
-import { Palette } from "lucide-react";
-import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
 import type { UserList } from "@/server/db/schema";
-import { useDebouncedCallback } from "use-debounce";
-
-const createListSchema = z.object({
-  name: z.string().min(1, "Name is required").max(50),
-  description: z.string().max(500).optional(),
-  isPublic: z.boolean().default(false),
-  colour: z
-    .string()
-    .min(1, "Color is required")
-    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
-  image: z
-    .custom<File[]>()
-    .optional()
-    .refine(
-      (files) => {
-        if (!files?.[0]) return true;
-        return files[0].size <= 4 * 1024 * 1024;
-      },
-      {
-        message: "Image must be less than 4MB",
-      },
-    ),
-});
-
-type CreateListInput = z.infer<typeof createListSchema>;
+import { createListSchema, type CreateListInput } from "@/lib/validations/list";
 
 type CreateListDialogProps = {
   open: boolean;
@@ -73,7 +45,7 @@ export const CreateListDialog = ({
   onSuccess,
 }: CreateListDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [customColor, setCustomColor] = useState<string>(listColourPresets[0]);
+  const [customColor, setCustomColor] = useState<string>("#FF0000");
   const { startUpload, isUploading } = useUploadThing("userListImage");
 
   const form = useForm<CreateListInput>({
@@ -86,20 +58,12 @@ export const CreateListDialog = ({
     },
   });
 
-  const handleCustomColorChange = useDebouncedCallback(
-    (color: string, onChange: (value: string) => void) => {
-      const formattedColor = color.toUpperCase();
-      setCustomColor(formattedColor);
-      onChange(formattedColor);
-    },
-    16,
-  );
-
   const onSubmit = async (data: CreateListInput) => {
     try {
       setIsLoading(true);
       let imageUrl: string | undefined;
 
+      // Handle image upload if present
       if (data.image?.[0]) {
         const uploadResult = await startUpload([data.image[0]]);
         if (!uploadResult) {
@@ -110,7 +74,10 @@ export const CreateListDialog = ({
       }
 
       const result = await createUserList({
-        ...data,
+        name: data.name,
+        description: data.description,
+        isPublic: data.isPublic,
+        colour: data.colour,
         image: imageUrl,
       });
 
@@ -209,68 +176,43 @@ export const CreateListDialog = ({
                 <FormField
                   control={form.control}
                   name="colour"
-                  render={({ field }) => {
-                    const isCustomSelected = !listColourPresets.includes(
-                      field.value,
-                    );
-
-                    return (
-                      <FormItem>
-                        <FormLabel>Color</FormLabel>
-                        <FormDescription>
-                          Choose a color for your list card
-                        </FormDescription>
-                        <div className="space-y-4">
-                          <div
-                            className="grid grid-cols-5 gap-3"
-                            role="radiogroup"
-                            aria-label="List card color selection"
-                          >
-                            {listColourPresets.map((color) => (
-                              <ColorSwatch
-                                key={color}
-                                color={color}
-                                selected={field.value === color}
-                                onClick={() => field.onChange(color)}
-                              />
-                            ))}
-                            <div className="relative size-8">
-                              <Input
-                                type="color"
-                                className="absolute inset-0 size-8 cursor-pointer opacity-0"
-                                value={customColor}
-                                onChange={(e) =>
-                                  handleCustomColorChange(
-                                    e.target.value,
-                                    field.onChange,
-                                  )
-                                }
-                                disabled={isLoading}
-                                aria-label="Choose custom color"
-                                role="application"
-                              />
-                              <div
-                                className={cn(
-                                  "pointer-events-none absolute inset-0 flex items-center justify-center rounded-md border transition-all",
-                                  isCustomSelected &&
-                                    "ring-2 ring-primary ring-offset-2",
-                                )}
-                                style={{ backgroundColor: customColor }}
-                                aria-hidden="true"
-                              >
-                                {isCustomSelected ? (
-                                  <Check className="size-4 text-white" />
-                                ) : (
-                                  <Palette className="size-4 text-white" />
-                                )}
-                              </div>
-                            </div>
-                          </div>
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Color</FormLabel>
+                      <FormDescription>
+                        Choose a color for your list card
+                      </FormDescription>
+                      <div className="space-y-4">
+                        <div
+                          className="grid grid-cols-5 gap-3"
+                          role="radiogroup"
+                          aria-label="List card color selection"
+                        >
+                          {listColourPresets.map((color) => (
+                            <ColorSwatch
+                              key={color}
+                              color={color}
+                              selected={field.value === color}
+                              onClick={() => field.onChange(color)}
+                              disabled={isLoading}
+                            />
+                          ))}
+                          <ColorSwatch
+                            color={customColor}
+                            selected={field.value === customColor}
+                            onClick={() => {}}
+                            onCustomColorChange={(color) => {
+                              setCustomColor(color);
+                              field.onChange(color);
+                            }}
+                            isCustom
+                            disabled={isLoading}
+                          />
                         </div>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
 
                 <FormField

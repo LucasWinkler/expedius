@@ -4,12 +4,8 @@ const passwordSchema = z
   .string()
   .trim()
   .min(8, "Password must be at least 8 characters")
-  .max(100, "Password must be less than 100 characters")
-  .regex(/\d/, "Password must contain at least one number")
-  .regex(
-    /[!@#$%^&*(),.?":{}|<>]/,
-    "Password must contain at least one special character",
-  );
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number");
 
 export const signUpSchema = z
   .object({
@@ -42,6 +38,7 @@ export const signUpSchema = z
           message: "Image must be less than 4MB",
         },
       ),
+    isPublic: z.boolean().default(false),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

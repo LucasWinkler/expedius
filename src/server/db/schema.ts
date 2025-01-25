@@ -34,7 +34,7 @@ export const user = pgTable("user", {
   usernameUpdatedAt: timestamp("username_updated_at", {
     withTimezone: true,
   }),
-  isPublic: boolean("is_public").default(false),
+  isPublic: boolean("is_public").notNull().default(false),
   ...timestamps,
 });
 

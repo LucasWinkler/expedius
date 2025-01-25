@@ -63,7 +63,6 @@ export const ListsSection = ({
                 showPrivacyBadge={isOwnProfile}
                 onEdit={handleEditSuccess}
                 onDelete={() => handleDelete(list.id)}
-                isDefault={true}
               />
             </div>
           ))}
@@ -82,7 +81,7 @@ export const ListsSection = ({
           )}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {customLists.map((list) => (
+            {customLists.map((list, index) => (
               <ListCard
                 key={list.id}
                 list={list}
@@ -90,7 +89,7 @@ export const ListsSection = ({
                 showPrivacyBadge={isOwnProfile}
                 onEdit={handleEditSuccess}
                 onDelete={() => handleDelete(list.id)}
-                isDefault={false}
+                priority={index < 2}
               />
             ))}
           </div>

@@ -8,7 +8,7 @@ type StepIndicatorProps = {
 export const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
   return (
     <div className="flex justify-center space-x-2">
-      {["credentials", "profile", "image"].map((step) => (
+      {["credentials", "profile", "final"].map((step) => (
         <div
           key={step}
           className={cn(

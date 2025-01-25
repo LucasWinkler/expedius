@@ -9,34 +9,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import BookmarkButton from "./BookmarkButton";
 import LikeButton from "./LikeButton";
 import { getPriceLevelDisplay } from "@/lib/utils";
-import { UserListForPlaceCard } from "@/server/data/userLists";
 import placeImageFallback from "../../../public/place-image-fallback.webp";
+import { useLists } from "@/contexts/ListsContext";
 
 export const PlaceCard = ({
   place,
   priority = false,
-  userLists: initialUserLists,
 }: {
   place: Place;
   priority?: boolean;
-  userLists?: UserListForPlaceCard[];
 }) => {
+  const { lists, refreshLists, getSelectedLists, updateSelectedLists } =
+    useLists();
   const [selectedLists, setSelectedLists] = useState<Set<string>>(new Set());
-  const [userLists, setUserLists] = useState<
-    UserListForPlaceCard[] | undefined
-  >(initialUserLists);
 
+  // Update selected lists when lists change or when the component mounts
   useEffect(() => {
-    const initialLists = new Set(
-      userLists
-        ?.filter((list) => list.places.some((p) => p.placeId === place.id))
-        .map((list) => list.id),
-    );
-    setSelectedLists(initialLists);
-  }, [userLists, place.id]);
+    const currentSelectedLists = getSelectedLists(place.id);
+    setSelectedLists(currentSelectedLists);
+  }, [getSelectedLists, place.id, lists]);
 
-  const handleListsUpdate = (newLists: UserListForPlaceCard[]) => {
-    setUserLists(newLists);
+  const handleSelectedListsChange = (newSelectedLists: Set<string>) => {
+    setSelectedLists(newSelectedLists);
+    updateSelectedLists(place.id, newSelectedLists);
   };
 
   const renderPriceLevel = (level?: string) => getPriceLevelDisplay(level);
@@ -70,21 +65,14 @@ export const PlaceCard = ({
               className="absolute right-2 top-2 flex flex-col gap-2"
               onClick={(e) => e.stopPropagation()}
             >
-              <LikeButton
-                placeId={place.id}
-                initialIsLiked={userLists?.some(
-                  (list) =>
-                    list.isDefault &&
-                    list.places.some((p) => p.placeId === place.id),
-                )}
-              />
+              <LikeButton placeId={place.id} />
 
               <BookmarkButton
                 placeId={place.id}
-                userLists={userLists}
+                userLists={lists}
                 selectedLists={selectedLists}
-                setSelectedLists={setSelectedLists}
-                onListsUpdate={handleListsUpdate}
+                setSelectedLists={handleSelectedListsChange}
+                onListsUpdate={refreshLists}
               />
             </div>
           </div>
