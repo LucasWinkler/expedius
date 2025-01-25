@@ -1,7 +1,9 @@
 import { useOptimistic, useTransition, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useSession } from "@/lib/auth-client";
 
 export const useLike = (placeId: string, initialIsLiked: boolean = false) => {
+  const { data: session } = useSession();
   const [baseIsLiked, setBaseIsLiked] = useState(initialIsLiked);
   const [isPending, startTransition] = useTransition();
   const [isInitialized, setIsInitialized] = useState(false);
@@ -13,6 +15,12 @@ export const useLike = (placeId: string, initialIsLiked: boolean = false) => {
 
   useEffect(() => {
     const fetchInitialState = async () => {
+      // Don't fetch if not authenticated
+      if (!session?.user.id) {
+        setIsInitialized(true);
+        return;
+      }
+
       try {
         const response = await fetch(
           `/api/places/like/status?placeId=${placeId}`,
@@ -39,10 +47,16 @@ export const useLike = (placeId: string, initialIsLiked: boolean = false) => {
     };
 
     fetchInitialState();
-  }, [placeId, addOptimisticLike]);
+  }, [placeId, addOptimisticLike, session?.user.id]);
 
   const toggleLike = async () => {
     if (!isInitialized) return;
+
+    // Require authentication to like
+    if (!session?.user.id) {
+      toast.error("Please sign in to save places");
+      return;
+    }
 
     const newState = !optimisticLiked;
 

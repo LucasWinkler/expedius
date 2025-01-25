@@ -8,6 +8,7 @@ import { BiographySkeleton } from "@/components/profile/BiographySkeleton";
 import { ListsSkeleton } from "@/components/profile/ListsSkeleton";
 import { PrivateProfileView } from "@/components/profile/PrivateProfileView";
 import { getUser } from "@/server/services/profile";
+import { getServerSession } from "@/server/auth/session";
 
 type ProfilePageProps = {
   params: Promise<{ username: string }>;
@@ -46,6 +47,9 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
     return <PrivateProfileView username={user.username} />;
   }
 
+  const session = await getServerSession();
+  const isOwnProfile = session?.user.id === user.id;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Suspense fallback={<ProfileHeaderSkeleton />}>
@@ -59,7 +63,7 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
           </Suspense>
         </div>
         <div className="md:col-span-2">
-          <Suspense fallback={<ListsSkeleton />}>
+          <Suspense fallback={<ListsSkeleton isOwnProfile={isOwnProfile} />}>
             <ListsContent username={username} />
           </Suspense>
         </div>

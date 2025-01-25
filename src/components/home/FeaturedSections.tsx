@@ -23,32 +23,25 @@ const FeaturedSections = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
-    if (session?.user.id) {
-      fetch("/api/lists/user")
-        .then((res) => res.json())
-        .then((data) => {
-          setLists(data.lists);
-        });
-    }
-  }, [session]);
-
-  useEffect(() => {
     const fetchResults = async () => {
       try {
-        const searchResults = await Promise.all(
-          FEATURED_SECTIONS.map(({ query }) =>
-            searchPlacesClient(query, 5, coords),
+        const [searchResults, listsResponse] = await Promise.all([
+          Promise.all(
+            FEATURED_SECTIONS.map(({ query }) =>
+              searchPlacesClient(query, 5, coords),
+            ),
           ),
-        );
+          session?.user.id
+            ? fetch("/api/lists/user").then((res) => res.json())
+            : Promise.resolve({ lists: [] }),
+        ]);
 
         const placesBySection = searchResults.reduce<Record<string, Place[]>>(
           (acc, data, index) => {
             const query = FEATURED_SECTIONS[index].query;
-
             if (data?.places) {
               acc[query] = data.places;
             }
-
             return acc;
           },
           {},
@@ -56,10 +49,13 @@ const FeaturedSections = () => {
 
         startTransition(() => {
           setSectionPlaces(placesBySection);
+          if (listsResponse.lists) {
+            setLists(listsResponse.lists);
+          }
           setIsInitialLoad(false);
         });
       } catch (error) {
-        console.error("Failed to fetch featured sections:", error);
+        console.error("Failed to fetch data:", error);
         setIsInitialLoad(false);
       }
     };
@@ -67,7 +63,7 @@ const FeaturedSections = () => {
     if (!isLoadingLocation) {
       fetchResults();
     }
-  }, [coords, isLoadingLocation]);
+  }, [coords, isLoadingLocation, session?.user.id]);
 
   if (isInitialLoad || isPending) {
     return <FeaturedSectionSkeleton />;

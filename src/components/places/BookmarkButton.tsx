@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { BookmarkPlus, Loader2, Plus, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
@@ -40,6 +40,17 @@ export const BookmarkButton = ({
   const [initialSelectedLists, setInitialSelectedLists] = useState<Set<string>>(
     new Set(),
   );
+
+  const sortedLists = useMemo(() => {
+    if (!userLists) return [];
+    return [...userLists].sort((a, b) => {
+      // Default list first
+      if (a.isDefault) return -1;
+      if (b.isDefault) return 1;
+      // Keep original order for non-default lists
+      return 0;
+    });
+  }, [userLists]);
 
   const refreshLists = async () => {
     try {
@@ -158,7 +169,7 @@ export const BookmarkButton = ({
                   type="always"
                   className="flex max-h-[120px] flex-col pr-4 md:max-h-[160px]"
                 >
-                  {userLists.map((list) => (
+                  {sortedLists.map((list) => (
                     <label
                       key={list.id}
                       htmlFor={`list-${list.id}`}
