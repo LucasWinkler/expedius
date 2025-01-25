@@ -1,6 +1,5 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { getServerSession } from "@/server/auth/session";
-import { getStrictUploadThingUrl } from "@/lib/uploadthing";
 
 const f = createUploadthing();
 
@@ -10,7 +9,7 @@ export const ourFileRouter = {
       return {};
     })
     .onUploadComplete(({ file }) => {
-      return { fileUrl: getStrictUploadThingUrl(file.url) };
+      return { fileUrl: file.appUrl };
     }),
   updateProfileImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(async () => {
@@ -19,7 +18,7 @@ export const ourFileRouter = {
       return { userId: session.user.id };
     })
     .onUploadComplete(async ({ file }) => {
-      return { fileUrl: getStrictUploadThingUrl(file.url) };
+      return { fileUrl: file.appUrl };
     }),
   userListImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(async () => {
@@ -28,7 +27,7 @@ export const ourFileRouter = {
       return { userId: session.user.id };
     })
     .onUploadComplete(async ({ file }) => {
-      return { fileUrl: getStrictUploadThingUrl(file.url) };
+      return { fileUrl: file.appUrl };
     }),
 } satisfies FileRouter;
 

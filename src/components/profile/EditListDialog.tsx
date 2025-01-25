@@ -72,7 +72,7 @@ export const EditListDialog = ({
           toast.error("Failed to upload image");
           return;
         }
-        imageUrl = uploadResult[0].url;
+        imageUrl = uploadResult[0].appUrl;
       } else if (data.image === null) {
         imageUrl = null;
       }

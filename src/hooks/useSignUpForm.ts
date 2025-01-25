@@ -76,7 +76,7 @@ export const useSignUpForm = () => {
           });
           return;
         }
-        imageUrl = uploadResult[0].url;
+        imageUrl = uploadResult[0].appUrl;
       }
       await signUp.email(
         {

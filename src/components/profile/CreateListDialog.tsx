@@ -70,7 +70,7 @@ export const CreateListDialog = ({
           toast.error("Failed to upload image");
           return;
         }
-        imageUrl = uploadResult[0].url;
+        imageUrl = uploadResult[0].appUrl;
       }
 
       const result = await createUserList({

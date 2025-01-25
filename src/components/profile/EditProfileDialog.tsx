@@ -143,7 +143,7 @@ export const EditProfileDialog = ({
             toast.error("Failed to upload image");
             return;
           }
-          imageUrl = uploadResult[0].url;
+          imageUrl = uploadResult[0].appUrl;
         } else if (changedFields.image === null) {
           imageUrl = null;
         }
