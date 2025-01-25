@@ -69,6 +69,7 @@ export const updateProfile = async (
         name: updatedUser.name,
         image: updatedUser.image,
         username: updatedUser.username,
+        isPublic: updatedUser.isPublic,
       },
       headers: await headers(),
     });
