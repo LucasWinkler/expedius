@@ -7,6 +7,7 @@ export const env = createEnv({
     BETTER_AUTH_URL: z.string().url(),
     BETTER_AUTH_SECRET: z.string().min(1),
     UPLOADTHING_TOKEN: z.string().min(1),
+    UPLOADTHING_APP_ID: z.string().min(1),
     GOOGLE_PLACES_API_KEY: z.string().min(1),
     GOOGLE_PLACES_API_BASE_URL: z.string().min(1),
     NODE_ENV: z

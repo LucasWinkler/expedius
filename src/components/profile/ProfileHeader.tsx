@@ -8,8 +8,6 @@ type ProfileHeaderProps = {
   isOwnProfile: boolean;
 };
 
-
-
 export const ProfileHeader = async ({
   user,
   listCount,

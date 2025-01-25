@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import withPlaiceholder from "@plaiceholder/next";
+import { env } from "./src/env";
 
 const nextConfig: NextConfig = {
   images: {
@@ -7,7 +8,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "utfs.io",
+        hostname: `${env.UPLOADTHING_APP_ID}.ufs.sh`,
+        pathname: "/f/*",
       },
     ],
   },
