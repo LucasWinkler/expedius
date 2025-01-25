@@ -47,7 +47,7 @@ export const SearchBar = ({ initialQuery = "" }: { initialQuery?: string }) => {
   }
 
   const handleClear = () => {
-    form.reset();
+    form.reset({ query: "" });
     inputRef.current?.focus();
   };
 
