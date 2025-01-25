@@ -23,6 +23,7 @@ import { createUserList } from "@/server/actions/userList";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useTransition } from "react";
+import { listColourPresets } from "@/constants";
 
 const createListSchema = z.object({
   name: z.string().trim().min(3, "Name must be at least 3 characters").max(50),
@@ -51,7 +52,11 @@ const SaveListDialogForm = ({
   const onSubmit = async (values: z.infer<typeof createListSchema>) => {
     startTransition(async () => {
       try {
-        const result = await createUserList({ name: values.name });
+        const result = await createUserList({
+          name: values.name,
+          isPublic: false,
+          colour: listColourPresets[0],
+        });
 
         if (result.error) {
           toast.error(result.error);
