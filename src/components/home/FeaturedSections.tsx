@@ -9,12 +9,10 @@ import { useLocation } from "@/context/LocationContext";
 import type { Place } from "@/types";
 import { FeaturedSectionSkeleton } from "./FeaturedSectionSkeleton";
 import { useSession } from "@/lib/auth-client";
-import { UserListForPlaceCard } from "@/server/data/userLists";
 
 const FeaturedSections = () => {
   const { coords, isLoading: isLoadingLocation } = useLocation();
   const { data: session } = useSession();
-  const [userLists, setLists] = useState<UserListForPlaceCard[]>([]);
 
   const [sectionPlaces, setSectionPlaces] = useState<Record<string, Place[]>>(
     {},
@@ -25,16 +23,11 @@ const FeaturedSections = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const [searchResults, listsResponse] = await Promise.all([
-          Promise.all(
-            FEATURED_SECTIONS.map(({ query }) =>
-              searchPlacesClient(query, 5, coords),
-            ),
+        const searchResults = await Promise.all(
+          FEATURED_SECTIONS.map(({ query }) =>
+            searchPlacesClient(query, 5, coords),
           ),
-          session?.user.id
-            ? fetch("/api/lists/user").then((res) => res.json())
-            : Promise.resolve({ lists: [] }),
-        ]);
+        );
 
         const placesBySection = searchResults.reduce<Record<string, Place[]>>(
           (acc, data, index) => {
@@ -49,9 +42,6 @@ const FeaturedSections = () => {
 
         startTransition(() => {
           setSectionPlaces(placesBySection);
-          if (listsResponse.lists) {
-            setLists(listsResponse.lists);
-          }
           setIsInitialLoad(false);
         });
       } catch (error) {
@@ -84,14 +74,7 @@ const FeaturedSections = () => {
           );
         }
 
-        return (
-          <FeaturedSection
-            key={title}
-            title={title}
-            places={places}
-            userLists={userLists}
-          />
-        );
+        return <FeaturedSection key={title} title={title} places={places} />;
       })}
     </div>
   );
