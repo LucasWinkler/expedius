@@ -98,7 +98,7 @@ export const EditListDialog = ({
         name: data.name,
         isPublic: data.isPublic,
         colour: data.colour,
-        description: changedFields.description,
+        description: data.description,
         image: imageUrl,
       });
 
