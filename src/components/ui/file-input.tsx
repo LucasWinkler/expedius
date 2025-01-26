@@ -6,6 +6,7 @@ import { Upload, X } from "lucide-react";
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { ProxiedImage } from "./ProxiedImage";
 
 type FileInputProps = {
   onChange: (files: File[] | null | undefined) => void;
@@ -100,15 +101,27 @@ export const FileInput = ({
             "w-full",
           )}
         >
-          <Image
-            src={previewUrl}
-            alt="Preview"
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            quality={60}
-            priority={false}
-          />
+          {preview ? (
+            <Image
+              src={previewUrl}
+              alt="Preview"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              quality={60}
+              priority={false}
+            />
+          ) : (
+            <ProxiedImage
+              src={previewUrl}
+              alt="Preview"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              quality={60}
+              priority={false}
+            />
+          )}
         </div>
       )}
     </div>

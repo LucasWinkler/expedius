@@ -4,7 +4,6 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, MoreHorizontal, Edit, Trash, Loader2 } from "lucide-react";
 import type { UserList } from "@/server/db/schema";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn, shouldUseWhiteText, getImageAverageColor } from "@/lib/utils";
@@ -18,8 +17,8 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { DeleteListDialog } from "./DeleteListDialog";
 import { EditListDialog } from "./EditListDialog";
+import { ProxiedImage } from "@/components/ui/ProxiedImage";
 
-// Cache for image colors to avoid recalculating
 const imageColorCache = new Map<string, { color: string; isDark: boolean }>();
 
 type ListCardProps = {
@@ -32,7 +31,6 @@ type ListCardProps = {
   priority?: boolean;
 };
 
-// Custom hook for handling image color analysis
 const useImageColor = (imageUrl: string | null) => {
   const [imageColor, setImageColor] = useState<{
     color: string;
@@ -61,7 +59,6 @@ const useImageColor = (imageUrl: string | null) => {
       return;
     }
 
-    // Always set image as not loaded when URL changes
     setImageLoaded(false);
 
     getImageAverageColor(imageUrl)
@@ -98,9 +95,8 @@ export const ListCard = ({
 
   const { imageColor, imageLoaded, setImageLoaded } = useImageColor(list.image);
 
-  // Simple calculation, no need for useMemo
   const useWhiteText = list.image
-    ? (imageColor?.isDark ?? true) // Default to white text while loading
+    ? (imageColor?.isDark ?? true)
     : shouldUseWhiteText(list.colour);
 
   return (
@@ -120,7 +116,7 @@ export const ListCard = ({
 
           {list.image && (
             <>
-              <Image
+              <ProxiedImage
                 src={list.image}
                 alt={list.name}
                 fill
