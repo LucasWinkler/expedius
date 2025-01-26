@@ -130,6 +130,8 @@ export const ListCard = ({
                 priority={priority || list.isDefault}
                 onLoad={() => setImageLoaded(true)}
               />
+              {/* Subtle dark overlay */}
+              {imageLoaded && <div className="absolute inset-0 bg-black/10" />}
               {!imageLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Loader2
@@ -164,10 +166,7 @@ export const ListCard = ({
                         variant="secondary"
                         size="icon"
                         className={cn(
-                          "ml-2 h-8 w-8 shrink-0",
-                          useWhiteText
-                            ? "bg-white/20 text-white hover:bg-white/30"
-                            : "bg-black/20 text-black hover:bg-black/30",
+                          "size-10 bg-white/20 text-white shadow-md backdrop-blur-md transition-all duration-200 ease-out hover:bg-white/30 active:scale-90 [&_svg]:size-5",
                         )}
                       >
                         <MoreHorizontal className="size-4" />
@@ -204,14 +203,12 @@ export const ListCard = ({
             <div className="flex items-center justify-between">
               <div
                 className={cn(
-                  "flex items-center rounded-md px-2 py-1 text-sm",
-                  useWhiteText
-                    ? "bg-white/20 text-white hover:bg-white/30"
-                    : "bg-black/20 text-black hover:bg-black/30",
+                  "flex items-center rounded-md px-2 py-1",
+                  "bg-white/20 text-white shadow-md backdrop-blur-md",
                 )}
               >
                 <MapPin className="mr-1 size-3" />
-                <span className="drop-shadow-sm">{placesCount}</span>
+                <span>{placesCount}</span>
               </div>
 
               {showPrivacyBadge && (
@@ -219,9 +216,7 @@ export const ListCard = ({
                   variant="secondary"
                   className={cn(
                     "h-5 text-xs font-normal",
-                    useWhiteText
-                      ? "bg-white/20 text-white hover:bg-white/30"
-                      : "bg-black/20 text-black hover:bg-black/30",
+                    "bg-white/20 text-white shadow-md backdrop-blur-md",
                   )}
                 >
                   {list.isPublic ? "Public" : "Private"}
