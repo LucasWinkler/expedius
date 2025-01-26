@@ -95,7 +95,10 @@ export const EditListDialog = ({
       }
 
       const result = await updateUserList(list.id, {
-        ...changedFields,
+        name: data.name,
+        isPublic: data.isPublic,
+        colour: data.colour,
+        description: changedFields.description,
         image: imageUrl,
       });
 
