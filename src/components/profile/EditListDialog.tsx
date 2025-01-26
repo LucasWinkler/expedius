@@ -48,7 +48,7 @@ export const EditListDialog = ({
   onSuccess,
 }: EditListDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [customColor, setCustomColor] = useState<string>("#FF0000"); // Default to red for custom color
+  const [customColor, setCustomColor] = useState<string>("#FF0000");
   const { startUpload, isUploading } = useUploadThing("userListImage");
 
   const form = useForm<EditListInput>({
@@ -118,8 +118,16 @@ export const EditListDialog = ({
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input {...field} disabled={isLoading} />
+                          <Input
+                            {...field}
+                            disabled={isLoading || list.isDefault}
+                          />
                         </FormControl>
+                        {list.isDefault && (
+                          <FormDescription>
+                            The name of your likes list cannot be modified
+                          </FormDescription>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -135,10 +143,16 @@ export const EditListDialog = ({
                           <Textarea
                             className="min-h-[120px] resize-none"
                             placeholder="A collection of my favourite spots..."
-                            disabled={isLoading}
+                            disabled={isLoading || list.isDefault}
                             {...field}
                           />
                         </FormControl>
+                        {list.isDefault && (
+                          <FormDescription>
+                            The description of your likes list cannot be
+                            modified
+                          </FormDescription>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}

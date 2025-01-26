@@ -49,6 +49,13 @@ export const updateUserList = async (
       return { error: "Not authorized" };
     }
 
+    if (
+      list.isDefault &&
+      (data.name !== list.name || data.description !== list.description)
+    ) {
+      return { error: "Cannot modify name or description of default list" };
+    }
+
     const updatedList = await userLists.mutations.update(listId, {
       name: data.name,
       description: data.description,

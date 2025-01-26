@@ -127,7 +127,8 @@ export const userLists = {
       withErrorHandling(async () => {
         const newList = await userLists.mutations.create({
           name: "Likes",
-          description: "Your default collection for quickly saving places.",
+          description:
+            "Save places you love using the heart or bookmark button",
           userId,
           colour: "oklch(.645 .246 16.439)",
           isDefault: true,
