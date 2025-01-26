@@ -63,6 +63,23 @@ export const EditListDialog = ({
 
   const onSubmit = async (data: EditListInput) => {
     try {
+      // Create an object containing only the changed fields
+      const changedFields: Partial<EditListInput> = {};
+
+      if (data.name !== list.name) changedFields.name = data.name;
+      if (data.description !== list.description)
+        changedFields.description = data.description;
+      if (data.isPublic !== list.isPublic)
+        changedFields.isPublic = data.isPublic;
+      if (data.colour !== list.colour) changedFields.colour = data.colour;
+      if (data.image !== undefined) changedFields.image = data.image;
+
+      // If no fields have changed, close the dialog without making an API call
+      if (Object.keys(changedFields).length === 0) {
+        onOpenChange(false);
+        return;
+      }
+
       setIsLoading(true);
       let imageUrl: string | null = list.image;
 
@@ -78,7 +95,7 @@ export const EditListDialog = ({
       }
 
       const result = await updateUserList(list.id, {
-        ...data,
+        ...changedFields,
         image: imageUrl,
       });
 
@@ -269,14 +286,19 @@ export const EditListDialog = ({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isLoading || isUploading}>
+                <Button
+                  type="submit"
+                  disabled={isLoading || isUploading || !form.formState.isDirty}
+                >
                   {isLoading || isUploading ? (
                     <div className="flex items-center">
                       <Loader2 className="mr-2 size-4 animate-spin" />
                       {isUploading ? "Uploading..." : "Saving..."}
                     </div>
-                  ) : (
+                  ) : form.formState.isDirty ? (
                     "Save Changes"
+                  ) : (
+                    "No Changes"
                   )}
                 </Button>
               </div>

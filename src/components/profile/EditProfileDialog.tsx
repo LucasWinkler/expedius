@@ -316,14 +316,19 @@ export const EditProfileDialog = ({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isDisabled}>
+              <Button
+                type="submit"
+                disabled={isDisabled || !form.formState.isDirty}
+              >
                 {isDisabled ? (
                   <div className="flex items-center">
                     <Loader2 className="mr-2 size-4 animate-spin" />
                     {isUploading ? "Uploading..." : "Saving..."}
                   </div>
-                ) : (
+                ) : form.formState.isDirty ? (
                   "Save Changes"
+                ) : (
+                  "No Changes"
                 )}
               </Button>
             </div>
