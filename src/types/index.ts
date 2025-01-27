@@ -1,3 +1,4 @@
+// API/External types
 export type PlacePhoto = {
   name: string;
   widthPx: number;
@@ -23,6 +24,48 @@ export type Place = {
   };
 };
 
+// Business/Domain types
+export interface UserList {
+  id: string;
+  name: string;
+  description?: string;
+  image?: string;
+  colour: string;
+  isPublic: boolean;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  savedPlaces?: SavedPlace[];
+}
+
+export interface SavedPlace {
+  id: string;
+  listId: string;
+  placeId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  place?: Place;
+}
+
+export interface Like {
+  id: string;
+  userId: string;
+  placeId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  place?: Place;
+}
+
+// API Response types
 export interface PlaceSearchResponse {
   places: Place[];
+}
+
+export interface ListResponse {
+  list: UserList;
+  savedPlaces: SavedPlace[];
+}
+
+export interface LikeResponse {
+  liked: boolean;
 }

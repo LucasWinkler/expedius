@@ -5,9 +5,28 @@ import {
   text,
   timestamp,
   uuid,
+  index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { relations, type InferSelectModel } from "drizzle-orm";
 import { listColourPresets } from "@/constants";
-import { relations } from "drizzle-orm";
+
+// Types
+
+export type DbUser = InferSelectModel<typeof user>;
+export type DbList = InferSelectModel<typeof list>;
+export type DbLike = InferSelectModel<typeof like>;
+export type DbSavedPlace = InferSelectModel<typeof savedPlace>;
+export type DbSession = InferSelectModel<typeof session>;
+export type DbAccount = InferSelectModel<typeof account>;
+export type DbVerification = InferSelectModel<typeof verification>;
+
+// Enums
+
+export const rolesEnum = pgEnum("roles", ["user", "admin"]);
+export type Role = (typeof rolesEnum.enumValues)[number];
+
+// Timestamps
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -19,8 +38,7 @@ const timestamps = {
     .$onUpdate(() => new Date()),
 };
 
-export const rolesEnum = pgEnum("roles", ["user", "admin"]);
-export type Role = (typeof rolesEnum.enumValues)[number];
+// Tables
 
 export const user = pgTable("user", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
@@ -38,23 +56,38 @@ export const user = pgTable("user", {
   ...timestamps,
 });
 
-export type User = typeof user.$inferSelect;
+export const list = pgTable(
+  "list",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    description: text("description"),
+    image: text("image"),
+    colour: text("colour").notNull().default(listColourPresets[0]),
+    isPublic: boolean("is_public").notNull().default(false),
+    ...timestamps,
+  },
+  (table) => [index("list_user_idx").on(table.userId)],
+);
 
-export const userList = pgTable("user_list", {
-  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  description: text("description"),
-  image: text("image"),
-  colour: text("colour").notNull().default(listColourPresets[0]),
-  isPublic: boolean("is_public").notNull().default(false),
-  isDefault: boolean("is_default").notNull().default(false),
-  ...timestamps,
-});
-
-export type UserList = typeof userList.$inferSelect;
+export const savedPlace = pgTable(
+  "saved_place",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    listId: uuid("list_id")
+      .notNull()
+      .references(() => list.id, { onDelete: "cascade" }),
+    placeId: text("place_id").notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("saved_place_list_place_idx").on(table.listId, table.placeId),
+    index("saved_place_list_idx").on(table.listId),
+  ],
+);
 
 export const session = pgTable("session", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
@@ -68,8 +101,6 @@ export const session = pgTable("session", {
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
 });
-
-export type Session = typeof session.$inferSelect;
 
 export const account = pgTable("account", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
@@ -88,8 +119,6 @@ export const account = pgTable("account", {
   ...timestamps,
 });
 
-export type Account = typeof account.$inferSelect;
-
 export const verification = pgTable("verification", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
   identifier: text("identifier").notNull(),
@@ -98,34 +127,47 @@ export const verification = pgTable("verification", {
   ...timestamps,
 });
 
-export type Verification = typeof verification.$inferSelect;
+export const like = pgTable(
+  "like",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    placeId: text("place_id").notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("like_user_place_idx").on(table.userId, table.placeId),
+    index("like_user_idx").on(table.userId),
+  ],
+);
 
-export const listPlace = pgTable("list_place", {
-  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
-  listId: uuid("list_id")
-    .notNull()
-    .references(() => userList.id, { onDelete: "cascade" }),
-  placeId: text("place_id").notNull(),
-  ...timestamps,
-});
+// Relations
 
 export const userRelations = relations(user, ({ many }) => ({
-  lists: many(userList),
+  lists: many(list),
+  likes: many(like),
 }));
 
-export const userListRelations = relations(userList, ({ one, many }) => ({
+export const listRelations = relations(list, ({ one, many }) => ({
   user: one(user, {
-    fields: [userList.userId],
+    fields: [list.userId],
     references: [user.id],
   }),
-  places: many(listPlace),
+  savedPlaces: many(savedPlace),
 }));
 
-export const listPlaceRelations = relations(listPlace, ({ one }) => ({
-  list: one(userList, {
-    fields: [listPlace.listId],
-    references: [userList.id],
+export const likeRelations = relations(like, ({ one }) => ({
+  user: one(user, {
+    fields: [like.userId],
+    references: [user.id],
   }),
 }));
 
-export type ListPlace = typeof listPlace.$inferSelect;
+export const savedPlaceRelations = relations(savedPlace, ({ one }) => ({
+  list: one(list, {
+    fields: [savedPlace.listId],
+    references: [list.id],
+  }),
+}));
