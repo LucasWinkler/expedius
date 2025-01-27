@@ -5,7 +5,7 @@ import { useLists } from "@/contexts/ListsContext";
 
 export const useLike = (placeId: string) => {
   const { data: session } = useSession();
-  const { isPlaceLiked, updatePlaceLikeStatus } = useLists();
+  const { isPlaceLiked, updatePlaceLikeStatus, isLoadingLikes } = useLists();
   const [isPending, startTransition] = useTransition();
 
   // Use the context's state as the base state
@@ -25,26 +25,22 @@ export const useLike = (placeId: string) => {
 
     startTransition(async () => {
       try {
-        // Update optimistically first
+        // Update UI immediately
         addOptimisticLike(newState);
+        // Update context so other components (like bookmarks) see the change
+        updatePlaceLikeStatus(placeId, newState);
 
         const response = await fetch("/api/places/like", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ placeId }),
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to toggle like");
-        }
-
-        // Update context state directly
-        updatePlaceLikeStatus(placeId, newState);
+        if (!response.ok) throw new Error("Failed to toggle like");
       } catch (error) {
-        // Revert optimistic update on error
+        // Revert both optimistic updates on error
         addOptimisticLike(!newState);
+        updatePlaceLikeStatus(placeId, !newState);
         toast.error("Failed to save place");
         console.error(error);
       }
@@ -53,7 +49,7 @@ export const useLike = (placeId: string) => {
 
   return {
     isLiked: optimisticLiked,
-    isLoading: isPending,
+    isLoading: isPending || isLoadingLikes,
     toggleLike,
   };
 };

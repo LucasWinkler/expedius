@@ -7,175 +7,178 @@ import {
   useState,
   useEffect,
 } from "react";
-import type { UserListForPlaceCard } from "@/server/data/userLists";
+
 import { useSession } from "@/lib/auth-client";
+import type {
+  UserListForPlaceCard,
+  ListPlaceFieldsForPlaceCard,
+} from "@/server/data/userLists";
 
-type ListsContextType = {
-  lists: UserListForPlaceCard[];
-  isLoading: boolean;
-  refreshLists: () => Promise<void>;
+interface ListsContextType {
+  likedPlaceIds: Set<string>;
   isPlaceLiked: (placeId: string) => boolean;
-  isPlaceInList: (placeId: string, listId: string) => boolean;
+  updatePlaceLikeStatus: (placeId: string, liked: boolean) => void;
+  isLoadingLikes: boolean;
+  lists: UserListForPlaceCard[];
+  refreshLists: () => Promise<void>;
   getSelectedLists: (placeId: string) => Set<string>;
-  updateSelectedLists: (placeId: string, listIds: Set<string>) => void;
-  updatePlaceLikeStatus: (placeId: string, isLiked: boolean) => void;
-};
+  updateSelectedLists: (
+    placeId: string,
+    selectedLists: Set<string>,
+  ) => Promise<void>;
+}
 
-const ListsContext = createContext<ListsContextType | null>(null);
+const ListsContext = createContext<ListsContextType | undefined>(undefined);
 
-export const ListsProvider = ({ children }: { children: React.ReactNode }) => {
+export function ListsProvider({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
+  const [likedPlaceIds, setLikedPlaceIds] = useState<Set<string>>(new Set());
+  const [isLoadingLikes, setIsLoadingLikes] = useState(true);
   const [lists, setLists] = useState<UserListForPlaceCard[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  // Track selected lists per place
-  const [selectedListsMap, setSelectedListsMap] = useState<
-    Map<string, Set<string>>
-  >(new Map());
 
-  const refreshLists = useCallback(async () => {
+  const fetchLists = useCallback(async () => {
     if (!session?.user.id) {
       setLists([]);
-      setIsLoading(false);
+      setIsLoadingLikes(false);
       return;
     }
 
     try {
-      const response = await fetch("/api/lists/user");
-      const data = await response.json();
-      if (data.lists) {
-        setLists(data.lists);
-        // Update selected lists map based on new data
-        const newSelectedListsMap = new Map<string, Set<string>>();
-        data.lists.forEach((list: UserListForPlaceCard) => {
-          list.places.forEach((place) => {
-            const placeId = place.placeId;
-            const currentSet =
-              newSelectedListsMap.get(placeId) || new Set<string>();
-            currentSet.add(list.id);
-            newSelectedListsMap.set(placeId, currentSet);
-          });
-        });
-        setSelectedListsMap(newSelectedListsMap);
+      const response = await fetch("/api/lists");
+      if (!response.ok) throw new Error("Failed to fetch lists");
+      const { lists: fetchedLists } = await response.json();
+      setLists(fetchedLists);
+
+      const defaultList = fetchedLists.find(
+        (list: UserListForPlaceCard) => list.isDefault,
+      );
+      if (defaultList) {
+        setLikedPlaceIds(
+          new Set(
+            defaultList.places.map(
+              (place: ListPlaceFieldsForPlaceCard) => place.placeId,
+            ),
+          ),
+        );
       }
+      setIsLoadingLikes(false);
     } catch (error) {
-      console.error("Failed to fetch lists:", error);
-    } finally {
-      setIsLoading(false);
+      console.error("Error fetching lists:", error);
+      setIsLoadingLikes(false);
     }
   }, [session?.user.id]);
 
   const isPlaceLiked = useCallback(
-    (placeId: string) => {
-      return lists.some(
-        (list) =>
-          list.isDefault && list.places.some((p) => p.placeId === placeId),
-      );
-    },
-    [lists],
+    (placeId: string) => likedPlaceIds.has(placeId),
+    [likedPlaceIds],
   );
 
-  const isPlaceInList = useCallback(
-    (placeId: string, listId: string) => {
-      const list = lists.find((l) => l.id === listId);
-      return list?.places.some((p) => p.placeId === placeId) ?? false;
-    },
-    [lists],
-  );
-
-  const getSelectedLists = useCallback(
-    (placeId: string) => {
-      return selectedListsMap.get(placeId) || new Set<string>();
-    },
-    [selectedListsMap],
-  );
-
-  const updateSelectedLists = useCallback(
-    (placeId: string, listIds: Set<string>) => {
-      setSelectedListsMap((prev) => {
-        const newMap = new Map(prev);
-        newMap.set(placeId, listIds);
-        return newMap;
+  const updatePlaceLikeStatus = useCallback(
+    (placeId: string, liked: boolean) => {
+      setLikedPlaceIds((prev) => {
+        const newSet = new Set(prev);
+        if (liked) {
+          newSet.add(placeId);
+        } else {
+          newSet.delete(placeId);
+        }
+        return newSet;
       });
+
+      setLists((prevLists) =>
+        prevLists.map((list) => {
+          if (!list.isDefault) return list;
+
+          const updatedPlaces = liked
+            ? [...list.places, { id: `temp-${placeId}`, placeId }]
+            : list.places.filter((place) => place.placeId !== placeId);
+
+          return {
+            ...list,
+            places: updatedPlaces,
+          };
+        }),
+      );
     },
     [],
   );
 
-  const updatePlaceLikeStatus = useCallback(
-    (placeId: string, isLiked: boolean) => {
-      // Update lists state
-      setLists((currentLists) => {
-        const defaultList = currentLists.find((list) => list.isDefault);
-        if (!defaultList) return currentLists;
-
-        return currentLists.map((list) => {
-          if (!list.isDefault) return list;
-
-          if (isLiked) {
-            // Add place to likes list if not already present
-            if (!list.places.some((p) => p.placeId === placeId)) {
-              return {
-                ...list,
-                places: [...list.places, { id: `temp-${placeId}`, placeId }],
-              };
-            }
-          } else {
-            // Remove place from likes list
-            return {
-              ...list,
-              places: list.places.filter((p) => p.placeId !== placeId),
-            };
-          }
-          return list;
-        });
-      });
-
-      // Update selectedListsMap state
-      setSelectedListsMap((prev) => {
-        const newMap = new Map(prev);
-        const currentSelected = new Set(newMap.get(placeId));
-        const defaultList = lists.find((list) => list.isDefault);
-
-        if (defaultList) {
-          if (isLiked) {
-            currentSelected.add(defaultList.id);
-          } else {
-            currentSelected.delete(defaultList.id);
-          }
-          newMap.set(placeId, currentSelected);
+  const getSelectedLists = useCallback(
+    (placeId: string) => {
+      const selected = new Set<string>();
+      lists.forEach((list) => {
+        if (list.places.some((place) => place.placeId === placeId)) {
+          selected.add(list.id);
         }
-
-        return newMap;
       });
+      return selected;
     },
     [lists],
   );
 
+  const updateSelectedLists = useCallback(
+    async (placeId: string, selectedLists: Set<string>) => {
+      if (!session?.user.id) return;
+
+      const defaultList = lists.find((list) => list.isDefault);
+      if (!defaultList) return;
+
+      const wasLiked = defaultList.places.some(
+        (place) => place.placeId === placeId,
+      );
+      const willBeLiked = selectedLists.has(defaultList.id);
+
+      if (wasLiked !== willBeLiked) {
+        updatePlaceLikeStatus(placeId, willBeLiked);
+      }
+
+      try {
+        const response = await fetch("/api/lists/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            placeId,
+            selectedLists: Array.from(selectedLists),
+          }),
+        });
+
+        if (!response.ok) throw new Error("Failed to update lists");
+        await fetchLists();
+      } catch (error) {
+        if (wasLiked !== willBeLiked) {
+          updatePlaceLikeStatus(placeId, wasLiked);
+        }
+        console.error("Error updating lists:", error);
+        throw error;
+      }
+    },
+    [session?.user.id, fetchLists, lists, updatePlaceLikeStatus],
+  );
+
   useEffect(() => {
-    refreshLists();
-  }, [refreshLists]);
+    void fetchLists();
+  }, [fetchLists]);
 
   return (
     <ListsContext.Provider
       value={{
-        lists,
-        isLoading,
-        refreshLists,
+        likedPlaceIds,
         isPlaceLiked,
-        isPlaceInList,
+        updatePlaceLikeStatus,
+        isLoadingLikes,
+        lists,
+        refreshLists: fetchLists,
         getSelectedLists,
         updateSelectedLists,
-        updatePlaceLikeStatus,
       }}
     >
       {children}
     </ListsContext.Provider>
   );
-};
+}
 
 export const useLists = () => {
   const context = useContext(ListsContext);
-  if (!context) {
-    throw new Error("useLists must be used within a ListsProvider");
-  }
+  if (!context) throw new Error("useLists must be used within ListsProvider");
   return context;
 };

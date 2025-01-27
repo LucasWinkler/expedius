@@ -5,7 +5,7 @@ import FeaturedSection from "./FeaturedSection";
 import { FeaturedSectionError } from "./FeaturedSectionError";
 import { FEATURED_SECTIONS } from "@/constants";
 import { searchPlacesClient } from "@/lib/search";
-import { useLocation } from "@/context/LocationContext";
+import { useLocation } from "@/contexts/LocationContext";
 import type { Place } from "@/types";
 import { FeaturedSectionSkeleton } from "./FeaturedSectionSkeleton";
 import { useSession } from "@/lib/auth-client";
