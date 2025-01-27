@@ -28,7 +28,6 @@ export async function POST(request: Request) {
       defaultList = await userLists.mutations.createDefault(session.user.id);
     }
 
-    // Get current like status
     const currentLists = await userLists.queries.getAllByUserIdWithPlaces(
       session.user.id,
     );
@@ -37,8 +36,6 @@ export async function POST(request: Request) {
         list.isDefault && list.places.some((p) => p.placeId === placeId),
     );
 
-    // If currently liked, remove from likes list (unlike)
-    // If not currently liked, add to likes list (like)
     const selectedLists = isCurrentlyLiked ? [] : [defaultList.id];
 
     await userLists.mutations.updateSelectedLists(

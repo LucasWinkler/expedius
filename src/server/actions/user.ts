@@ -31,7 +31,6 @@ export const updateProfile = async (
       return { error: "User not found" };
     }
 
-    // If username is being updated, validate it
     if (data.username && data.username !== user.username) {
       if (
         user.usernameUpdatedAt &&
@@ -47,7 +46,6 @@ export const updateProfile = async (
       }
     }
 
-    // Only update fields that were actually changed
     const updateData: typeof data = {};
     if (data.username && data.username !== user.username)
       updateData.username = data.username;

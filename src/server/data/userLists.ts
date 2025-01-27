@@ -164,13 +164,11 @@ export const userLists = {
       selectedLists: string[],
     ) =>
       withErrorHandling(async () => {
-        // Fetch all lists for the user
         const userLists = await db.query.userList.findMany({
           where: eq(userList.userId, userId),
           with: { places: true },
         });
 
-        // Determine which lists need to be updated
         const listsToAdd = selectedLists.filter(
           (listId) =>
             !userLists.some(
@@ -187,14 +185,12 @@ export const userLists = {
           .map((list) => list.id)
           .filter((listId) => !selectedLists.includes(listId));
 
-        // Add the place to the selected lists
         await Promise.all(
           listsToAdd.map((listId) =>
             db.insert(listPlace).values({ listId, placeId }).execute(),
           ),
         );
 
-        // Remove the place from the unselected lists
         await Promise.all(
           listsToRemove.map((listId) =>
             db

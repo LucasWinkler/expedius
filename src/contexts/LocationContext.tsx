@@ -51,7 +51,6 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const handleError = () => {
-      // Just mark as not loading, we'll use IP-based location
       setCoords({ latitude: null, longitude: null });
       setIsLoading(false);
     };
@@ -76,29 +75,22 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
           name: "geolocation",
         });
 
-        // Request location if already granted
         if (permission.state === "granted") {
           requestLocation();
         } else {
-          // For denied or prompt, we'll still request to handle the prompt case
-          // and to ensure consistent behavior
           requestLocation();
         }
 
-        // Listen for permission changes
         permission.addEventListener("change", () => {
           if (permission.state === "granted") {
-            // Re-request location when permission is granted
             requestLocation();
           } else {
-            // Reset coords if permission is removed
             setCoords({ latitude: null, longitude: null });
             setIsLoading(false);
           }
         });
       } catch (error) {
         console.error("Error checking geolocation permission:", error);
-        // Fallback to requesting location directly
         requestLocation();
       }
     };

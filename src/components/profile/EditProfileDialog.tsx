@@ -109,7 +109,6 @@ export const EditProfileDialog = ({
   }, [username, checkUsername]);
 
   const onSubmit = async (data: UpdateProfileInput) => {
-    // Create an object containing only the changed fields
     const changedFields: Partial<UpdateProfileInput> = {};
 
     if (data.username !== user.username) {

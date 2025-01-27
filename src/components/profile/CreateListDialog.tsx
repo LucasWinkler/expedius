@@ -63,7 +63,6 @@ export const CreateListDialog = ({
       setIsLoading(true);
       let imageUrl: string | undefined;
 
-      // Handle image upload if present
       if (data.image?.[0]) {
         const uploadResult = await startUpload([data.image[0]]);
         if (!uploadResult) {

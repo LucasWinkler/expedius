@@ -82,7 +82,6 @@ export const getImageAverageColor = async (
   try {
     const result = await fac.getColorAsync(imageUrl);
     const hex = result.hex;
-    // Use our existing textColor function to determine if we should use white text
     const isDark = textColor(hex) === "#ffffff";
 
     return {
@@ -91,7 +90,6 @@ export const getImageAverageColor = async (
     };
   } catch (error) {
     console.error("Error getting average color:", error);
-    // Return a safe default
     return {
       color: "#000000",
       isDark: true,

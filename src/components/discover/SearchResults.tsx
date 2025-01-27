@@ -77,12 +77,10 @@ export const SearchResults = ({ query }: SearchResultsProps) => {
     }
   }, [query, coords, isLoadingLocation, session?.user.id]);
 
-  // Show loading state during initial load or transitions
   if (isInitialLoad || isPending) {
     return <SearchResultsSkeleton />;
   }
 
-  // Show error state
   if (error || (places.length === 0 && query)) {
     return <SearchError />;
   }

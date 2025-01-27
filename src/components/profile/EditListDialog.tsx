@@ -63,7 +63,6 @@ export const EditListDialog = ({
 
   const onSubmit = async (data: EditListInput) => {
     try {
-      // Create an object containing only the changed fields
       const changedFields: Partial<EditListInput> = {};
 
       if (data.name !== list.name) changedFields.name = data.name;
@@ -74,7 +73,6 @@ export const EditListDialog = ({
       if (data.colour !== list.colour) changedFields.colour = data.colour;
       if (data.image !== undefined) changedFields.image = data.image;
 
-      // If no fields have changed, close the dialog without making an API call
       if (Object.keys(changedFields).length === 0) {
         onOpenChange(false);
         return;
@@ -259,10 +257,8 @@ export const EditListDialog = ({
                             onChange={(files) => onChange(files)}
                             onClear={() => {
                               if (value) {
-                                // Clear new selection, keep existing
                                 onChange(undefined);
                               } else if (list.image) {
-                                // Remove existing image
                                 onChange(null);
                               }
                             }}

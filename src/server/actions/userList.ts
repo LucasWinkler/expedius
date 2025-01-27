@@ -18,7 +18,7 @@ export const createUserList = async (
       colour: data.colour,
       isPublic: data.isPublic ?? false,
       userId: session.user.id,
-      image: data.image, // Now we're passing the uploaded image URL
+      image: data.image,
     });
 
     revalidatePath(`/u/${session.user.username}`);

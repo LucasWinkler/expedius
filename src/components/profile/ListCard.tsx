@@ -52,7 +52,6 @@ const useImageColor = (imageUrl: string | null) => {
       return;
     }
 
-    // Check cache first
     const cached = imageColorCache.get(imageUrl);
     if (cached) {
       setImageColor(cached);

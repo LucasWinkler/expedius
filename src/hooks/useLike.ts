@@ -8,14 +8,12 @@ export const useLike = (placeId: string) => {
   const { isPlaceLiked, updatePlaceLikeStatus, isLoadingLikes } = useLists();
   const [isPending, startTransition] = useTransition();
 
-  // Use the context's state as the base state
   const [optimisticLiked, addOptimisticLike] = useOptimistic(
     isPlaceLiked(placeId),
     (currentState: boolean, newState: boolean) => newState,
   );
 
   const toggleLike = async () => {
-    // Require authentication to like
     if (!session?.user.id) {
       toast.error("Please sign in to save places");
       return;
@@ -25,9 +23,7 @@ export const useLike = (placeId: string) => {
 
     startTransition(async () => {
       try {
-        // Update UI immediately
         addOptimisticLike(newState);
-        // Update context so other components (like bookmarks) see the change
         updatePlaceLikeStatus(placeId, newState);
 
         const response = await fetch("/api/places/like", {
@@ -38,7 +34,6 @@ export const useLike = (placeId: string) => {
 
         if (!response.ok) throw new Error("Failed to toggle like");
       } catch (error) {
-        // Revert both optimistic updates on error
         addOptimisticLike(!newState);
         updatePlaceLikeStatus(placeId, !newState);
         toast.error("Failed to save place");

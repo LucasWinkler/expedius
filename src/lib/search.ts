@@ -10,20 +10,17 @@ const processPlacePhotos = async (places: Place[]): Promise<Place[]> => {
             return place;
           }
 
-          // Fetch the photo with blur data
           const photoRes = await fetch(getPlacePhotoUrl(place.photos[0].name));
           if (!photoRes.ok) {
             return place;
           }
 
-          // Get image dimensions from the photo metadata
           const { widthPx, heightPx } = place.photos[0];
 
           return {
             ...place,
             image: {
               url: getPlacePhotoUrl(place.photos[0].name),
-              // We'll get blur data from response headers
               blurDataURL: photoRes.headers.get("x-blur-data") || "",
               width: widthPx,
               height: heightPx,
@@ -65,7 +62,6 @@ export async function searchPlacesClient(
     const data = await res.json();
     if (!data.places) return null;
 
-    // Process photos for each place
     const placesWithPhotos = await processPlacePhotos(data.places);
     return { ...data, places: placesWithPhotos };
   } catch (error) {

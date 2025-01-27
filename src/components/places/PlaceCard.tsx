@@ -23,7 +23,6 @@ export const PlaceCard = ({
     useLists();
   const [selectedLists, setSelectedLists] = useState<Set<string>>(new Set());
 
-  // Update selected lists when lists change or when the component mounts
   useEffect(() => {
     const currentSelectedLists = getSelectedLists(place.id);
     setSelectedLists(currentSelectedLists);

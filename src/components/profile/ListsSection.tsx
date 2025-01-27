@@ -19,7 +19,6 @@ export const ListsSection = ({
 }: ListsSectionProps) => {
   const [lists, setLists] = useState(initialLists);
 
-  // Separate likes list and other lists
   const likesLists = lists.filter((list) => list.isDefault);
   const customLists = lists
     .filter((list) => !list.isDefault)
