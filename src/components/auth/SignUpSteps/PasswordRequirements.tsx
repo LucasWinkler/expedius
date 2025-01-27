@@ -1,3 +1,4 @@
+import { minPasswordLength } from "@/constants";
 import { Check, X } from "lucide-react";
 
 type Requirement = {
@@ -14,8 +15,8 @@ export const PasswordRequirements = ({
 }: PasswordRequirementsProps) => {
   const requirements: Requirement[] = [
     {
-      text: "At least 8 characters",
-      isMet: password.length >= 8,
+      text: `At least ${minPasswordLength} characters`,
+      isMet: password.length >= minPasswordLength,
     },
     {
       text: "Contains an uppercase letter",

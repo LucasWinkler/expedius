@@ -15,12 +15,19 @@ import { checkUsernameAvailability } from "@/server/actions/user";
 import { z } from "zod";
 import type { UseFormReturn } from "react-hook-form";
 import type { SignUpInput } from "@/lib/validations/auth";
+import { maxUsernameLength, minUsernameLength } from "@/constants";
 
 const usernameSchema = z
   .string()
   .trim()
-  .min(3, "Username must be at least 3 characters")
-  .max(30, "Username must be less than 30 characters")
+  .min(
+    minUsernameLength,
+    `Username must be at least ${minUsernameLength} characters`,
+  )
+  .max(
+    maxUsernameLength,
+    `Username must be less than ${maxUsernameLength} characters`,
+  )
   .regex(
     /^[a-zA-Z0-9_-]+$/,
     "Username can only contain letters, numbers, underscores and dashes",

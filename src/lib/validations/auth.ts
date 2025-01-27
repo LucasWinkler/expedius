@@ -1,9 +1,19 @@
+import {
+  maxNameLength,
+  maxUsernameLength,
+  minNameLength,
+  minPasswordLength,
+  minUsernameLength,
+} from "@/constants";
 import { z } from "zod";
 
 const passwordSchema = z
   .string()
   .trim()
-  .min(8, "Password must be at least 8 characters")
+  .min(
+    minPasswordLength,
+    `Password must be at least ${minPasswordLength} characters`,
+  )
   .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
   .regex(/[0-9]/, "Password must contain at least one number");
 
@@ -15,13 +25,19 @@ export const signUpSchema = z
     name: z
       .string()
       .trim()
-      .min(2, "Name must be at least 2 characters")
-      .max(50, "Name must be less than 50 characters"),
+      .min(minNameLength, `Name must be at least ${minNameLength} characters`)
+      .max(maxNameLength, `Name must be less than ${maxNameLength} characters`),
     username: z
       .string()
       .trim()
-      .min(3, "Username must be at least 3 characters")
-      .max(30, "Username must be less than 30 characters")
+      .min(
+        minUsernameLength,
+        `Username must be at least ${minUsernameLength} characters`,
+      )
+      .max(
+        maxUsernameLength,
+        `Username must be less than ${maxUsernameLength} characters`,
+      )
       .regex(
         /^[a-zA-Z0-9_-]+$/,
         "Username can only contain letters, numbers, underscores and dashes",

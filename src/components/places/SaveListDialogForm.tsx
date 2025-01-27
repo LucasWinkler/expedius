@@ -23,17 +23,21 @@ import { createUserList } from "@/server/actions/userList";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useTransition } from "react";
-import { listColourPresets } from "@/constants";
-
-const createListSchema = z.object({
-  name: z.string().trim().min(3, "Name must be at least 3 characters").max(50),
-});
+import { listColourPresets, maxNameLength, minNameLength } from "@/constants";
 
 type SaveListDialogFormProps = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 };
+
+const createListSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(minNameLength, `Name must be at least ${minNameLength} characters`)
+    .max(maxNameLength, `Name must be less than ${maxNameLength} characters`),
+});
 
 const SaveListDialogForm = ({
   isOpen,
