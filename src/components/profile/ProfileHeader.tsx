@@ -1,17 +1,17 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { User } from "@/server/db/schema";
+import type { DbUser } from "@/server/db/schema";
 import { ProfileActionsWrapper } from "./ProfileActionsWrapper";
 
-type ProfileHeaderProps = {
-  user: User;
-  listCount: number;
+interface ProfileHeaderProps {
+  user: DbUser;
   isOwnProfile: boolean;
-};
+  totalLists: number;
+}
 
-export const ProfileHeader = async ({
+export const ProfileHeader = ({
   user,
-  listCount,
   isOwnProfile,
+  totalLists,
 }: ProfileHeaderProps) => {
   return (
     <div className="flex flex-col items-center md:flex-row md:items-start md:justify-between">
@@ -27,7 +27,9 @@ export const ProfileHeader = async ({
           <h1 className="text-3xl font-bold">{user.name}</h1>
           <p className="text-muted-foreground">@{user.username}</p>
           <div className="mt-2 flex justify-center space-x-4 md:justify-start">
-            <span>{listCount} Lists</span>
+            <span>
+              {totalLists} List{totalLists === 1 ? "" : "s"}
+            </span>
             <span>0 Followers</span>
             <span>0 Following</span>
           </div>

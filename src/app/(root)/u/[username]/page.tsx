@@ -1,75 +1,81 @@
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { ProfileHeaderContent } from "@/components/profile/ProfileHeaderContent";
-import { BiographyContent } from "@/components/profile/BiographyContent";
-import { ListsContent } from "@/components/profile/ListsContent";
-import { ProfileHeaderSkeleton } from "@/components/profile/ProfileHeaderSkeleton";
-import { BiographySkeleton } from "@/components/profile/BiographySkeleton";
-import { ListsSkeleton } from "@/components/profile/ListsSkeleton";
+import { users } from "@/server/data/users";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { BiographySection } from "@/components/profile/BiographySection";
+import { ProfileLists } from "@/components/profile/ProfileLists";
 import { PrivateProfileView } from "@/components/profile/PrivateProfileView";
-import { getUser } from "@/server/services/profile";
-import { getServerSession } from "@/server/auth/session";
+import type { PublicProfileData } from "@/server/types/profile";
+import { profileParamsSchema } from "@/lib/validations/profile";
 
-type ProfilePageProps = {
+interface ProfilePageProps {
   params: Promise<{ username: string }>;
-};
+  searchParams: Promise<{ page?: string }>;
+}
 
-export const generateMetadata = async ({ params }: ProfilePageProps) => {
+export async function generateMetadata({ params }: ProfilePageProps) {
   const username = (await params).username;
-  if (!username) {
-    return { title: "User not found" };
+  const profile = await users.queries.getProfileMetadata(username);
+
+  if (!profile) {
+    return {
+      title: "Profile Not Found | PoiToGo",
+    };
   }
 
-  const user = await getUser(username);
-  if (!user) {
-    return { title: "User not found | PoiToGo" };
-  }
+  return {
+    title: profile.isPublic
+      ? `${profile.name} (@${profile.username}) | PoiToGo`
+      : `Private Profile (${profile.username}) | PoiToGo`,
+  };
+}
 
-  if ("type" in user) {
-    return { title: `@${user.username} (Private) | PoiToGo` };
-  }
+export default async function ProfilePage({
+  params,
+  searchParams,
+}: ProfilePageProps) {
+  const validated = profileParamsSchema.safeParse({
+    username: (await params).username,
+    page: (await searchParams).page,
+  });
 
-  return { title: `${user.name} (@${user.username}) | PoiToGo` };
-};
-
-const ProfilePage = async ({ params }: ProfilePageProps) => {
-  const username = (await params).username;
-  if (!username) {
+  if (!validated.success) {
     notFound();
   }
 
-  const user = await getUser(username);
-  if (!user) {
+  const profile = await users.queries.getProfile(validated.data);
+
+  if (!profile) {
     notFound();
   }
 
-  if ("type" in user) {
-    return <PrivateProfileView username={user.username} />;
+  if ("type" in profile && profile.type === "private") {
+    return <PrivateProfileView username={profile.username} />;
   }
 
-  const session = await getServerSession();
-  const isOwnProfile = session?.user.id === user.id;
+  const publicProfile = profile as PublicProfileData;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Suspense fallback={<ProfileHeaderSkeleton />}>
-        <ProfileHeaderContent username={username} />
-      </Suspense>
+      <ProfileHeader
+        user={publicProfile.user}
+        isOwnProfile={publicProfile.isOwnProfile}
+        totalLists={Number(publicProfile.lists.metadata.totalItems)}
+      />
 
       <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
         <div className="md:col-span-1">
-          <Suspense fallback={<BiographySkeleton />}>
-            <BiographyContent username={username} />
-          </Suspense>
+          <BiographySection bio={publicProfile.user.bio} />
         </div>
         <div className="md:col-span-2">
-          <Suspense fallback={<ListsSkeleton isOwnProfile={isOwnProfile} />}>
-            <ListsContent username={username} />
-          </Suspense>
+          <ProfileLists
+            lists={publicProfile.lists.items}
+            username={validated.data.username}
+            isOwnProfile={publicProfile.isOwnProfile}
+            totalPages={publicProfile.lists.metadata.totalPages}
+            currentPage={validated.data.page}
+          />
         </div>
       </div>
     </div>
   );
-};
-
-export default ProfilePage;
+}

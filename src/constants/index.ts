@@ -1,3 +1,5 @@
+export * from "./queryKeys";
+
 export const listColourPresets = [
   "oklch(0.6 0.25 230)", // vibrant blue
   "oklch(0.7 0.25 30)", // bright orange
@@ -42,3 +44,7 @@ export const maxUsernameLength = 30;
 export const minNameLength = 2;
 export const maxNameLength = 50;
 export const minQueryLength = 2;
+
+export const PAGINATION = {
+  ITEMS_PER_PAGE: 6,
+} as const;

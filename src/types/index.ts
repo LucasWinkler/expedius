@@ -1,3 +1,5 @@
+export * from "./pagination";
+
 // API/External types
 export type PlacePhoto = {
   name: string;
@@ -25,17 +27,16 @@ export type Place = {
 };
 
 // Business/Domain types
-export interface UserList {
+export interface List {
   id: string;
+  userId: string;
   name: string;
   description?: string;
   image?: string;
   colour: string;
   isPublic: boolean;
-  userId: string;
   createdAt: Date;
   updatedAt: Date;
-  savedPlaces?: SavedPlace[];
 }
 
 export interface SavedPlace {
@@ -44,7 +45,20 @@ export interface SavedPlace {
   placeId: string;
   createdAt: Date;
   updatedAt: Date;
-  place?: Place;
+}
+
+export interface CreateListInput {
+  name: string;
+  description?: string;
+  colour?: string;
+  isPublic?: boolean;
+}
+
+export type UpdateListInput = Partial<CreateListInput>;
+
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
 }
 
 export interface Like {
@@ -62,7 +76,7 @@ export interface PlaceSearchResponse {
 }
 
 export interface ListResponse {
-  list: UserList;
+  list: List;
   savedPlaces: SavedPlace[];
 }
 

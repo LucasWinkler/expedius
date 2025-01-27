@@ -24,25 +24,22 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { createUserList } from "@/server/actions/userList";
 import { Loader2 } from "lucide-react";
 import { ColorSwatch } from "./ColorSwatch";
 import { listColourPresets } from "@/constants";
 import { useUploadThing } from "@/lib/uploadthing";
 import { FileInput } from "@/components/ui/file-input";
-import type { UserList } from "@/server/db/schema";
 import { createListSchema, type CreateListInput } from "@/lib/validations/list";
+import { createList } from "@/server/actions/list";
 
 type CreateListDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: (list: UserList) => void;
 };
 
 export const CreateListDialog = ({
   open,
   onOpenChange,
-  onSuccess,
 }: CreateListDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [customColor, setCustomColor] = useState<string>("#FF0000");
@@ -72,7 +69,7 @@ export const CreateListDialog = ({
         imageUrl = uploadResult[0].appUrl;
       }
 
-      const result = await createUserList({
+      await createList({
         name: data.name,
         description: data.description,
         isPublic: data.isPublic,
@@ -80,19 +77,13 @@ export const CreateListDialog = ({
         image: imageUrl,
       });
 
-      if (result.error) {
-        toast.error(result.error);
-        return;
-      }
-
-      if (result.data) {
-        onOpenChange(false);
-        toast.success("List created successfully");
-        form.reset();
-        onSuccess?.(result.data);
-      }
-    } catch {
-      toast.error("Something went wrong");
+      onOpenChange(false);
+      toast.success("List created successfully");
+      form.reset();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong",
+      );
     } finally {
       setIsLoading(false);
     }

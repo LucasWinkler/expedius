@@ -1,22 +1,21 @@
-import { getUser } from "@/server/services/profile";
-import userLists from "@/server/data/userLists";
 import { ProfileHeader } from "./ProfileHeader";
+import type { PublicProfileData } from "@/server/types/profile";
+interface ProfileHeaderContentProps {
+  user: PublicProfileData["user"];
+  isOwnProfile: boolean;
+  lists: PublicProfileData["lists"];
+}
 
-export const ProfileHeaderContent = async ({
-  username,
-}: {
-  username: string;
-}) => {
-  const user = await getUser(username);
-  if (!user || "type" in user) return null;
-  const lists = await userLists.queries.getAllByUserId(user.id);
-  const isOwnProfile = "id" in user;
-
+export const ProfileHeaderContent = ({
+  user,
+  isOwnProfile,
+  lists,
+}: ProfileHeaderContentProps) => {
   return (
     <ProfileHeader
       user={user}
       isOwnProfile={isOwnProfile}
-      listCount={lists.length}
+      listCount={lists.items.length}
     />
   );
 };

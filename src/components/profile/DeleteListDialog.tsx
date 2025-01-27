@@ -10,34 +10,35 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
+import { deleteList } from "@/server/actions/list";
+import { useTransition } from "react";
 import { toast } from "sonner";
 
-type DeleteListDialogProps = {
+interface DeleteListDialogProps {
+  listId: string;
+  listName: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  listName: string;
-  onDelete: () => Promise<void>;
-};
+}
 
 export const DeleteListDialog = ({
+  listId,
+  listName,
   open,
   onOpenChange,
-  listName,
-  onDelete,
 }: DeleteListDialogProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  const handleDelete = async () => {
-    try {
-      setIsLoading(true);
-      await onDelete();
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to delete list");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDelete = () => {
+    startTransition(async () => {
+      try {
+        await deleteList(listId);
+        onOpenChange(false);
+        toast.success("List deleted successfully");
+      } catch {
+        toast.error("Failed to delete list");
+      }
+    });
   };
 
   return (
@@ -46,18 +47,19 @@ export const DeleteListDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete List</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete &quot;{listName}&quot;? This action
-            cannot be undone.
+            Are you sure you want to delete{" "}
+            <span className="font-bold">{listName}</span>? This action cannot be
+            undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
-            disabled={isLoading}
+            disabled={isPending}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isLoading ? "Deleting..." : "Delete"}
+            {isPending ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

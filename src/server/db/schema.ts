@@ -21,6 +21,12 @@ export type DbSession = InferSelectModel<typeof session>;
 export type DbAccount = InferSelectModel<typeof account>;
 export type DbVerification = InferSelectModel<typeof verification>;
 
+export type DbListWithPlacesCount = DbList & {
+  _count: {
+    savedPlaces: number;
+  };
+};
+
 // Enums
 
 export const rolesEnum = pgEnum("roles", ["user", "admin"]);

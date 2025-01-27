@@ -10,7 +10,6 @@ import BookmarkButton from "./BookmarkButton";
 import LikeButton from "./LikeButton";
 import { getPriceLevelDisplay } from "@/lib/utils";
 import placeImageFallback from "../../../public/place-image-fallback.webp";
-import { useLists } from "@/contexts/ListsContext";
 
 export const PlaceCard = ({
   place,

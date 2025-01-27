@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "@/server/auth/session";
-import { lists } from "@/server/data/lists";
-import { createListSchema } from "@/server/validations/lists";
-import { paginationSchema } from "@/server/validations/pagination";
+import { likes } from "@/server/data/likes";
+import { toggleLikeSchema } from "@/server/validations/likes";
 
 export async function GET(request: Request) {
   try {
@@ -12,23 +11,21 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const result = paginationSchema.safeParse({
-      page: searchParams.get("page"),
-      limit: searchParams.get("limit"),
+    const result = toggleLikeSchema.safeParse({
+      placeId: searchParams.get("placeId"),
     });
 
     if (!result.success) {
       return new NextResponse(result.error.message, { status: 400 });
     }
 
-    const paginatedLists = await lists.queries.getAllByUserId(
+    const like = await likes.queries.getByPlaceId(
       session.user.id,
-      result.data,
+      result.data.placeId,
     );
-
-    return NextResponse.json(paginatedLists);
+    return NextResponse.json({ isLiked: !!like });
   } catch (error) {
-    console.error("[GET_LISTS]", error);
+    console.error("[GET_LIKE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
@@ -41,16 +38,19 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const result = createListSchema.safeParse(body);
+    const result = toggleLikeSchema.safeParse(body);
 
     if (!result.success) {
       return new NextResponse(result.error.message, { status: 400 });
     }
 
-    const newList = await lists.mutations.create(session.user.id, result.data);
-    return NextResponse.json(newList);
+    const response = await likes.mutations.toggle(
+      session.user.id,
+      result.data.placeId,
+    );
+    return NextResponse.json(response);
   } catch (error) {
-    console.error("[CREATE_LIST]", error);
+    console.error("[TOGGLE_LIKE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

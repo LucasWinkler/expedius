@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { Toaster } from "sonner";
+import { Providers } from "@/providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,7 +19,7 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
         <Toaster
           position="bottom-right"
           expand={true}

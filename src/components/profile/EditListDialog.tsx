@@ -25,27 +25,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "sonner";
-import { updateUserList } from "@/server/actions/userList";
 import { useUploadThing } from "@/lib/uploadthing";
-import type { UserList } from "@/server/db/schema";
+import type { DbList } from "@/server/db/schema";
 import { editListSchema, type EditListInput } from "@/lib/validations/list";
 import { ColorSwatch } from "./ColorSwatch";
 import { Loader2 } from "lucide-react";
 import { listColourPresets } from "@/constants";
 import { FileInput } from "@/components/ui/file-input";
+import { updateList } from "@/server/actions/list";
 
 type EditListDialogProps = {
-  list: UserList;
+  list: DbList;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: (list: UserList) => void;
 };
 
 export const EditListDialog = ({
   list,
   open,
   onOpenChange,
-  onSuccess,
 }: EditListDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [customColor, setCustomColor] = useState<string>("#FF0000");
@@ -92,7 +90,7 @@ export const EditListDialog = ({
         imageUrl = null;
       }
 
-      const result = await updateUserList(list.id, {
+      await updateList(list.id, {
         name: data.name,
         isPublic: data.isPublic,
         colour: data.colour,
@@ -100,16 +98,9 @@ export const EditListDialog = ({
         image: imageUrl,
       });
 
-      if (result.error) {
-        toast.error(result.error);
-        return;
-      }
-
-      if (result.data) {
-        onSuccess?.(result.data);
-      }
       toast.success("List updated successfully");
       onOpenChange(false);
+      form.reset();
     } catch {
       toast.error("Something went wrong");
     } finally {
@@ -136,16 +127,8 @@ export const EditListDialog = ({
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input
-                            {...field}
-                            disabled={isLoading || list.isDefault}
-                          />
+                          <Input {...field} disabled={isLoading} />
                         </FormControl>
-                        {list.isDefault && (
-                          <FormDescription>
-                            The name of your likes list cannot be modified
-                          </FormDescription>
-                        )}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -161,16 +144,10 @@ export const EditListDialog = ({
                           <Textarea
                             className="min-h-[120px] resize-none"
                             placeholder="A collection of my favourite spots..."
-                            disabled={isLoading || list.isDefault}
+                            disabled={isLoading}
                             {...field}
                           />
                         </FormControl>
-                        {list.isDefault && (
-                          <FormDescription>
-                            The description of your likes list cannot be
-                            modified
-                          </FormDescription>
-                        )}
                         <FormMessage />
                       </FormItem>
                     )}

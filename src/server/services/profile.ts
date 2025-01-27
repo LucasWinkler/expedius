@@ -2,14 +2,17 @@
 
 import { cache } from "react";
 import { getServerSession } from "@/server/auth/session";
-import users from "@/server/data/users";
-import type { User } from "@/server/db/schema";
+import { users } from "@/server/data/users";
+import type { DbUser } from "@/server/db/schema";
 
-type PublicProfile = User;
-type PrivateProfile = {
+export interface PublicProfile extends DbUser {
+  type: "public";
+}
+
+export interface PrivateProfile {
   username: string;
   type: "private";
-};
+}
 
 export type ProfileResponse = PublicProfile | PrivateProfile;
 
@@ -30,6 +33,9 @@ export const getUser = cache(
       };
     }
 
-    return user;
+    return {
+      ...user,
+      type: "public",
+    };
   },
 );

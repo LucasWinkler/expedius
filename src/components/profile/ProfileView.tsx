@@ -1,25 +1,25 @@
-import type { User } from "@/server/db/schema";
-import userLists from "@/server/data/userLists";
+"use client";
+
 import { ProfileHeader } from "./ProfileHeader";
 import { BiographySection } from "./BiographySection";
 import { ListsSection } from "./ListsSection";
-import { getServerSession } from "@/server/auth/session";
+import { useLists } from "@/hooks/useLists";
+import { DbUser } from "@/server/db/schema";
 
-type ProfileViewProps = {
-  user: User;
-};
+interface ProfileViewProps {
+  user: DbUser;
+  isOwnProfile: boolean;
+}
 
-export const ProfileView = async ({ user }: ProfileViewProps) => {
-  const session = await getServerSession();
-  const lists = await userLists.queries.getAllByUserId(user.id);
-  const isOwnProfile = session?.user.id === user.id;
+export const ProfileView = ({ user, isOwnProfile }: ProfileViewProps) => {
+  const { data: lists } = useLists();
 
   return (
     <div className="container mx-auto px-4 py-8">
       <ProfileHeader
         user={user}
         isOwnProfile={isOwnProfile}
-        listCount={lists.length}
+        listCount={lists?.items.length ?? 0}
       />
 
       <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
@@ -27,7 +27,7 @@ export const ProfileView = async ({ user }: ProfileViewProps) => {
           <BiographySection bio={user.bio ?? ""} />
         </div>
         <div className="md:col-span-2">
-          <ListsSection initialLists={lists} isOwnProfile={isOwnProfile} />
+          <ListsSection isOwnProfile={isOwnProfile} />
         </div>
       </div>
     </div>

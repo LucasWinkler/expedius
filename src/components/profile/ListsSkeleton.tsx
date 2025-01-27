@@ -14,14 +14,12 @@ export const ListsSkeleton = ({ isOwnProfile }: ListsSkeletonProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {/* Only show likes list skeleton if it's own profile */}
           {isOwnProfile && (
             <div className="w-full">
               <Skeleton className="h-40 w-full" />
             </div>
           )}
 
-          {/* Only show separator if there are items to separate */}
           {isOwnProfile && (
             <div className="relative py-2">
               <div className="absolute inset-0 flex items-center">

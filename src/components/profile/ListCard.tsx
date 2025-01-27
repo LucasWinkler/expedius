@@ -2,11 +2,10 @@
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, MoreHorizontal, Edit, Trash, Loader2 } from "lucide-react";
-import type { UserList } from "@/server/db/schema";
+import type { DbListWithPlacesCount } from "@/server/db/schema";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { cn, shouldUseWhiteText, getImageAverageColor } from "@/lib/utils";
+import { cn, shouldUseWhiteText } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,97 +13,42 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState, useEffect, useRef } from "react";
-import { DeleteListDialog } from "./DeleteListDialog";
-import { EditListDialog } from "./EditListDialog";
 import { ProxiedImage } from "@/components/ui/ProxiedImage";
+import { useImageColour } from "@/hooks/useImageColour";
+import { Badge } from "../ui/badge";
 
-const imageColorCache = new Map<string, { color: string; isDark: boolean }>();
-
-type ListCardProps = {
-  list: UserList;
-  onEdit: (list: UserList) => void;
-  onDelete: () => Promise<void>;
-  showActions?: boolean;
+interface ListCardProps {
+  list: DbListWithPlacesCount;
+  isOwnProfile: boolean;
+  username: string;
   showPrivacyBadge?: boolean;
-  placesCount?: number;
-  priority?: boolean;
-};
-
-const useImageColor = (imageUrl: string | null) => {
-  const [imageColor, setImageColor] = useState<{
-    color: string;
-    isDark: boolean;
-  } | null>(null);
-  const [imageLoaded, setImageLoaded] = useState(!imageUrl);
-  const isMounted = useRef(true);
-
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!imageUrl) {
-      setImageColor(null);
-      setImageLoaded(true);
-      return;
-    }
-
-    const cached = imageColorCache.get(imageUrl);
-    if (cached) {
-      setImageColor(cached);
-      return;
-    }
-
-    setImageLoaded(false);
-
-    getImageAverageColor(imageUrl)
-      .then((result) => {
-        if (!isMounted.current) return;
-        imageColorCache.set(imageUrl, result);
-        setImageColor(result);
-      })
-      .catch((error) => {
-        console.error("Error analyzing image color:", error);
-        if (!isMounted.current) return;
-        setImageColor(null);
-      });
-  }, [imageUrl]);
-
-  return {
-    imageColor,
-    imageLoaded,
-    setImageLoaded,
-  };
-};
+  onEdit: (list: DbListWithPlacesCount) => void;
+  onDelete: (list: DbListWithPlacesCount) => void;
+}
 
 export const ListCard = ({
   list,
-  showActions,
+  isOwnProfile,
+  username,
+  showPrivacyBadge = false,
   onEdit,
   onDelete,
-  placesCount = 0,
-  showPrivacyBadge,
-  priority = false,
 }: ListCardProps) => {
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-
-  const { imageColor, imageLoaded, setImageLoaded } = useImageColor(list.image);
+  const { imageColour, imageLoaded, setImageLoaded } = useImageColour(
+    list.image,
+  );
 
   const useWhiteText = list.image
-    ? (imageColor?.isDark ?? true)
+    ? (imageColour?.isDark ?? true)
     : shouldUseWhiteText(list.colour);
 
   return (
     <div className="group relative">
-      <Link href={`/list/${list.id}`} className="block">
+      <Link href={`/u/${username}/lists/${list.id}`} className="block">
         <Card
           className={cn(
             "relative h-40 overflow-hidden transition-all duration-200 ease-out",
-            "hover:scale-[1.02] hover:shadow-lg hover:shadow-foreground/5",
+            "hover:shadow-lg",
             "active:scale-[0.98]",
           )}
         >
@@ -126,10 +70,8 @@ export const ListCard = ({
                 )}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 quality={75}
-                priority={priority || list.isDefault}
                 onLoad={() => setImageLoaded(true)}
               />
-              {/* Subtle dark overlay */}
               {imageLoaded && <div className="absolute inset-0 bg-black/10" />}
               {!imageLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -148,16 +90,27 @@ export const ListCard = ({
 
           <CardHeader className="relative flex h-full flex-col justify-between p-4">
             <div className="flex items-start justify-between">
-              <CardTitle
-                className={cn(
-                  "line-clamp-2 flex-1 text-lg font-bold leading-tight drop-shadow-sm",
-                  useWhiteText ? "text-white" : "text-black",
-                )}
-              >
-                {list.name}
-              </CardTitle>
+              <div>
+                <CardTitle
+                  className={cn(
+                    "line-clamp-2 flex-1 text-lg font-bold leading-tight drop-shadow-sm",
+                    useWhiteText ? "text-white" : "text-black",
+                  )}
+                >
+                  {list.name}
+                </CardTitle>
+                <p
+                  className={cn(
+                    "mt-1 text-sm",
+                    useWhiteText ? "text-white/80" : "text-muted-foreground",
+                  )}
+                >
+                  {list._count.savedPlaces} Place
+                  {list._count.savedPlaces === 1 ? "" : "s"}
+                </p>
+              </div>
 
-              {showActions && (
+              {isOwnProfile && (
                 <div onClick={(e) => e.preventDefault()}>
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
@@ -175,7 +128,7 @@ export const ListCard = ({
                       <DropdownMenuItem
                         onClick={(e) => {
                           e.preventDefault();
-                          setIsEditDialogOpen(true);
+                          onEdit(list);
                         }}
                       >
                         <Edit className="mr-2 size-4" />
@@ -185,10 +138,9 @@ export const ListCard = ({
                       <DropdownMenuItem
                         onClick={(e) => {
                           e.preventDefault();
-                          setIsDeleteDialogOpen(true);
+                          onDelete(list);
                         }}
                         className="text-destructive focus:text-destructive"
-                        disabled={list.isDefault}
                       >
                         <Trash className="mr-2 size-4" />
                         Delete List
@@ -207,16 +159,13 @@ export const ListCard = ({
                 )}
               >
                 <MapPin className="mr-1 size-3" />
-                <span>{placesCount}</span>
+                <span>{list._count.savedPlaces}</span>
               </div>
 
               {showPrivacyBadge && (
                 <Badge
                   variant="secondary"
-                  className={cn(
-                    "h-5 text-xs font-normal",
-                    "bg-white/20 text-white shadow-md backdrop-blur-md",
-                  )}
+                  className="h-5 bg-white/20 text-xs font-normal text-white shadow-md backdrop-blur-md hover:bg-white/20"
                 >
                   {list.isPublic ? "Public" : "Private"}
                 </Badge>
@@ -225,22 +174,7 @@ export const ListCard = ({
           </CardHeader>
         </Card>
       </Link>
-
-      <EditListDialog
-        list={list}
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        onSuccess={onEdit}
-      />
-
-      <DeleteListDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        listName={list.name}
-        onDelete={onDelete}
-      />
     </div>
   );
 };
-
 export default ListCard;

@@ -1,1 +1,0 @@
-ALTER TABLE "user_list" DROP COLUMN "place_id";
