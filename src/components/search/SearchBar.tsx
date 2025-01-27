@@ -65,7 +65,7 @@ export const SearchBar = ({ initialQuery = "" }: { initialQuery?: string }) => {
                   <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors duration-200 ease-in-out" />
                   <Input
                     placeholder="Search for places..."
-                    className="w-full rounded-full border-muted-foreground/20 bg-white py-6 pl-12 pr-32 shadow-lg transition-all duration-300 ease-out hover:border-muted-foreground/30 hover:shadow-xl focus:border-muted-foreground/40 focus:shadow-xl"
+                    className="w-full rounded-full border-muted-foreground/20 bg-white py-6 pl-12 pr-32 shadow-sm transition-all duration-300 ease-out hover:border-muted-foreground/30 hover:shadow-md focus:border-muted-foreground/40 focus:shadow-lg"
                     {...field}
                     ref={inputRef}
                   />
