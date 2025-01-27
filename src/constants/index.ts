@@ -10,11 +10,11 @@ export const listColourPresets = [
 ];
 
 export const SEARCH_SUGGESTIONS = [
+  { title: "Cafes", query: "cafes" },
+  { title: "Bakeries", query: "bakeries" },
   { title: "Restaurants", query: "restaurants" },
-  { title: "Cafes & Bakeries", query: "cafe bakery" },
   { title: "Museums", query: "museums" },
   { title: "Shopping", query: "shopping" },
-  { title: "Tourist Attractions", query: "tourist attractions" },
   { title: "Parks", query: "parks" },
 ] as const;
 
