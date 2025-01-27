@@ -34,24 +34,16 @@ export const ListCard = ({
   onEdit,
   onDelete,
 }: ListCardProps) => {
-  const { imageColour, imageLoaded, setImageLoaded } = useImageColour(
-    list.image,
-  );
+  const { imageLoaded, setImageLoaded } = useImageColour(list.image);
 
-  const useWhiteText = list.image
-    ? (imageColour?.isDark ?? true)
-    : shouldUseWhiteText(list.colour);
+  // const useWhiteText = list.image
+  //   ? (imageColour?.isDark ?? true)
+  //   : shouldUseWhiteText(list.colour);
 
   return (
     <div className="group relative">
-      <Link href={`/u/${username}/lists/${list.id}`} className="block">
-        <Card
-          className={cn(
-            "relative h-40 overflow-hidden transition-all duration-200 ease-out",
-            "hover:shadow-lg",
-            "active:scale-[0.98]",
-          )}
-        >
+      <Link className="block" href={`/u/${username}/lists/${list.id}`}>
+        <Card className="relative h-40 overflow-hidden transition-all duration-200 ease-out active:scale-[0.98] group-hover:border-muted-foreground/50 group-hover:shadow-lg">
           <div
             className={cn("absolute inset-0")}
             style={{ backgroundColor: list.colour }}
@@ -89,26 +81,16 @@ export const ListCard = ({
           )}
 
           <CardHeader className="relative flex h-full flex-col justify-between p-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle
-                  className={cn(
-                    "line-clamp-2 flex-1 text-lg font-bold leading-tight drop-shadow-sm",
-                    useWhiteText ? "text-white" : "text-black",
-                  )}
-                >
-                  {list.name}
-                </CardTitle>
-                <p
-                  className={cn(
-                    "mt-1 text-sm",
-                    useWhiteText ? "text-white/80" : "text-muted-foreground",
-                  )}
-                >
-                  {list._count.savedPlaces} Place
-                  {list._count.savedPlaces === 1 ? "" : "s"}
-                </p>
-              </div>
+            <div className="flex items-start justify-between gap-2">
+              <CardTitle
+                className={cn(
+                  "line-clamp-2 flex-1 text-lg font-bold leading-tight drop-shadow-sm",
+                  "text-white",
+                  // useWhiteText ? "text-white" : "text-black",
+                )}
+              >
+                {list.name}gasg asgas gasg asgasg
+              </CardTitle>
 
               {isOwnProfile && (
                 <div onClick={(e) => e.preventDefault()}>
