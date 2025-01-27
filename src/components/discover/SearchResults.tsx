@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { PlaceCard } from "../places/PlaceCard";
 import { searchPlacesClient } from "@/lib/search";
-import { useLocation } from "@/context/LocationContext";
+import { useLocation } from "@/contexts/LocationContext";
 import type { Place } from "@/types";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
