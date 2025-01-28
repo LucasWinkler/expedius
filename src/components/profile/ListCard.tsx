@@ -89,7 +89,7 @@ export const ListCard = ({
                   // useWhiteText ? "text-white" : "text-black",
                 )}
               >
-                {list.name}gasg asgas gasg asgasg
+                {list.name}
               </CardTitle>
 
               {isOwnProfile && (
