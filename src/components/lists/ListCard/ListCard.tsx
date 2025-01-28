@@ -52,10 +52,10 @@ export const ListCard = ({
         />
       </div>
 
-      <div className="xs:flex-row relative flex flex-col">
+      <div className="relative flex flex-col xs:flex-row">
         <Link
           href={`/u/${username}/lists/${list.id}`}
-          className="xs:w-48 relative aspect-[4/3] overflow-hidden rounded-xl p-5 sm:w-60 md:w-72"
+          className="relative aspect-[4/3] overflow-hidden rounded-xl p-5 xs:w-48 sm:w-60 md:w-72"
         >
           {!imageLoaded && list.image && (
             <div className="absolute inset-0 z-10 flex items-center justify-center">

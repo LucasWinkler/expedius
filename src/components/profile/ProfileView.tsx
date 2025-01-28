@@ -91,7 +91,7 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
                   isOwnProfile={isOwnProfile}
                   onEdit={() => setEditingList(list)}
                   onDelete={() => setDeletingList(list)}
-                  showPrivacyBadge
+                  showPrivacyBadge={isOwnProfile}
                 />
               ))}
 
