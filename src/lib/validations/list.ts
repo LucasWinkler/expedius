@@ -1,4 +1,4 @@
-import { maxNameLength } from "@/constants";
+import { listColourPresets, maxNameLength } from "@/constants";
 import { minNameLength } from "@/constants";
 import { z } from "zod";
 
@@ -21,14 +21,15 @@ export const listSchema = z.object({
     .min(minNameLength, `Name must be at least ${minNameLength} characters`)
     .max(maxNameLength, `Name must be less than ${maxNameLength} characters`),
   description: z.string().max(500).optional(),
-  isPublic: z.boolean().optional().default(false),
+  isPublic: z.boolean().optional(),
   colour: z
     .string()
-    .min(1, "Color is required")
+    .min(1, "Colour is required")
     .regex(
       /^(#[0-9A-Fa-f]{6}|oklch\(\s*[0-9.]+\s+[0-9.]+\s+[0-9.]+\s*\)|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)|hsl\(\s*\d+\s*,\s*\d+%?\s*,\s*\d+%?\s*\))$/,
       "Invalid color format. Must be hex, OKLCH, RGB, or HSL",
-    ),
+    )
+    .default(listColourPresets[0]),
   image: listImageSchema,
 });
 

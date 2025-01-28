@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { BookmarkPlus, X, Loader2, Plus } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "../ui/button";
-import { CreateListForPlaceDialog } from "../lists/CreateListForPlaceDialog";
+import { CreateListForPlaceDialog } from "./CreateListForPlaceDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,

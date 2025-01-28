@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useCreateList } from "@/hooks/useLists";
 import { z } from "zod";
-import { maxNameLength, minNameLength } from "@/constants";
+import { listColourPresets, maxNameLength, minNameLength } from "@/constants";
 
 const createListForPlaceSchema = z.object({
   name: z
@@ -59,9 +59,7 @@ export const CreateListForPlaceDialog = ({
     try {
       await createList({
         name: data.name,
-
-        isPublic: false,
-        colour: "#000000",
+        colour: listColourPresets[0],
       });
 
       onOpenChange(false);

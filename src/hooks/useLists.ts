@@ -18,13 +18,14 @@ import { getListsByUsername } from "@/lib/api/lists";
 export const useListsInfinite = (username: DbUser["username"]) => {
   const { data: session } = useSession();
   const isAuthenticated = session?.user.username === username;
+  const ITEMS_PER_PAGE = 6;
 
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.LISTS, "infinite", username, isAuthenticated],
     queryFn: ({ pageParam = 1 }) =>
       getListsByUsername(username, {
         page: pageParam,
-        limit: pageParam === 1 ? 6 : 3,
+        limit: ITEMS_PER_PAGE,
       }),
     getNextPageParam: (lastPage) =>
       lastPage.metadata.hasNextPage
