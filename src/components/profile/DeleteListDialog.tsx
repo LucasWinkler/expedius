@@ -10,13 +10,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { deleteList } from "@/server/actions/list";
-import { useTransition } from "react";
+import { useDeleteList } from "@/hooks/useLists";
+import type { DbList } from "@/server/db/schema";
 import { toast } from "sonner";
 
 interface DeleteListDialogProps {
-  listId: string;
-  listName: string;
+  listId: DbList["id"];
+  listName: DbList["name"];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -27,18 +27,16 @@ export const DeleteListDialog = ({
   open,
   onOpenChange,
 }: DeleteListDialogProps) => {
-  const [isPending, startTransition] = useTransition();
+  const { mutateAsync: deleteList, isPending } = useDeleteList(listId);
 
-  const handleDelete = () => {
-    startTransition(async () => {
-      try {
-        await deleteList(listId);
-        onOpenChange(false);
-        toast.success("List deleted successfully");
-      } catch {
-        toast.error("Failed to delete list");
-      }
-    });
+  const handleDelete = async () => {
+    try {
+      await deleteList();
+      onOpenChange(false);
+      toast.success("List deleted successfully");
+    } catch {
+      toast.error("Failed to delete list");
+    }
   };
 
   return (

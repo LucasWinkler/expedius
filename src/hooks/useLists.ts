@@ -7,14 +7,14 @@ import {
 import { getList, getLists, getListsByUsername } from "@/lib/api";
 import { QUERY_KEYS } from "@/constants";
 import { useSession } from "@/lib/auth-client";
-import { createList, updateList } from "@/server/actions/list";
-import { DbList } from "@/server/db/schema";
+import { createList, deleteList, updateList } from "@/server/actions/list";
+import { DbList, DbUser } from "@/server/db/schema";
 import {
   CreateListRequest,
   UpdateListRequest,
 } from "@/server/validations/lists";
 
-export const useListsInfinite = (username: string) => {
+export const useListsInfinite = (username: DbUser["username"]) => {
   const { data: session } = useSession();
   const isAuthenticated = session?.user.username === username;
 
@@ -40,7 +40,7 @@ export const useLists = (page?: number) => {
   });
 };
 
-export const useList = (id: string) => {
+export const useList = (id: DbList["id"]) => {
   return useQuery({
     queryKey: [QUERY_KEYS.LISTS, id],
     queryFn: () => getList(id),
@@ -65,6 +65,18 @@ export const useUpdateList = (id: DbList["id"]) => {
 
   return useMutation({
     mutationFn: (data: UpdateListRequest) => updateList(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS, id] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS] });
+    },
+  });
+};
+
+export const useDeleteList = (id: DbList["id"]) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => deleteList(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS, id] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS] });
