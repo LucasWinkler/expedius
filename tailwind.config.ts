@@ -13,8 +13,12 @@ export default {
       fontFamily: {
         sans: ["var(--font-sans)"],
       },
+      screens: {
+        xs: "480px",
+      },
       colors: {
         background: "hsl(var(--background))",
+
         foreground: "hsl(var(--foreground))",
         card: {
           DEFAULT: "hsl(var(--card))",

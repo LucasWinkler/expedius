@@ -62,6 +62,10 @@ export const shouldUseWhiteText = (color: string): boolean => {
   return textColor(color) === "#ffffff";
 };
 
+export const shouldUseLightText = (color: string): boolean => {
+  return getLuminance(color) > 0.5;
+};
+
 export const getPriceLevelDisplay = (level?: string): string | null => {
   const priceLevelMap: Record<string, string> = {
     PRICE_LEVEL_FREE: "Free",
