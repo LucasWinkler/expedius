@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { users } from "@/server/data/users";
-import { ProfileHero } from "@/components/profile/ProfileHero";
-import { ProfileContent } from "@/components/profile/ProfileContent";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { ProfileView } from "@/components/profile/ProfileView";
 import type { PublicProfileData } from "@/server/types/profile";
 import { profileParamsSchema } from "@/lib/validations/profile";
 import { ProfilePrivateView } from "@/components/profile/ProfilePrivateView";
@@ -68,12 +68,12 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <>
-      <ProfileHero
+      <ProfileHeader
         user={publicProfile.user}
         isOwnProfile={publicProfile.isOwnProfile}
         totalLists={publicProfile.lists.metadata.totalItems}
       />
-      <ProfileContent
+      <ProfileView
         username={publicProfile.user.username}
         isOwnProfile={publicProfile.isOwnProfile}
       />

@@ -11,17 +11,17 @@ import { ProfileAvatar } from "./ProfileAvatar";
 import { ProfileInfo } from "./ProfileInfo";
 import { ProfileEditDialog } from "./ProfileEditDialog";
 
-interface ProfileHeroProps {
+interface ProfileHeaderProps {
   user: DbUser;
   isOwnProfile: boolean;
   totalLists: number;
 }
 
-export const ProfileHero = ({
+export const ProfileHeader = ({
   user,
   isOwnProfile,
   totalLists,
-}: ProfileHeroProps) => {
+}: ProfileHeaderProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const router = useRouter();
 
