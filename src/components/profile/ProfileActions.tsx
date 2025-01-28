@@ -1,76 +1,52 @@
-"use client";
+import { Share2 } from "lucide-react";
 
-import { useState, lazy, Suspense } from "react";
-import { Button } from "@/components/ui/button";
-import { Edit, Share2 } from "lucide-react";
-import { useSession } from "@/lib/auth-client";
-import type { User } from "@/server/db/schema";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import copyTextToClipboard from "@uiw/copy-to-clipboard";
+import { Edit } from "lucide-react";
+import { Button } from "../ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
-type ProfileActionsProps = {
-  user: User;
-};
+interface ProfileActionsProps {
+  onEdit: () => void;
+  onShare: () => void;
+}
 
-const EditProfileDialog = lazy(() => import("./EditProfileDialog"));
-
-export const ProfileActions = ({ user }: ProfileActionsProps) => {
-  const { data: session, isPending } = useSession();
-  const router = useRouter();
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const isOwnProfile = session?.user.id === user.id;
-
-  const handleEditSuccess = async (updatedUser: User) => {
-    if (updatedUser.username !== user.username) {
-      router.push(`/u/${updatedUser.username}`);
-    } else {
-      router.refresh();
-    }
-  };
-
-  const handleShare = () => {
-    try {
-      copyTextToClipboard(
-        `${window.location.origin}${window.location.pathname}`,
-      );
-      toast.success("Link copied to clipboard");
-    } catch {
-      toast.error("Failed to copy link to clipboard");
-    }
-  };
-
-  if (isPending) return null;
-
-  return isOwnProfile ? (
-    <>
-      <div className="mt-4 flex space-x-2 md:mt-0">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsEditDialogOpen(true)}
-        >
-          <Edit className="mr-2 size-4" />
-          Edit Profile
-        </Button>
-        <Button onClick={handleShare} variant="outline" size="sm">
-          <Share2 className="mr-2 size-4" />
-          Share
-        </Button>
+export const ProfileActions = ({ onEdit, onShare }: ProfileActionsProps) => {
+  return (
+    <div className="container relative mx-auto max-w-3xl px-4">
+      <div className="absolute right-4 top-6 flex justify-center gap-2">
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onEdit}
+                className="h-10 w-10 rounded-full bg-background/80 p-0 backdrop-blur-md hover:bg-background/90"
+              >
+                <Edit />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Edit Profile</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={onShare}
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-full bg-background/80 p-0 backdrop-blur-md hover:bg-background/90"
+              >
+                <Share2 />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Share Profile</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
-
-      {isEditDialogOpen && (
-        <Suspense fallback={null}>
-          <EditProfileDialog
-            user={user}
-            open={isEditDialogOpen}
-            onOpenChange={setIsEditDialogOpen}
-            onSuccess={handleEditSuccess}
-          />
-        </Suspense>
-      )}
-    </>
-  ) : null;
+    </div>
+  );
 };
-
-export default ProfileActions;

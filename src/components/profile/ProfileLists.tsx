@@ -14,9 +14,9 @@ import {
 } from "@/components/ui/pagination";
 import { CreateListDialog } from "./CreateListDialog";
 import { EditListDialog } from "./EditListDialog";
-import { DeleteListDialog } from "./DeleteListDialog";
+import { DeleteListDialog } from "../lists/DeleteListDialog";
 import type { DbListWithPlacesCount } from "@/server/db/schema";
-import { ListCard } from "./ListCard";
+import { ListCard } from "../lists/ListCard";
 
 interface ProfileListsProps {
   lists: DbListWithPlacesCount[];

@@ -11,8 +11,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "PoiToGo",
-  description: "PoiToGo is a place to find and share your favourite places.",
+  title: {
+    template: "%s - PoiToGo",
+    default: "PoiToGo",
+  },
+  description:
+    "PoiToGo is your travel guide. Find, organize, and share your favourite places from around the world.",
 };
 
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
@@ -21,11 +25,11 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
       <body className={`${inter.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
         <Toaster
-          position="bottom-right"
+          position="top-right"
           expand={true}
           richColors={true}
           closeButton={true}
-          duration={4000}
+          duration={3000}
         />
       </body>
     </html>

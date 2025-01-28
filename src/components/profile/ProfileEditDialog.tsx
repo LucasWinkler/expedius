@@ -27,7 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { FileInput } from "@/components/ui/file-input";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useUploadThing } from "@/lib/uploadthing";
-import type { User } from "@/server/db/schema";
+import type { DbUser } from "@/server/db/schema";
 import {
   updateProfileSchema,
   type UpdateProfileInput,
@@ -36,19 +36,19 @@ import { updateProfile } from "@/server/actions/user";
 import { useDebouncedCallback } from "use-debounce";
 import { checkUsernameAvailability } from "@/server/actions/user";
 
-type EditProfileDialogProps = {
-  user: User;
+type ProfileEditDialogProps = {
+  user: DbUser;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: (user: User) => void;
+  onSuccess?: (user: DbUser) => void;
 };
 
-export const EditProfileDialog = ({
+export const ProfileEditDialog = ({
   user,
   open,
   onOpenChange,
   onSuccess,
-}: EditProfileDialogProps) => {
+}: ProfileEditDialogProps) => {
   const [isPending, startTransition] = useTransition();
   const { startUpload, isUploading } = useUploadThing("updateProfileImage");
   const [isChecking, setIsChecking] = useState(false);
@@ -338,4 +338,4 @@ export const EditProfileDialog = ({
   );
 };
 
-export default EditProfileDialog;
+export default ProfileEditDialog;

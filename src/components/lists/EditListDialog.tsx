@@ -27,12 +27,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useUploadThing } from "@/lib/uploadthing";
 import type { DbListWithPlacesCount } from "@/server/db/schema";
-import { ColorSwatch } from "./ColorSwatch";
 import { Loader2 } from "lucide-react";
 import { listColourPresets } from "@/constants";
 import { FileInput } from "@/components/ui/file-input";
 import { UpdateListInput, updateListSchema } from "@/lib/validations/list";
 import { useUpdateList } from "@/hooks/useLists";
+import { ColorSwatch } from "./ColorSwatch";
 
 type EditListDialogProps = {
   open: boolean;
@@ -185,7 +185,6 @@ export const EditListDialog = ({
                               <ColorSwatch
                                 color={customColor}
                                 selected={field.value === customColor}
-                                onClick={() => {}}
                                 onCustomColorChange={(color) => {
                                   setCustomColor(color);
                                   field.onChange(color);

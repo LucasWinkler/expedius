@@ -9,8 +9,9 @@ type DiscoverPageProps = {
 
 export const generateMetadata = async ({ searchParams }: DiscoverPageProps) => {
   const query = (await searchParams).q;
-  if (!query) return { title: "Find Your Next Adventure | PoiToGo" };
-  return { title: `${query} - Search Results | PoiToGo` };
+  if (!query) return { title: "Start discovering" };
+
+  return { title: `Discover ${query}` };
 };
 
 const DiscoverPage = async ({ searchParams }: DiscoverPageProps) => {

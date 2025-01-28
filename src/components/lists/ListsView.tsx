@@ -12,11 +12,11 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { CreateListDialog } from "../profile/CreateListDialog";
-import { EditListDialog } from "../profile/EditListDialog";
-import { DeleteListDialog } from "../profile/DeleteListDialog";
+import { CreateListDialog } from "@/components/lists/CreateListDialog";
+import { EditListDialog } from "@/components/lists/EditListDialog";
+import { DeleteListDialog } from "@/components/lists/DeleteListDialog";
 import type { DbListWithPlacesCount } from "@/server/db/schema";
-import { ListCard } from "../profile/ListCard";
+import { ListCard } from "@/components/lists/ListCard";
 
 interface ListsViewProps {
   lists: DbListWithPlacesCount[];

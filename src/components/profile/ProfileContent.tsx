@@ -2,26 +2,24 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useListsInfinite } from "@/hooks/useLists";
-import { ListCard } from "./ListCard";
+import { ListCard } from "../lists/ListCard";
 import { Loader2, Plus } from "lucide-react";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import type { DbListWithPlacesCount } from "@/server/db/schema";
 import { useState } from "react";
-import CreateListDialog from "./CreateListDialog";
-import { DeleteListDialog } from "./DeleteListDialog";
-import EditListDialog from "./EditListDialog";
+import { DeleteListDialog } from "../lists/DeleteListDialog";
 import { Button } from "../ui/button";
+import CreateListDialog from "../lists/CreateListDialog";
+import EditListDialog from "../lists/EditListDialog";
 
 interface ProfileContentProps {
   username: string;
   isOwnProfile: boolean;
-  bio: string | null;
 }
 
 export const ProfileContent = ({
   username,
   isOwnProfile,
-  bio,
 }: ProfileContentProps) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useListsInfinite(username);
@@ -51,29 +49,29 @@ export const ProfileContent = ({
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8">
-      {bio && (
-        <div className="mb-8">
-          <p className="whitespace-pre-wrap text-muted-foreground">{bio}</p>
-        </div>
-      )}
       <Tabs
         defaultValue="lists"
         onValueChange={(value) => setActiveTab(value as "lists" | "likes")}
       >
         <div className="mb-8 flex items-center justify-between">
           <TabsList>
-            <TabsTrigger value="lists">Lists</TabsTrigger>
-            <TabsTrigger value="likes">Likes</TabsTrigger>
+            <TabsTrigger className="hover:bg-muted" value="lists">
+              Lists
+            </TabsTrigger>
+            <TabsTrigger className="hover:bg-muted" value="likes">
+              Likes
+            </TabsTrigger>
           </TabsList>
 
           {isOwnProfile && activeTab === "lists" && (
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setIsCreateDialogOpen(true)}
+              className="flex items-center gap-2 rounded-full bg-background px-4 py-2 text-sm font-medium text-foreground ring-1 ring-border transition-all hover:bg-muted"
             >
-              <Plus className="mr-2 size-4" />
-              New List
+              <Plus className="size-4" />
+              Create
             </Button>
           )}
         </div>
@@ -125,7 +123,7 @@ export const ProfileContent = ({
           )}
         </TabsContent>
 
-        <TabsContent value="likes"></TabsContent>
+        <TabsContent value="likes">Likes... eventually</TabsContent>
       </Tabs>
       {isOwnProfile && activeTab === "lists" && (
         <CreateListDialog

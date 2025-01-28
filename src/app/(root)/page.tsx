@@ -7,7 +7,7 @@ import HomeHero from "@/components/home/HomeHero";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Find Your Next Adventure | PoiToGo",
+  title: "Discover your next adventure",
 };
 
 const Home = () => {

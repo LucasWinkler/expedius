@@ -1,11 +1,11 @@
 import { Lock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
-type PrivateProfileViewProps = {
+type ProfilePrivateViewProps = {
   username: string;
 };
 
-export const PrivateProfileView = ({ username }: PrivateProfileViewProps) => {
+export const ProfilePrivateView = ({ username }: ProfilePrivateViewProps) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="flex flex-col items-center justify-center p-8 text-center">

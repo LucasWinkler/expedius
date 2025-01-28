@@ -8,7 +8,7 @@ import { oklchToHex, hexToOklch } from "@/lib/utils";
 type ColorSwatchProps = {
   color: string;
   selected: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   onCustomColorChange?: (color: string) => void;
   isCustom?: boolean;
   disabled?: boolean;

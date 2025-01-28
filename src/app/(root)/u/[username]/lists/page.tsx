@@ -3,7 +3,7 @@ import { users } from "@/server/data/users";
 import { profileParamsSchema } from "@/lib/validations/profile";
 import type { PublicProfileData } from "@/server/types/profile";
 import { ListsView } from "@/components/lists/ListsView";
-import { PrivateProfileView } from "@/components/profile/PrivateProfileView";
+import { ProfilePrivateView } from "@/components/profile/ProfilePrivateView";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -34,7 +34,7 @@ export default async function ListsPage({
   }
 
   if ("type" in profile && profile.type === "private") {
-    return <PrivateProfileView username={profile.username} />;
+    return <ProfilePrivateView username={profile.username} />;
   }
 
   const publicProfile = profile as PublicProfileData;

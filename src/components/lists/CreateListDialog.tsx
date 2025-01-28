@@ -25,10 +25,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
-import { ColorSwatch } from "./ColorSwatch";
+import { ColorSwatch } from "@/components/lists/ColorSwatch";
 import { listColourPresets } from "@/constants";
 import { useUploadThing } from "@/lib/uploadthing";
 import { FileInput } from "@/components/ui/file-input";
+
 import { createListSchema, type CreateListInput } from "@/lib/validations/list";
 import { useCreateList } from "@/hooks/useLists";
 
@@ -89,7 +90,13 @@ export const CreateListDialog = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        onOpenChange(open);
+        form.reset();
+      }}
+    >
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Create New List</DialogTitle>
@@ -189,7 +196,6 @@ export const CreateListDialog = ({
                           <ColorSwatch
                             color={customColor}
                             selected={field.value === customColor}
-                            onClick={() => {}}
                             onCustomColorChange={(color) => {
                               setCustomColor(color);
                               field.onChange(color);
@@ -236,14 +242,19 @@ export const CreateListDialog = ({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending || isUploading}>
+              <Button
+                type="submit"
+                disabled={isPending || isUploading || !form.formState.isDirty}
+              >
                 {isPending || isUploading ? (
                   <div className="flex items-center">
                     <Loader2 className="mr-2 size-4 animate-spin" />
                     {isUploading ? "Uploading..." : "Creating..."}
                   </div>
-                ) : (
+                ) : form.formState.isDirty ? (
                   "Create List"
+                ) : (
+                  "No Changes"
                 )}
               </Button>
             </div>
