@@ -29,10 +29,11 @@ export const users = {
       return user;
     },
 
-    getProfileMetadata: async (username: string) => {
+    getProfileMetadata: async (username: DbUser["username"]) => {
       const foundUser = await db.query.user.findFirst({
         where: eq(user.username, username),
         columns: {
+          id: true,
           username: true,
           name: true,
           isPublic: true,
@@ -41,10 +42,14 @@ export const users = {
 
       if (!foundUser) return null;
 
+      const session = await getServerSession();
+      const isOwnProfile = session?.user.id === foundUser.id;
+
       return {
         name: foundUser.name,
         username: foundUser.username,
         isPublic: foundUser.isPublic,
+        isOwnProfile,
       };
     },
 

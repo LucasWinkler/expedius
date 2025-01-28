@@ -33,13 +33,17 @@ export const generateMetadata = async ({
     };
   }
 
-  const { name, username, isPublic } = profile;
+  const { name, username, isPublic, isOwnProfile } = profile;
 
   const privateProfileTitle = `Private Profile (@${username})`;
   const publicProfileTitle = `${name} (@${username})`;
 
   return {
-    title: `${isPublic ? publicProfileTitle : privateProfileTitle}`,
+    title: isOwnProfile
+      ? `${name} (@${username})`
+      : isPublic
+        ? publicProfileTitle
+        : privateProfileTitle,
   };
 };
 
