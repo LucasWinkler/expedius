@@ -11,17 +11,19 @@ const routeContextSchema = z.object({
 
 export async function GET(
   request: Request,
-  context: { params: { placeId: string } },
+  { params }: { params: Promise<{ placeId: string }> },
 ) {
   try {
-    const { params } = routeContextSchema.parse(context);
+    const validatedParams = routeContextSchema.parse({
+      params: await params,
+    });
 
     const session = await getServerSession();
     if (!session) {
       return NextResponse.json({ isLiked: false });
     }
 
-    const isLiked = await checkLikeStatus(params.placeId);
+    const isLiked = await checkLikeStatus(validatedParams.params.placeId);
     return NextResponse.json({ isLiked });
   } catch (error) {
     if (error instanceof z.ZodError) {

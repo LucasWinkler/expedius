@@ -1,31 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import { ListPlus } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SaveToListDropdown } from "./SaveToListDropdown";
+import { toast } from "sonner";
+import { useSession } from "@/lib/auth-client";
 
 interface SaveToListButtonProps {
   placeId: string;
 }
 
 export const SaveToListButton = ({ placeId }: SaveToListButtonProps) => {
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const { data: session } = useSession();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!session) {
+      toast.error("Please sign in to save places to lists");
+      return;
+    }
+
+    setIsDropdownOpen(true);
+  };
 
   return (
-    <>
+    <SaveToListDropdown
+      placeId={placeId}
+      open={isDropdownOpen}
+      onOpenChange={setIsDropdownOpen}
+    >
       <Button
         variant="secondary"
         size="icon"
-        onClick={() => setDialogOpen(true)}
-        className="h-9 w-9"
+        className="size-8 bg-background/80 backdrop-blur hover:bg-background/90"
+        onClick={handleClick}
       >
-        <ListPlus className="size-5" />
+        <Bookmark aria-hidden="true" />
+        <span className="sr-only">Save to list(s)</span>
       </Button>
-      {/* <SaveToListDialog
-        placeId={placeId}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-      /> */}
-    </>
+    </SaveToListDropdown>
   );
 };

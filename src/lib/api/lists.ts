@@ -1,6 +1,7 @@
 import { DbList } from "@/server/db/schema";
 import type { ListsResponse, ListsWithCountResponse } from "./types";
 import { CreateListInput, UpdateListInput } from "../validations/list";
+import { ListForPlaceCard } from "@/types";
 
 export const getLists = async ({ page = 1, limit = 10 } = {}) => {
   const response = await fetch(`/api/lists?page=${page}&limit=${limit}`);
@@ -41,4 +42,10 @@ export const getListsByUsername = async (
   );
   if (!response.ok) throw new Error("Failed to fetch user lists");
   return response.json() as Promise<ListsWithCountResponse>;
+};
+
+export const getListsForPlaceCard = async (placeId: string) => {
+  const response = await fetch(`/api/lists/place/${placeId}`);
+  if (!response.ok) throw new Error("Failed to fetch lists");
+  return response.json() as Promise<ListForPlaceCard[]>;
 };

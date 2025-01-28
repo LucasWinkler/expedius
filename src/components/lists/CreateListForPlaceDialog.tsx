@@ -26,37 +26,45 @@ import { useCreateList } from "@/hooks/useLists";
 import { z } from "zod";
 import { maxNameLength, minNameLength } from "@/constants";
 
-const createSimpleListSchema = z.object({
+const createListForPlaceSchema = z.object({
   name: z
     .string()
     .min(minNameLength, `Name must be at least ${minNameLength} characters`)
     .max(maxNameLength, `Name must be less than ${maxNameLength} characters`),
 });
 
-type CreateSimpleListInput = z.infer<typeof createSimpleListSchema>;
+type CreateListForPlaceInput = z.infer<typeof createListForPlaceSchema>;
 
-interface CreateListDialogProps {
+interface CreateListForPlaceDialogProps {
   children: React.ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export const CreateListDialog = ({ children }: CreateListDialogProps) => {
+export const CreateListForPlaceDialog = ({
+  children,
+  open,
+  onOpenChange,
+}: CreateListForPlaceDialogProps) => {
   const { mutateAsync: createList, isPending } = useCreateList();
 
-  const form = useForm<CreateSimpleListInput>({
-    resolver: zodResolver(createSimpleListSchema),
+  const form = useForm<CreateListForPlaceInput>({
+    resolver: zodResolver(createListForPlaceSchema),
     defaultValues: {
       name: "",
     },
   });
 
-  const onSubmit = async (data: CreateSimpleListInput) => {
+  const onSubmit = async (data: CreateListForPlaceInput) => {
     try {
       await createList({
         name: data.name,
+
         isPublic: false,
         colour: "#000000",
       });
 
+      onOpenChange(false);
       form.reset();
       toast.success("List created successfully");
     } catch (error) {
@@ -66,14 +74,19 @@ export const CreateListDialog = ({ children }: CreateListDialogProps) => {
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    onOpenChange(open);
+    form.reset();
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create new list</DialogTitle>
           <DialogDescription>
-            Create a new list to save your favorite places
+            Create a new list to save your favourite places
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -86,7 +99,7 @@ export const CreateListDialog = ({ children }: CreateListDialogProps) => {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="My favorite places"
+                      placeholder="My favourite places"
                       {...field}
                       disabled={isPending}
                     />
@@ -110,10 +123,8 @@ export const CreateListDialog = ({ children }: CreateListDialogProps) => {
                     <Loader2 className="mr-2 size-4 animate-spin" />
                     Creating...
                   </div>
-                ) : form.formState.isDirty ? (
-                  "Create List"
                 ) : (
-                  "No Changes"
+                  "Create List"
                 )}
               </Button>
             </div>

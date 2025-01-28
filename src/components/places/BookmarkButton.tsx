@@ -16,7 +16,7 @@ import { updateUserLists } from "@/server/actions/userList";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "../ui/scroll-area";
 import { Checkbox } from "../ui/checkbox";
-import SaveListDialogForm from "./SaveListDialogForm";
+import SaveToListDialogForm from "./SaveToListDialogForm";
 
 type BookmarkButtonProps = {
   placeId: string;
@@ -268,7 +268,7 @@ export const BookmarkButton = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <SaveListDialogForm
+      <SaveToListDialogForm
         isOpen={isDialogOpen}
         onOpenChange={(open) => {
           setIsDialogOpen(open);

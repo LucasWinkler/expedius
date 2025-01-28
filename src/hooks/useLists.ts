@@ -57,6 +57,9 @@ export const useCreateList = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.LISTS],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.PLACE_LISTS],
+      });
     },
   });
 };

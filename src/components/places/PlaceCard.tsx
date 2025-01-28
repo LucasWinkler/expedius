@@ -2,16 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { Place } from "@/types";
+import type { ListForPlaceCard, Place } from "@/types";
 import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { getPriceLevelDisplay } from "@/lib/utils";
 import placeImageFallback from "../../../public/place-image-fallback.webp";
 import { LikeButton } from "./LikeButton";
+import { SaveToListButton } from "./SaveToListButton";
 
 interface PlaceCardProps {
   place: Place;
   initialIsLiked: boolean;
+  initialLists: ListForPlaceCard[];
   priority?: boolean;
 }
 
@@ -50,7 +52,7 @@ export const PlaceCard = ({
               onClick={(e) => e.stopPropagation()}
             >
               <LikeButton placeId={place.id} initialIsLiked={initialIsLiked} />
-              {/* <SaveToListButton placeId={place.id} /> */}
+              <SaveToListButton placeId={place.id} />
             </div>
           </div>
           <CardHeader className="space-y-2 p-4 pb-2 pt-0">

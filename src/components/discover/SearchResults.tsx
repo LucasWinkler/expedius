@@ -34,6 +34,7 @@ export const SearchResults = ({ query }: SearchResultsProps) => {
           key={place.id}
           place={place}
           initialIsLiked={!!data.likeStatuses[place.id]}
+          initialLists={data.userLists}
         />
       ))}
     </ul>

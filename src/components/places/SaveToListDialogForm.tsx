@@ -19,13 +19,13 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { createUserList } from "@/server/actions/userList";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useTransition } from "react";
 import { listColourPresets, maxNameLength, minNameLength } from "@/constants";
+import { createList } from "@/server/actions/list";
 
-type SaveListDialogFormProps = {
+type SaveToListDialogFormProps = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
@@ -39,11 +39,11 @@ const createListSchema = z.object({
     .max(maxNameLength, `Name must be less than ${maxNameLength} characters`),
 });
 
-const SaveListDialogForm = ({
+const SaveToListDialogForm = ({
   isOpen,
   onOpenChange,
   onSuccess,
-}: SaveListDialogFormProps) => {
+}: SaveToListDialogFormProps) => {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof createListSchema>>({
@@ -56,20 +56,21 @@ const SaveListDialogForm = ({
   const onSubmit = async (values: z.infer<typeof createListSchema>) => {
     startTransition(async () => {
       try {
-        const result = await createUserList({
+        const result = await createList({
           name: values.name,
           isPublic: false,
           colour: listColourPresets[0],
         });
 
-        if (result.error) {
-          toast.error(result.error);
-        } else {
-          onOpenChange(false);
-          form.reset();
-          toast.success("List created successfully");
-          onSuccess?.();
+        if (!result) {
+          toast.error("Failed to create list");
+          return;
         }
+
+        form.reset();
+        toast.success("List created successfully");
+        onOpenChange(false);
+        onSuccess?.();
       } catch (error) {
         console.error("Error occurred while creating the list:", error);
         toast.error("An error occurred while creating the list");
@@ -129,4 +130,4 @@ const SaveListDialogForm = ({
   );
 };
 
-export default SaveListDialogForm;
+export default SaveToListDialogForm;

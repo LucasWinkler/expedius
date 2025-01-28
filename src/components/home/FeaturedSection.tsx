@@ -70,6 +70,7 @@ export const FeaturedSection = ({ title, data }: FeaturedSectionProps) => {
                   place={place}
                   priority={index < 3}
                   initialIsLiked={!!data.likeStatuses[place.id]}
+                  initialLists={data.userLists}
                 />
               </CarouselItem>
             ))}

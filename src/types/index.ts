@@ -80,3 +80,10 @@ export interface ListResponse {
 export interface LikeResponse {
   liked: boolean;
 }
+
+export interface ListForPlaceCard {
+  id: List["id"];
+  name: List["name"];
+  userId: List["userId"];
+  isSelected?: boolean;
+}
