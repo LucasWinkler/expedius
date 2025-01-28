@@ -1,4 +1,5 @@
-import type { ListsResponse } from "./types";
+import { DbList } from "@/server/db/schema";
+import type { ListsResponse, ListsWithCountResponse } from "./types";
 import type { CreateListInput, UpdateListInput } from "@/types";
 
 export const getLists = async ({ page = 1, limit = 10 } = {}) => {
@@ -10,7 +11,7 @@ export const getLists = async ({ page = 1, limit = 10 } = {}) => {
 export const getList = async (id: string) => {
   const response = await fetch(`/api/lists/${id}`);
   if (!response.ok) throw new Error("Failed to fetch list");
-  return response.json() as Promise<List>;
+  return response.json() as Promise<DbList>;
 };
 
 export const createList = async (data: CreateListInput) => {
@@ -19,7 +20,7 @@ export const createList = async (data: CreateListInput) => {
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create list");
-  return response.json() as Promise<List>;
+  return response.json() as Promise<DbList>;
 };
 
 export const updateList = async (id: string, data: UpdateListInput) => {
@@ -28,5 +29,16 @@ export const updateList = async (id: string, data: UpdateListInput) => {
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to update list");
-  return response.json() as Promise<List>;
+  return response.json() as Promise<DbList>;
+};
+
+export const getListsByUsername = async (
+  username: string,
+  { page = 1, limit = 12 } = {},
+) => {
+  const response = await fetch(
+    `/api/users/${username}/lists?page=${page}&limit=${limit}`,
+  );
+  if (!response.ok) throw new Error("Failed to fetch user lists");
+  return response.json() as Promise<ListsWithCountResponse>;
 };

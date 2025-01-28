@@ -4,6 +4,7 @@ import { db } from "@/server/db";
 import { list } from "@/server/db/schema";
 import type { DbUser, DbList, DbListWithPlacesCount } from "@/server/db/schema";
 import type { PaginationParams } from "@/types";
+import { users } from "./users";
 
 export const lists = {
   queries: {
@@ -79,6 +80,29 @@ export const lists = {
           };
         },
         [`user-${userId}-lists-page-${page}`],
+        {
+          tags: [`user-lists`],
+          revalidate: 60,
+        },
+      )();
+    },
+
+    getAllByUsername: async (
+      username: string,
+      isOwnProfile: boolean,
+      { page = 1, limit = 10 }: PaginationParams = {},
+    ) => {
+      return unstable_cache(
+        async () => {
+          const user = await users.queries.getByUsername(username);
+          if (!user) return null;
+
+          return lists.queries.getAllByUserId(user.id, isOwnProfile, {
+            page,
+            limit,
+          });
+        },
+        [`user-${username}-lists-page-${page}-${isOwnProfile}`],
         {
           tags: [`user-lists`],
           revalidate: 60,

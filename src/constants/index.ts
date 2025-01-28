@@ -47,4 +47,4 @@ export const minQueryLength = 2;
 
 export const PAGINATION = {
   ITEMS_PER_PAGE: 6,
-} as const;
+};

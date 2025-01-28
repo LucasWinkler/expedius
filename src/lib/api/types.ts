@@ -1,3 +1,4 @@
+import { DbListWithPlacesCount } from "@/server/db/schema";
 import type { List, SavedPlace } from "@/types";
 
 export interface PaginatedResponse<T> {
@@ -12,5 +13,6 @@ export interface PaginatedResponse<T> {
 }
 
 export type ListsResponse = PaginatedResponse<List>;
+export type ListsWithCountResponse = PaginatedResponse<DbListWithPlacesCount>;
 export type SavedPlacesResponse = PaginatedResponse<SavedPlace>;
 export type { List, SavedPlace };
