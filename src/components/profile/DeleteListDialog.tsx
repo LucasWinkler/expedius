@@ -45,9 +45,8 @@ export const DeleteListDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete List</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete{" "}
-            <span className="font-bold">{listName}</span>? This action cannot be
-            undone.
+            Are you sure you want to delete <strong>{listName}</strong>? This
+            action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
