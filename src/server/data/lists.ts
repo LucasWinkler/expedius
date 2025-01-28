@@ -5,6 +5,7 @@ import { list } from "@/server/db/schema";
 import type { DbUser, DbList, DbListWithPlacesCount } from "@/server/db/schema";
 import type { PaginationParams } from "@/types";
 import { users } from "./users";
+import { CreateListRequest, UpdateListRequest } from "@/server/validations/lists";
 
 export const lists = {
   queries: {
@@ -112,17 +113,12 @@ export const lists = {
   },
 
   mutations: {
-    create: async (
-      userId: DbUser["id"],
-      data: Pick<
-        typeof list.$inferInsert,
-        "name" | "description" | "colour" | "isPublic" | "image"
-      >,
-    ) => {
+    create: async (userId: DbUser["id"], data: CreateListRequest) => {
       const [newList] = await db
         .insert(list)
         .values({ ...data, userId })
         .returning();
+
       return newList;
     },
 
@@ -138,20 +134,13 @@ export const lists = {
       return defaultList;
     },
 
-    update: async (
-      id: DbList["id"],
-      data: Partial<
-        Pick<
-          typeof list.$inferInsert,
-          "name" | "description" | "colour" | "isPublic" | "image"
-        >
-      >,
-    ) => {
+    update: async (id: DbList["id"], data: UpdateListRequest) => {
       const [updatedList] = await db
         .update(list)
         .set(data)
         .where(eq(list.id, id))
         .returning();
+
       return updatedList;
     },
 

@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useListsInfinite } from "@/hooks/useLists";
 import { ListCard } from "./ListCard";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+import type { DbListWithPlacesCount } from "@/server/db/schema";
+import { useState } from "react";
+import CreateListDialog from "./CreateListDialog";
+import { DeleteListDialog } from "./DeleteListDialog";
+import EditListDialog from "./EditListDialog";
+import { Button } from "../ui/button";
 
 interface ProfileContentProps {
   username: string;
@@ -19,49 +25,58 @@ export const ProfileContent = ({
 }: ProfileContentProps) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useListsInfinite(username);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [editingList, setEditingList] = useState<DbListWithPlacesCount | null>(
+    null,
+  );
+  const [deletingList, setDeletingList] =
+    useState<DbListWithPlacesCount | null>(null);
+  const [activeTab, setActiveTab] = useState<"lists" | "likes">("lists");
 
-  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const loadMoreRef = useInfiniteScroll({
+    onLoadMore: async () => {
+      await fetchNextPage();
+    },
+    hasNextPage: !!hasNextPage,
+    isLoading: isFetchingNextPage,
+  });
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          void fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    const currentRef = loadMoreRef.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
-
-    return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
-    };
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  const allLists = data?.pages.flatMap((page) => page.items) ?? [];
+  const allLists =
+    data?.pages.flatMap((page, pageIndex) =>
+      page.items.map((item) => ({
+        ...item,
+        key: `${item.id}-${pageIndex}`,
+      })),
+    ) ?? [];
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8">
-      {/* Bio */}
       {bio && (
         <div className="mb-8">
           <p className="whitespace-pre-wrap text-muted-foreground">{bio}</p>
         </div>
       )}
+      <Tabs
+        defaultValue="lists"
+        onValueChange={(value) => setActiveTab(value as "lists" | "likes")}
+      >
+        <div className="mb-8 flex items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="lists">Lists</TabsTrigger>
+            <TabsTrigger value="likes">Likes</TabsTrigger>
+          </TabsList>
 
-      {/* Content Tabs */}
-      <Tabs defaultValue="lists">
-        <TabsList className="mb-8">
-          <TabsTrigger value="lists">Lists</TabsTrigger>
-          <TabsTrigger value="likes">Likes</TabsTrigger>
-        </TabsList>
-
+          {isOwnProfile && activeTab === "lists" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
+              <Plus className="mr-2 size-4" />
+              New List
+            </Button>
+          )}
+        </div>
         <TabsContent value="lists">
           {status === "pending" ? (
             <div className="flex justify-center py-8">
@@ -75,12 +90,12 @@ export const ProfileContent = ({
             <div className="space-y-4">
               {allLists.map((list) => (
                 <ListCard
-                  key={list.id}
+                  key={list.key}
                   list={list}
                   username={username}
                   isOwnProfile={isOwnProfile}
-                  onEdit={() => {}}
-                  onDelete={() => {}}
+                  onEdit={() => setEditingList(list)}
+                  onDelete={() => setDeletingList(list)}
                   showPrivacyBadge
                 />
               ))}
@@ -110,8 +125,29 @@ export const ProfileContent = ({
           )}
         </TabsContent>
 
-        <TabsContent value="likes">{/* Likes content here */}</TabsContent>
+        <TabsContent value="likes"></TabsContent>
       </Tabs>
+      {isOwnProfile && activeTab === "lists" && (
+        <CreateListDialog
+          open={isCreateDialogOpen}
+          onOpenChange={setIsCreateDialogOpen}
+        />
+      )}
+      {editingList && (
+        <EditListDialog
+          list={editingList}
+          open={!!editingList}
+          onOpenChange={() => setEditingList(null)}
+        />
+      )}
+      {deletingList && (
+        <DeleteListDialog
+          listId={deletingList.id}
+          listName={deletingList.name}
+          open={!!deletingList}
+          onOpenChange={() => setDeletingList(null)}
+        />
+      )}
     </div>
   );
 };

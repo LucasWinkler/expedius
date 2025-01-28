@@ -26,61 +26,46 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useUploadThing } from "@/lib/uploadthing";
-import type { DbList } from "@/server/db/schema";
-import { editListSchema, type EditListInput } from "@/lib/validations/list";
+import type { DbListWithPlacesCount } from "@/server/db/schema";
 import { ColorSwatch } from "./ColorSwatch";
 import { Loader2 } from "lucide-react";
 import { listColourPresets } from "@/constants";
 import { FileInput } from "@/components/ui/file-input";
-import { updateList } from "@/server/actions/list";
+import { UpdateListInput, updateListSchema } from "@/lib/validations/list";
+import { useUpdateList } from "@/hooks/useLists";
 
 type EditListDialogProps = {
-  list: DbList;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  list: DbListWithPlacesCount;
 };
 
 export const EditListDialog = ({
-  list,
   open,
   onOpenChange,
+  list,
 }: EditListDialogProps) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [customColor, setCustomColor] = useState<string>("#FF0000");
   const { startUpload, isUploading } = useUploadThing("userListImage");
+  const { mutateAsync: updateList, isPending } = useUpdateList(list.id);
 
-  const form = useForm<EditListInput>({
-    resolver: zodResolver(editListSchema),
+  const form = useForm<UpdateListInput>({
+    resolver: zodResolver(updateListSchema),
     defaultValues: {
       name: list.name,
       description: list.description ?? "",
       isPublic: list.isPublic ?? false,
       colour: list.colour ?? listColourPresets[0],
+      image: undefined,
     },
   });
 
-  const onSubmit = async (data: EditListInput) => {
+  const onSubmit = async (data: UpdateListInput) => {
     try {
-      const changedFields: Partial<EditListInput> = {};
+      let imageUrl = list.image;
 
-      if (data.name !== list.name) changedFields.name = data.name;
-      if (data.description !== list.description)
-        changedFields.description = data.description;
-      if (data.isPublic !== list.isPublic)
-        changedFields.isPublic = data.isPublic;
-      if (data.colour !== list.colour) changedFields.colour = data.colour;
-      if (data.image !== undefined) changedFields.image = data.image;
-
-      if (Object.keys(changedFields).length === 0) {
-        onOpenChange(false);
-        return;
-      }
-
-      setIsLoading(true);
-      let imageUrl: string | null = list.image;
-
-      if (data.image && Array.isArray(data.image)) {
-        const uploadResult = await startUpload([data.image[0]]);
+      if (data.image instanceof File) {
+        const uploadResult = await startUpload([data.image]);
         if (!uploadResult) {
           toast.error("Failed to upload image");
           return;
@@ -90,21 +75,14 @@ export const EditListDialog = ({
         imageUrl = null;
       }
 
-      await updateList(list.id, {
-        name: data.name,
-        isPublic: data.isPublic,
-        colour: data.colour,
-        description: data.description,
-        image: imageUrl,
-      });
-
-      toast.success("List updated successfully");
+      await updateList({ ...data, image: imageUrl });
       onOpenChange(false);
+      toast.success("List updated successfully");
       form.reset();
-    } catch {
-      toast.error("Something went wrong");
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong",
+      );
     }
   };
 
@@ -127,7 +105,7 @@ export const EditListDialog = ({
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input {...field} disabled={isLoading} />
+                          <Input {...field} disabled={isPending} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -144,7 +122,7 @@ export const EditListDialog = ({
                           <Textarea
                             className="min-h-[120px] resize-none"
                             placeholder="A collection of my favourite spots..."
-                            disabled={isLoading}
+                            disabled={isPending}
                             {...field}
                           />
                         </FormControl>
@@ -170,7 +148,7 @@ export const EditListDialog = ({
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            disabled={isLoading}
+                            disabled={isPending}
                           />
                         </FormControl>
                       </FormItem>
@@ -201,7 +179,7 @@ export const EditListDialog = ({
                                   color={color}
                                   selected={field.value === color}
                                   onClick={() => field.onChange(color)}
-                                  disabled={isLoading}
+                                  disabled={isPending}
                                 />
                               ))}
                               <ColorSwatch
@@ -213,7 +191,7 @@ export const EditListDialog = ({
                                   field.onChange(color);
                                 }}
                                 isCustom
-                                disabled={isLoading}
+                                disabled={isPending}
                               />
                             </div>
                           </div>
@@ -231,15 +209,15 @@ export const EditListDialog = ({
                         <FormLabel>Cover Image (Optional)</FormLabel>
                         <FormControl>
                           <FileInput
-                            onChange={(files) => onChange(files)}
+                            onChange={(file) => onChange(file)}
                             onClear={() => {
                               if (value) {
-                                onChange(undefined);
+                                onChange(undefined); // undefined = no new image to upload
                               } else if (list.image) {
-                                onChange(null);
+                                onChange(null); // null = remove lists current image
                               }
                             }}
-                            disabled={isLoading}
+                            disabled={isPending}
                             existingImage={list.image}
                           />
                         </FormControl>
@@ -258,15 +236,15 @@ export const EditListDialog = ({
                   type="button"
                   variant="outline"
                   onClick={() => onOpenChange(false)}
-                  disabled={isLoading}
+                  disabled={isPending}
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isLoading || isUploading || !form.formState.isDirty}
+                  disabled={isPending || isUploading || !form.formState.isDirty}
                 >
-                  {isLoading || isUploading ? (
+                  {isPending || isUploading ? (
                     <div className="flex items-center">
                       <Loader2 className="mr-2 size-4 animate-spin" />
                       {isUploading ? "Uploading..." : "Saving..."}

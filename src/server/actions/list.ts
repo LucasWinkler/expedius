@@ -4,27 +4,21 @@ import { lists } from "@/server/data/lists";
 import { revalidateTag } from "next/cache";
 import { getServerSession } from "../auth/session";
 import { DbList } from "@/server/db/schema";
-import { CreateListInput, createListSchema } from "@/lib/validations/list";
+import {
+  CreateListRequest,
+  createListServerSchema,
+  UpdateListRequest,
+  updateListServerSchema,
+} from "@/server/validations/lists";
 
-export const createList = async (
-  data: Omit<CreateListInput, "image"> & { image?: string },
-): Promise<DbList> => {
+export const createList = async (data: CreateListRequest): Promise<DbList> => {
   const session = await getServerSession();
   if (!session) throw new Error("Unauthorized");
 
-  const validation = createListSchema.safeParse({
-    ...data,
-    image: data.image ? [data.image] : undefined,
-  });
+  const validation = createListServerSchema.safeParse(data);
   if (!validation.success) throw new Error("Invalid data provided");
 
-  const newList = await lists.mutations.create(session.user.id, {
-    name: data.name,
-    description: data.description,
-    colour: data.colour,
-    isPublic: data.isPublic,
-    image: data.image,
-  });
+  const newList = await lists.mutations.create(session.user.id, data);
 
   revalidateTag("user-lists");
   return newList;
@@ -32,7 +26,7 @@ export const createList = async (
 
 export const updateList = async (
   listId: DbList["id"],
-  data: Omit<CreateListInput, "image"> & { image?: string | null },
+  data: UpdateListRequest,
 ): Promise<DbList> => {
   const session = await getServerSession();
   if (!session) throw new Error("Unauthorized");
@@ -46,11 +40,7 @@ export const updateList = async (
     throw new Error("You don't have permission to update this list");
   }
 
-  const validation = createListSchema.safeParse({
-    ...data,
-    image: data.image ? [data.image] : undefined,
-  });
-
+  const validation = updateListServerSchema.safeParse(data);
   if (!validation.success) {
     throw new Error("Invalid data provided");
   }

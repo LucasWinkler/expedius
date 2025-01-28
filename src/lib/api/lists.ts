@@ -1,6 +1,6 @@
 import { DbList } from "@/server/db/schema";
 import type { ListsResponse, ListsWithCountResponse } from "./types";
-import type { CreateListInput, UpdateListInput } from "@/types";
+import { CreateListInput, UpdateListInput } from "../validations/list";
 
 export const getLists = async ({ page = 1, limit = 10 } = {}) => {
   const response = await fetch(`/api/lists?page=${page}&limit=${limit}`);

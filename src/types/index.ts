@@ -47,15 +47,6 @@ export interface SavedPlace {
   updatedAt: Date;
 }
 
-export interface CreateListInput {
-  name: string;
-  description?: string;
-  colour?: string;
-  isPublic?: boolean;
-}
-
-export type UpdateListInput = Partial<CreateListInput>;
-
 export interface PaginationParams {
   page?: number;
   limit?: number;

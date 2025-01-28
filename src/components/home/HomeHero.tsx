@@ -11,14 +11,22 @@ const HomeHero = () => {
             <br />
             next adventure.
           </h1>
-          <p className="animate-fade-up animation-delay-200 mx-auto mt-4 max-w-[35ch] text-base text-muted-foreground opacity-0 sm:mt-5 sm:text-lg md:text-xl">
+          <p
+            className="animate-fade-up mx-auto mt-4 max-w-[35ch] text-base text-muted-foreground opacity-0 sm:mt-5 sm:text-lg md:text-xl"
+            style={{ animationDelay: "100ms" }}
+          >
             Find, organize, and share your favourite places from around the
             world.
           </p>
-          <div className="animate-fade-up animation-delay-300 mt-6 opacity-0 sm:mt-8">
+
+          <div
+            className="animate-fade-up mt-6 opacity-0 sm:mt-8"
+            style={{ animationDelay: "200ms" }}
+          >
             <div className="relative mx-auto max-w-2xl">
               <SearchBar />
             </div>
+
             <SearchSuggestions />
           </div>
         </div>
@@ -30,5 +38,4 @@ const HomeHero = () => {
     </section>
   );
 };
-
 export default HomeHero;

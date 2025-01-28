@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
-import { ProxiedImage } from "@/components/ui/ProxiedImage";
+// import { ProxiedImage } from "@/components/ui/ProxiedImage";
 import type { DbUser } from "@/server/db/schema";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 
@@ -19,12 +19,12 @@ export const ProfileHero = ({
 }: ProfileHeroProps) => {
   return (
     <div className="relative bg-background">
-      {/* Cover Image - could be added later */}
-      <div className="h-48 w-full bg-muted" />
+      <div className="h-48 w-full bg-muted">
+        {/* Possible future profile image */}
+      </div>
 
       <div className="container mx-auto px-4">
         <div className="relative -mt-24 flex flex-col items-center">
-          {/* Profile Image */}
           <div className="relative size-40 overflow-hidden rounded-full border-4 border-background bg-muted">
             <Avatar className="size-full">
               <AvatarImage

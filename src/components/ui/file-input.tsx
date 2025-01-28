@@ -8,14 +8,14 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ProxiedImage } from "./ProxiedImage";
 
-type FileInputProps = {
-  onChange: (files: File[] | null | undefined) => void;
+interface FileInputProps {
+  onChange: (file?: File) => void;
   onClear: () => void;
   disabled?: boolean;
   className?: string;
   existingImage?: string | null;
   variant?: "landscape" | "square";
-};
+}
 
 export const FileInput = ({
   onChange,
@@ -30,11 +30,11 @@ export const FileInput = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files?.[0]) {
-      setPreview(URL.createObjectURL(files[0]));
+    const file = e.target.files?.[0];
+    if (file) {
+      setPreview(URL.createObjectURL(file));
       setIsExistingImageHidden(true);
-      onChange(Array.from(files));
+      onChange(file);
     } else {
       onChange(undefined);
     }

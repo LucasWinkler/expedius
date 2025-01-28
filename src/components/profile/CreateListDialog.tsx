@@ -30,7 +30,7 @@ import { listColourPresets } from "@/constants";
 import { useUploadThing } from "@/lib/uploadthing";
 import { FileInput } from "@/components/ui/file-input";
 import { createListSchema, type CreateListInput } from "@/lib/validations/list";
-import { createList } from "@/server/actions/list";
+import { useCreateList } from "@/hooks/useLists";
 
 type CreateListDialogProps = {
   open: boolean;
@@ -41,9 +41,9 @@ export const CreateListDialog = ({
   open,
   onOpenChange,
 }: CreateListDialogProps) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [customColor, setCustomColor] = useState<string>("#FF0000");
   const { startUpload, isUploading } = useUploadThing("userListImage");
+  const { mutateAsync: createList, isPending } = useCreateList();
 
   const form = useForm<CreateListInput>({
     resolver: zodResolver(createListSchema),
@@ -52,20 +52,21 @@ export const CreateListDialog = ({
       description: "",
       isPublic: false,
       colour: listColourPresets[0],
+      image: undefined,
     },
   });
 
   const onSubmit = async (data: CreateListInput) => {
     try {
-      setIsLoading(true);
       let imageUrl: string | undefined;
 
-      if (data.image?.[0]) {
-        const uploadResult = await startUpload([data.image[0]]);
+      if (data.image) {
+        const uploadResult = await startUpload([data.image]);
         if (!uploadResult) {
-          toast.error("Failed to upload image");
+          toast.error("Failed to upload list image");
           return;
         }
+
         imageUrl = uploadResult[0].appUrl;
       }
 
@@ -84,8 +85,6 @@ export const CreateListDialog = ({
       toast.error(
         error instanceof Error ? error.message : "Something went wrong",
       );
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -112,7 +111,7 @@ export const CreateListDialog = ({
                         <Input
                           placeholder="My Favourite Places"
                           {...field}
-                          disabled={isLoading}
+                          disabled={isPending || isUploading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -131,7 +130,7 @@ export const CreateListDialog = ({
                           placeholder="A collection of my favourite spots..."
                           className="min-h-[120px] resize-none"
                           {...field}
-                          disabled={isLoading}
+                          disabled={isPending || isUploading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -154,7 +153,7 @@ export const CreateListDialog = ({
                         <Switch
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          disabled={isLoading}
+                          disabled={isPending || isUploading}
                         />
                       </FormControl>
                     </FormItem>
@@ -168,9 +167,9 @@ export const CreateListDialog = ({
                   name="colour"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Color</FormLabel>
+                      <FormLabel>Colour</FormLabel>
                       <FormDescription>
-                        Choose a color for your list card
+                        Choose a colour for your list card
                       </FormDescription>
                       <div className="space-y-4">
                         <div
@@ -184,7 +183,7 @@ export const CreateListDialog = ({
                               color={color}
                               selected={field.value === color}
                               onClick={() => field.onChange(color)}
-                              disabled={isLoading}
+                              disabled={isPending || isUploading}
                             />
                           ))}
                           <ColorSwatch
@@ -196,7 +195,7 @@ export const CreateListDialog = ({
                               field.onChange(color);
                             }}
                             isCustom
-                            disabled={isLoading}
+                            disabled={isPending || isUploading}
                           />
                         </div>
                       </div>
@@ -213,9 +212,9 @@ export const CreateListDialog = ({
                       <FormLabel>Cover Image (Optional)</FormLabel>
                       <FormControl>
                         <FileInput
-                          onChange={(files) => onChange(files)}
+                          onChange={(file) => onChange(file)}
                           onClear={() => onChange(undefined)}
-                          disabled={isLoading}
+                          disabled={isPending || isUploading}
                         />
                       </FormControl>
                       <FormDescription>
@@ -233,12 +232,12 @@ export const CreateListDialog = ({
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                disabled={isLoading}
+                disabled={isPending || isUploading}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading || isUploading}>
-                {isLoading || isUploading ? (
+              <Button type="submit" disabled={isPending || isUploading}>
+                {isPending || isUploading ? (
                   <div className="flex items-center">
                     <Loader2 className="mr-2 size-4 animate-spin" />
                     {isUploading ? "Uploading..." : "Creating..."}

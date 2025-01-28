@@ -4,21 +4,27 @@ import {
   useInfiniteQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import {
-  createList,
-  getList,
-  getLists,
-  getListsByUsername,
-  updateList,
-} from "@/lib/api";
+import { getList, getLists, getListsByUsername } from "@/lib/api";
 import { QUERY_KEYS } from "@/constants";
-import type { CreateListInput, UpdateListInput } from "@/types";
+import { useSession } from "@/lib/auth-client";
+import { createList, updateList } from "@/server/actions/list";
+import { DbList } from "@/server/db/schema";
+import {
+  CreateListRequest,
+  UpdateListRequest,
+} from "@/server/validations/lists";
 
 export const useListsInfinite = (username: string) => {
+  const { data: session } = useSession();
+  const isAuthenticated = session?.user.username === username;
+
   return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.LISTS, "infinite", username],
+    queryKey: [QUERY_KEYS.LISTS, "infinite", username, isAuthenticated],
     queryFn: ({ pageParam = 1 }) =>
-      getListsByUsername(username, { page: pageParam, limit: 12 }),
+      getListsByUsername(username, {
+        page: pageParam,
+        limit: pageParam === 1 ? 6 : 3,
+      }),
     getNextPageParam: (lastPage) =>
       lastPage.metadata.hasNextPage
         ? lastPage.metadata.currentPage + 1
@@ -45,18 +51,20 @@ export const useCreateList = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateListInput) => createList(data),
+    mutationFn: (data: CreateListRequest) => createList(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS] });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.LISTS],
+      });
     },
   });
 };
 
-export const useUpdateList = (id: string) => {
+export const useUpdateList = (id: DbList["id"]) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: UpdateListInput) => updateList(id, data),
+    mutationFn: (data: UpdateListRequest) => updateList(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS, id] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS] });
