@@ -3,7 +3,7 @@
 import { PlaceCard } from "../places/PlaceCard";
 import { useLocation } from "@/contexts/LocationContext";
 import { useSearch } from "@/hooks/useSearch";
-import SearchSkeleton from "./SearchSkeleton";
+import SearchSkeleton from "@/components/search/SearchSkeleton";
 import { NoResult } from "../places/NoResult";
 
 interface SearchResultsProps {
