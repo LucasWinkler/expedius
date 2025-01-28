@@ -6,6 +6,7 @@ import type { PlaceSearchResponse } from "@/types";
 import { DbListWithPlacesCount } from "@/server/db/schema";
 import { LikeStatuses } from "@/lib/api/types";
 import { likes } from "@/server/data/likes";
+import { withRateLimit } from "@/server/lib/rate-limit";
 
 const FIELD_MASK = [
   "places.id",
@@ -23,7 +24,7 @@ const placesCache = new Map<
 >();
 const CACHE_DURATION = 24 * 3600000; // 24 hours
 
-export async function GET(request: Request) {
+export const GET = withRateLimit(async (request: Request) => {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q");
   const size = searchParams.get("size") ?? "12";
@@ -122,4 +123,4 @@ export async function GET(request: Request) {
   };
 
   return NextResponse.json(responseData);
-}
+}, "search");

@@ -50,7 +50,7 @@ export const useLike = (
         queryKey: [QUERY_KEYS.LIKES, placeId],
       });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.LIKES_STATUSES],
+        queryKey: [QUERY_KEYS.LIKES_STATUSES, placeId],
       });
     },
   });

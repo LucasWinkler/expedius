@@ -16,7 +16,7 @@ export const likes = {
         },
         [`like-${userId}-${placeId}`],
         {
-          tags: [`user-likes`],
+          tags: [`user-${userId}-likes`, `user-likes`],
           revalidate: 60,
         },
       )();
@@ -32,7 +32,7 @@ export const likes = {
         },
         [`user-${userId}-likes`],
         {
-          tags: [`user-likes`],
+          tags: [`user-${userId}-likes`, `user-likes`],
           revalidate: 60,
         },
       )();
@@ -44,6 +44,7 @@ export const likes = {
 
       if (!placeIds.length) return {};
 
+      const cacheKey = `user-${session.user.id}-likes-statuses-${placeIds.length}`;
       const cachedFn = unstable_cache(
         async () => {
           const likedPlaces = await Promise.all(
@@ -58,9 +59,9 @@ export const likes = {
 
           return Object.fromEntries(likedPlaces);
         },
-        [`user-${session.user.id}-likes-statuses-${placeIds.join("-")}`],
+        [cacheKey],
         {
-          tags: [`user-likes`],
+          tags: [`user-${session.user.id}-likes`, `user-likes`],
           revalidate: 60,
         },
       );

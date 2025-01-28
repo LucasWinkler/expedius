@@ -13,19 +13,17 @@ import {
 export const lists = {
   queries: {
     getById: async (id: DbList["id"]) => {
-      return unstable_cache(
-        async () => {
-          return db.query.list.findFirst({
-            where: eq(list.id, id),
-            with: { savedPlaces: true },
-          });
-        },
-        [`list-${id}`],
-        {
-          tags: [`user-lists`],
-          revalidate: 60,
-        },
-      )();
+      const foundList = await db.query.list.findFirst({
+        where: eq(list.id, id),
+        with: { savedPlaces: true },
+      });
+
+      return unstable_cache(async () => foundList, [`list-${id}`], {
+        tags: foundList
+          ? [`user-${foundList.userId}-lists`, `user-lists`]
+          : [`user-lists`],
+        revalidate: 60,
+      })();
     },
 
     getAllByUserId: async (
@@ -85,7 +83,7 @@ export const lists = {
         },
         [`user-${userId}-lists-page-${page}`],
         {
-          tags: [`user-lists`],
+          tags: [`user-${userId}-lists`, `user-lists`],
           revalidate: 60,
         },
       )();
@@ -108,7 +106,7 @@ export const lists = {
         },
         [`user-${username}-lists-page-${page}-${isOwnProfile}`],
         {
-          tags: [`user-lists`],
+          tags: [`user-${username}-lists`, `user-lists`],
           revalidate: 60,
         },
       )();
@@ -142,7 +140,7 @@ export const lists = {
         },
         [`user-${userId}-place-${placeId}-lists`],
         {
-          tags: [`user-lists`, `list-places`],
+          tags: [`user-${userId}-lists`, `list-places`],
           revalidate: 60,
         },
       )();

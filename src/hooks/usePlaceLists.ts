@@ -30,6 +30,9 @@ export const usePlaceLists = (
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.PLACE_LISTS, placeId],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.USER_LISTS],
+      });
     },
   });
 

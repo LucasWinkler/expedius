@@ -51,40 +51,57 @@ export const useList = (id: DbList["id"]) => {
 
 export const useCreateList = () => {
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
 
   return useMutation({
     mutationFn: (data: CreateListRequest) => createList(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.LISTS],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.PLACE_LISTS],
-      });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USER_LISTS] });
+      if (session?.user.username) {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.LISTS, "infinite", session.user.username],
+        });
+      }
     },
   });
 };
 
 export const useUpdateList = (id: DbList["id"]) => {
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
 
   return useMutation({
     mutationFn: (data: UpdateListRequest) => updateList(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS, id] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USER_LISTS] });
+      if (session?.user.username) {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.LISTS, "infinite", session.user.username],
+        });
+      }
     },
   });
 };
 
 export const useDeleteList = (id: DbList["id"]) => {
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
 
   return useMutation({
     mutationFn: () => deleteList(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS, id] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USER_LISTS] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PLACE_LISTS] });
+      if (session?.user.username) {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.LISTS, "infinite", session.user.username],
+        });
+      }
     },
   });
 };

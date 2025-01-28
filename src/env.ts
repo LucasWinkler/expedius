@@ -10,6 +10,8 @@ export const env = createEnv({
     UPLOADTHING_APP_ID: z.string().min(1),
     GOOGLE_PLACES_API_KEY: z.string().min(1),
     GOOGLE_PLACES_API_BASE_URL: z.string().min(1),
+    UPSTASH_REDIS_REST_URL: z.string().min(1),
+    UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),

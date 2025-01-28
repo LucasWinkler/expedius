@@ -40,7 +40,7 @@ export const savedPlaces = {
         },
         [`list-${listId}-places-page-${page}`],
         {
-          tags: [`list-places`],
+          tags: [`list-${listId}-places`, `list-places`],
           revalidate: 60,
         },
       )();
