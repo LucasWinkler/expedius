@@ -12,11 +12,11 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { CreateListDialog } from "./CreateListDialog";
-import { EditListDialog } from "./EditListDialog";
-import { DeleteListDialog } from "../lists/DeleteListDialog";
+import { ListDeleteDialog } from "../lists/ListDeleteDialog";
 import type { DbListWithPlacesCount } from "@/server/db/schema";
 import { ListCard } from "../lists/ListCard";
+import ListEditDialog from "../lists/ListEditDialog";
+import ListCreateDialog from "../lists/ListCreateDialog";
 
 interface ProfileListsProps {
   lists: DbListWithPlacesCount[];
@@ -161,19 +161,21 @@ export const ProfileLists = ({
         )}
       </CardContent>
 
-      <CreateListDialog
+      <ListCreateDialog
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
       />
+
       {editingList && (
-        <EditListDialog
+        <ListEditDialog
           list={editingList}
           open={!!editingList}
           onOpenChange={() => setEditingList(null)}
         />
       )}
+
       {deletingList && (
-        <DeleteListDialog
+        <ListDeleteDialog
           listId={deletingList.id}
           listName={deletingList.name}
           open={!!deletingList}

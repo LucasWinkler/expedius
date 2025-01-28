@@ -33,15 +33,15 @@ import { FileInput } from "@/components/ui/file-input";
 import { createListSchema, type CreateListInput } from "@/lib/validations/list";
 import { useCreateList } from "@/hooks/useLists";
 
-type CreateListDialogProps = {
+type ListCreateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export const CreateListDialog = ({
+export const ListCreateDialog = ({
   open,
   onOpenChange,
-}: CreateListDialogProps) => {
+}: ListCreateDialogProps) => {
   const [customColor, setCustomColor] = useState<string>("#FF0000");
   const { startUpload, isUploading } = useUploadThing("userListImage");
   const { mutateAsync: createList, isPending } = useCreateList();
@@ -265,4 +265,4 @@ export const CreateListDialog = ({
   );
 };
 
-export default CreateListDialog;
+export default ListCreateDialog;

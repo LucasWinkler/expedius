@@ -14,19 +14,19 @@ import { useDeleteList } from "@/hooks/useLists";
 import type { DbList } from "@/server/db/schema";
 import { toast } from "sonner";
 
-interface DeleteListDialogProps {
+interface ListDeleteDialogProps {
   listId: DbList["id"];
   listName: DbList["name"];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export const DeleteListDialog = ({
+export const ListDeleteDialog = ({
   listId,
   listName,
   open,
   onOpenChange,
-}: DeleteListDialogProps) => {
+}: ListDeleteDialogProps) => {
   const { mutateAsync: deleteList, isPending } = useDeleteList(listId);
 
   const handleDelete = async () => {

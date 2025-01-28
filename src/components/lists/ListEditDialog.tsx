@@ -34,17 +34,17 @@ import { UpdateListInput, updateListSchema } from "@/lib/validations/list";
 import { useUpdateList } from "@/hooks/useLists";
 import { ColorSwatch } from "./ColorSwatch";
 
-type EditListDialogProps = {
+type ListEditDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   list: DbListWithPlacesCount;
 };
 
-export const EditListDialog = ({
+export const ListEditDialog = ({
   open,
   onOpenChange,
   list,
-}: EditListDialogProps) => {
+}: ListEditDialogProps) => {
   const [customColor, setCustomColor] = useState<string>("#FF0000");
   const { startUpload, isUploading } = useUploadThing("userListImage");
   const { mutateAsync: updateList, isPending } = useUpdateList(list.id);
@@ -263,4 +263,4 @@ export const EditListDialog = ({
   );
 };
 
-export default EditListDialog;
+export default ListEditDialog;

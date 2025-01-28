@@ -12,9 +12,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { CreateListDialog } from "@/components/lists/CreateListDialog";
-import { EditListDialog } from "@/components/lists/EditListDialog";
-import { DeleteListDialog } from "@/components/lists/DeleteListDialog";
+import { ListCreateDialog } from "@/components/lists/ListCreateDialog";
+import { ListEditDialog } from "@/components/lists/ListEditDialog";
+import { ListDeleteDialog } from "@/components/lists/ListDeleteDialog";
 import type { DbListWithPlacesCount } from "@/server/db/schema";
 import { ListCard } from "@/components/lists/ListCard";
 
@@ -168,19 +168,19 @@ export const ListsView = ({
         </div>
       )}
 
-      <CreateListDialog
+      <ListCreateDialog
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
       />
       {editingList && (
-        <EditListDialog
+        <ListEditDialog
           list={editingList}
           open={!!editingList}
           onOpenChange={() => setEditingList(null)}
         />
       )}
       {deletingList && (
-        <DeleteListDialog
+        <ListDeleteDialog
           listId={deletingList.id}
           listName={deletingList.name}
           open={!!deletingList}

@@ -7,10 +7,10 @@ import { Loader2, Plus } from "lucide-react";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import type { DbListWithPlacesCount } from "@/server/db/schema";
 import { useState } from "react";
-import { DeleteListDialog } from "../lists/DeleteListDialog";
+import { ListDeleteDialog } from "../lists/ListDeleteDialog";
 import { Button } from "../ui/button";
-import CreateListDialog from "../lists/CreateListDialog";
-import EditListDialog from "../lists/EditListDialog";
+import ListCreateDialog from "../lists/ListCreateDialog";
+import ListEditDialog from "../lists/ListEditDialog";
 
 interface ProfileContentProps {
   username: string;
@@ -126,20 +126,20 @@ export const ProfileContent = ({
         <TabsContent value="likes">Likes... eventually</TabsContent>
       </Tabs>
       {isOwnProfile && activeTab === "lists" && (
-        <CreateListDialog
+        <ListCreateDialog
           open={isCreateDialogOpen}
           onOpenChange={setIsCreateDialogOpen}
         />
       )}
       {editingList && (
-        <EditListDialog
+        <ListEditDialog
           list={editingList}
           open={!!editingList}
           onOpenChange={() => setEditingList(null)}
         />
       )}
       {deletingList && (
-        <DeleteListDialog
+        <ListDeleteDialog
           listId={deletingList.id}
           listName={deletingList.name}
           open={!!deletingList}
