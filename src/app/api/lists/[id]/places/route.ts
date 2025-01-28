@@ -4,19 +4,30 @@ import { lists } from "@/server/data/lists";
 import { savedPlaces } from "@/server/data/savedPlaces";
 import { saveToListSchema } from "@/server/validations/savedPlaces";
 import { paginationSchema } from "@/server/validations/pagination";
+import { z } from "zod";
+
+const routeContextSchema = z.object({
+  params: z.object({
+    id: z.string(),
+  }),
+});
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export async function GET(request: Request, { params }: RouteParams) {
   try {
+    const validatedParams = routeContextSchema.parse({
+      params: await params,
+    });
+
     const session = await getServerSession();
     if (!session?.user.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const list = await lists.queries.getById(params.id);
+    const list = await lists.queries.getById(validatedParams.params.id);
     if (!list) {
       return new NextResponse("List not found", { status: 404 });
     }
@@ -36,7 +47,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     }
 
     const paginatedPlaces = await savedPlaces.queries.getByListId(
-      params.id,
+      validatedParams.params.id,
       result.data,
     );
 
@@ -54,7 +65,11 @@ export async function POST(request: Request, { params }: RouteParams) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const list = await lists.queries.getById(params.id);
+    const validatedParams = routeContextSchema.parse({
+      params: await params,
+    });
+
+    const list = await lists.queries.getById(validatedParams.params.id);
     if (!list) {
       return new NextResponse("List not found", { status: 404 });
     }
@@ -71,7 +86,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     }
 
     const savedPlace = await savedPlaces.mutations.create({
-      listId: params.id,
+      listId: validatedParams.params.id,
       placeId: result.data.placeId,
     });
 

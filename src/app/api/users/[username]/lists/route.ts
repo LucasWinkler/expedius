@@ -2,14 +2,23 @@ import { NextResponse } from "next/server";
 import { lists } from "@/server/data/lists";
 import { paginationSchema } from "@/server/validations/pagination";
 import { getServerSession } from "@/server/auth/session";
+import { z } from "zod";
+
+const routeContextSchema = z.object({
+  params: z.object({
+    username: z.string(),
+  }),
+});
 
 interface RouteParams {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }
 
 export async function GET(request: Request, { params }: RouteParams) {
   try {
-    const { username } = await params;
+    const validatedParams = routeContextSchema.parse({
+      params: await params,
+    });
 
     const { searchParams } = new URL(request.url);
     const result = paginationSchema.safeParse({
@@ -22,10 +31,11 @@ export async function GET(request: Request, { params }: RouteParams) {
     }
 
     const session = await getServerSession();
-    const isOwnProfile = session?.user.username === username;
+    const isOwnProfile =
+      session?.user.username === validatedParams.params.username;
 
     const paginatedLists = await lists.queries.getAllByUsername(
-      username,
+      validatedParams.params.username,
       isOwnProfile,
       result.data,
     );
