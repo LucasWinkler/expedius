@@ -1,42 +1,49 @@
+"use client";
+
 import { Heart } from "lucide-react";
-import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { useLike } from "@/hooks/useLike";
+import { cn } from "@/lib/utils";
+import { useSession } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 interface LikeButtonProps {
   placeId: string;
+  initialIsLiked: boolean;
 }
 
-export const LikeButton = ({ placeId }: LikeButtonProps) => {
-  const { isLiked, isLoading, toggleLike } = useLike(placeId);
+export const LikeButton = ({ placeId, initialIsLiked }: LikeButtonProps) => {
+  const { data: session } = useSession();
+  const { isLiked, toggleLike } = useLike(placeId, initialIsLiked, !!session);
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    e.stopPropagation();
 
-    if (!isLoading) {
-      toggleLike();
+    if (!session) {
+      toast.error("Please sign in to like places");
+      return;
     }
+
+    toggleLike();
   };
 
   return (
     <Button
-      size="icon"
       variant="secondary"
+      size="icon"
       className={cn(
-        "size-10 bg-white/20 shadow-md backdrop-blur-md transition-all duration-200 ease-out hover:bg-white/30 active:scale-90 [&_svg]:size-5",
-        isLoading && "pointer-events-none",
-        "disabled:opacity-100",
+        "size-8 bg-background/80 backdrop-blur hover:bg-background/90",
+        isLiked && "text-red-500 hover:text-red-600",
       )}
       onClick={handleClick}
-      disabled={isLoading}
     >
       <Heart
-        className={cn(
-          "text-white transition-colors",
-          isLiked && "fill-rose-500 text-rose-500",
-        )}
+        className={cn("size-4", isLiked && "fill-current")}
+        aria-hidden="true"
       />
+
+      <span className="sr-only">{isLiked ? "Unlike place" : "Like place"}</span>
     </Button>
   );
 };

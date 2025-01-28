@@ -4,7 +4,6 @@ import {
   useInfiniteQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { getList, getLists, getListsByUsername } from "@/lib/api";
 import { QUERY_KEYS } from "@/constants";
 import { useSession } from "@/lib/auth-client";
 import { createList, deleteList, updateList } from "@/server/actions/list";
@@ -13,6 +12,8 @@ import {
   CreateListRequest,
   UpdateListRequest,
 } from "@/server/validations/lists";
+import { getList, getLists } from "@/lib/api/lists";
+import { getListsByUsername } from "@/lib/api/lists";
 
 export const useListsInfinite = (username: DbUser["username"]) => {
   const { data: session } = useSession();

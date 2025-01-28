@@ -59,7 +59,7 @@ export async function searchPlacesClient(
     const res = await fetch(`/api/places/search?${searchParams.toString()}`);
     if (!res.ok) throw new Error("Failed to fetch results");
 
-    const data = await res.json();
+    const data = (await res.json()) as PlaceSearchResponse;
     if (!data.places) return null;
 
     const placesWithPhotos = await processPlacePhotos(data.places);

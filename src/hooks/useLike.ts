@@ -1,50 +1,58 @@
-import { useTransition, useOptimistic } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/constants";
 import { toast } from "sonner";
-import { useSession } from "@/lib/auth-client";
-import { useLists } from "@/contexts/ListsContext";
+import {
+  checkLikeStatus,
+  toggleLike as toggleLikeAction,
+} from "@/server/actions/like";
 
-export const useLike = (placeId: string) => {
-  const { data: session } = useSession();
-  const { isPlaceLiked, updatePlaceLikeStatus, isLoadingLikes } = useLists();
-  const [isPending, startTransition] = useTransition();
+export const useLike = (
+  placeId: string,
+  initialIsLiked: boolean,
+  enabled = false,
+) => {
+  const queryClient = useQueryClient();
 
-  const [optimisticLiked, addOptimisticLike] = useOptimistic(
-    isPlaceLiked(placeId),
-    (currentState: boolean, newState: boolean) => newState,
-  );
+  const { data: isLiked } = useQuery({
+    queryKey: [QUERY_KEYS.LIKES, placeId],
+    queryFn: () => checkLikeStatus(placeId),
+    initialData: initialIsLiked,
+    enabled,
+  });
 
-  const toggleLike = async () => {
-    if (!session?.user.id) {
-      toast.error("Please sign in to save places");
-      return;
-    }
-
-    const newState = !optimisticLiked;
-
-    startTransition(async () => {
-      try {
-        addOptimisticLike(newState);
-        updatePlaceLikeStatus(placeId, newState);
-
-        const response = await fetch("/api/places/like", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ placeId }),
-        });
-
-        if (!response.ok) throw new Error("Failed to toggle like");
-      } catch (error) {
-        addOptimisticLike(!newState);
-        updatePlaceLikeStatus(placeId, !newState);
-        toast.error("Failed to save place");
-        console.error(error);
-      }
-    });
-  };
+  const { mutate: toggleLike } = useMutation({
+    mutationFn: async () => {
+      return toggleLikeAction(placeId);
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.LIKES, placeId],
+      });
+      const previousValue = queryClient.getQueryData([
+        QUERY_KEYS.LIKES,
+        placeId,
+      ]);
+      queryClient.setQueryData([QUERY_KEYS.LIKES, placeId], !previousValue);
+      return { previousValue };
+    },
+    onError: (error, _, context) => {
+      queryClient.setQueryData(
+        [QUERY_KEYS.LIKES, placeId],
+        context?.previousValue,
+      );
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update like",
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.LIKES, placeId],
+      });
+    },
+  });
 
   return {
-    isLiked: optimisticLiked,
-    isLoading: isPending || isLoadingLikes,
+    isLiked,
     toggleLike,
   };
 };

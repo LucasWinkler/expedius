@@ -12,6 +12,10 @@ export interface PaginatedResponse<T> {
   };
 }
 
+export interface LikeStatuses {
+  [placeId: string]: boolean;
+}
+
 export type ListsResponse = PaginatedResponse<List>;
 export type ListsWithCountResponse = PaginatedResponse<DbListWithPlacesCount>;
 export type SavedPlacesResponse = PaginatedResponse<SavedPlace>;

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "@/server/auth/session";
 import { lists } from "@/server/data/lists";
-import { updateListSchema } from "@/server/validations/lists";
-
+import { updateListSchema } from "@/lib/validations/list";
 interface RouteParams {
   params: { id: string };
 }
@@ -83,4 +82,4 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     console.error("[DELETE_LIST]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
-} 
+}

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import SearchBar from "@/components/search/SearchBar";
-import SearchResults from "@/components/discover/SearchResults";
+import { SearchResults } from "@/components/discover/SearchResults";
 import SearchSkeleton from "@/components/discover/SearchSkeleton";
 
 type DiscoverPageProps = {

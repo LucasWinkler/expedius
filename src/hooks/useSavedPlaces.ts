@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getSavedPlaces, savePlaceToList } from "@/lib/api";
+import { getSavedPlaces, savePlaceToList } from "@/lib/api/savedPlaces";
 import { QUERY_KEYS } from "@/constants";
 
 export const useSavedPlaces = (listId: string, page?: number) => {

@@ -2,38 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import type { Place } from "@/types";
 import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import BookmarkButton from "./BookmarkButton";
-import LikeButton from "./LikeButton";
 import { getPriceLevelDisplay } from "@/lib/utils";
 import placeImageFallback from "../../../public/place-image-fallback.webp";
+import { LikeButton } from "./LikeButton";
+
+interface PlaceCardProps {
+  place: Place;
+  initialIsLiked: boolean;
+  priority?: boolean;
+}
 
 export const PlaceCard = ({
   place,
+  initialIsLiked,
   priority = false,
-}: {
-  place: Place;
-  priority?: boolean;
-}) => {
-  const { lists, refreshLists, getSelectedLists, updateSelectedLists } =
-    useLists();
-  const [selectedLists, setSelectedLists] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    const currentSelectedLists = getSelectedLists(place.id);
-    setSelectedLists(currentSelectedLists);
-  }, [getSelectedLists, place.id, lists]);
-
-  const handleSelectedListsChange = (newSelectedLists: Set<string>) => {
-    setSelectedLists(newSelectedLists);
-    updateSelectedLists(place.id, newSelectedLists);
-  };
-
-  const renderPriceLevel = (level?: string) => getPriceLevelDisplay(level);
-
+}: PlaceCardProps) => {
   return (
     <li className="group list-none">
       <Link href={`/place/${place.id}`} className="block">
@@ -45,8 +31,8 @@ export const PlaceCard = ({
                 src={place.image.url}
                 width={place.image.width}
                 height={place.image.height}
-                placeholder="blur"
-                blurDataURL={place.image.blurDataURL}
+                placeholder={place.image.blurDataURL ? "blur" : undefined}
+                blurDataURL={place.image.blurDataURL ?? undefined}
                 alt={place.displayName.text}
                 priority={priority}
               />
@@ -63,15 +49,8 @@ export const PlaceCard = ({
               className="absolute right-2 top-2 flex flex-col gap-2"
               onClick={(e) => e.stopPropagation()}
             >
-              <LikeButton placeId={place.id} />
-
-              <BookmarkButton
-                placeId={place.id}
-                userLists={lists}
-                selectedLists={selectedLists}
-                setSelectedLists={handleSelectedListsChange}
-                onListsUpdate={refreshLists}
-              />
+              <LikeButton placeId={place.id} initialIsLiked={initialIsLiked} />
+              {/* <SaveToListButton placeId={place.id} /> */}
             </div>
           </div>
           <CardHeader className="space-y-2 p-4 pb-2 pt-0">
@@ -80,7 +59,7 @@ export const PlaceCard = ({
                 {place.displayName.text}
               </CardTitle>
               <span className="text-sm font-medium text-muted-foreground">
-                {renderPriceLevel(place.priceLevel)}
+                {getPriceLevelDisplay(place.priceLevel)}
               </span>
             </div>
             {place.rating && (

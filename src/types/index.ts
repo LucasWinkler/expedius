@@ -1,3 +1,7 @@
+import { LikeStatuses } from "@/lib/api/types";
+
+import { DbListWithPlacesCount } from "@/server/db/schema";
+
 export * from "./pagination";
 
 // API/External types
@@ -64,6 +68,8 @@ export interface Like {
 // API Response types
 export interface PlaceSearchResponse {
   places: Place[];
+  likeStatuses: LikeStatuses;
+  userLists: DbListWithPlacesCount[];
 }
 
 export interface ListResponse {

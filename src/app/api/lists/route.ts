@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "@/server/auth/session";
 import { lists } from "@/server/data/lists";
-import { createListSchema } from "@/server/validations/lists";
 import { paginationSchema } from "@/server/validations/pagination";
+import { createListServerSchema } from "@/server/validations/lists";
 
 export async function GET(request: Request) {
   try {
@@ -23,6 +23,7 @@ export async function GET(request: Request) {
 
     const paginatedLists = await lists.queries.getAllByUserId(
       session.user.id,
+      true,
       result.data,
     );
 
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const result = createListSchema.safeParse(body);
+    const result = createListServerSchema.safeParse(body);
 
     if (!result.success) {
       return new NextResponse(result.error.message, { status: 400 });
