@@ -68,7 +68,11 @@ export const ProfileHeader = ({
           {user.bio && (
             <p className="mt-4 text-center text-muted-foreground">{user.bio}</p>
           )}
-          <ProfileStats totalLists={totalLists} totalLikes={0} />
+          <ProfileStats
+            totalLists={totalLists}
+            totalLikes={0}
+            username={user.username}
+          />
         </div>
       </div>
 

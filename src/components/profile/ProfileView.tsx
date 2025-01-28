@@ -50,7 +50,7 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
         defaultValue="lists"
         onValueChange={(value) => setActiveTab(value as "lists" | "likes")}
       >
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-2">
           <TabsList>
             <TabsTrigger className="hover:bg-muted" value="lists">
               Lists
