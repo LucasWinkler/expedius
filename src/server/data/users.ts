@@ -11,7 +11,6 @@ import type {
 } from "@/server/types/profile";
 import { profileParamsSchema } from "@/lib/validations/profile";
 import { ProfileParams } from "@/lib/validations/profile";
-import { PAGINATION } from "@/constants";
 import { lists } from "@/server/data/lists";
 
 export const users = {
@@ -57,7 +56,7 @@ export const users = {
         throw new Error("Invalid profile parameters");
       }
 
-      const { username, page } = validated.data;
+      const { username, page, limit } = validated.data;
 
       const foundUser = await db.query.user.findFirst({
         where: eq(user.username, username),
@@ -75,10 +74,14 @@ export const users = {
         };
       }
 
-      const userLists = await lists.queries.getAllByUserId(foundUser.id, {
-        page,
-        limit: PAGINATION.ITEMS_PER_PAGE,
-      });
+      const userLists = await lists.queries.getAllByUserId(
+        foundUser.id,
+        isOwnProfile,
+        {
+          page,
+          limit,
+        },
+      );
 
       return {
         user: { ...foundUser, type: "public" as const },

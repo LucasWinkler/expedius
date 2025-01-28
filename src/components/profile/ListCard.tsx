@@ -43,7 +43,7 @@ export const ListCard = ({
   return (
     <div className="group relative">
       <Link className="block" href={`/u/${username}/lists/${list.id}`}>
-        <Card className="relative h-40 overflow-hidden transition-all duration-200 ease-out active:scale-[0.98] group-hover:border-muted-foreground/50 group-hover:shadow-lg">
+        <Card className="relative h-40 overflow-hidden transition-all duration-200 ease-out group-hover:shadow-lg">
           <div
             className={cn("absolute inset-0")}
             style={{ backgroundColor: list.colour }}

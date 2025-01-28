@@ -36,6 +36,7 @@ export default async function ProfilePage({
   const validated = profileParamsSchema.safeParse({
     username: (await params).username,
     page: (await searchParams).page,
+    limit: 6,
   });
 
   if (!validated.success) {

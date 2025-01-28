@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { DbUser } from "@/server/db/schema";
 import { ProfileActionsWrapper } from "./ProfileActionsWrapper";
+import Link from "next/link";
 
 interface ProfileHeaderProps {
   user: DbUser;
@@ -27,9 +28,13 @@ export const ProfileHeader = ({
           <h1 className="text-3xl font-bold">{user.name}</h1>
           <p className="text-muted-foreground">@{user.username}</p>
           <div className="mt-2 flex justify-center space-x-4 md:justify-start">
-            <span>
+            <Link
+              href={`/u/${user.username}/lists`}
+              className="underline-offset-2 hover:text-primary hover:underline"
+            >
               {totalLists} List{totalLists === 1 ? "" : "s"}
-            </span>
+            </Link>
+
             <span>0 Followers</span>
             <span>0 Following</span>
           </div>
