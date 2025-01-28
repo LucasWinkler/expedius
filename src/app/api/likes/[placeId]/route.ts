@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "@/server/auth/session";
-import { checkLikeStatus } from "@/server/actions/like";
 import { z } from "zod";
+import { likes } from "@/server/data/likes";
 
 const routeContextSchema = z.object({
   params: z.object({
@@ -23,8 +23,11 @@ export async function GET(
       return NextResponse.json({ isLiked: false });
     }
 
-    const isLiked = await checkLikeStatus(validatedParams.params.placeId);
-    return NextResponse.json({ isLiked });
+    const like = await likes.queries.getByPlaceId(
+      session.user.id,
+      validatedParams.params.placeId,
+    );
+    return NextResponse.json({ isLiked: !!like });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return new NextResponse("Invalid request data", { status: 422 });

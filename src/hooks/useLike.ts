@@ -1,10 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants";
 import { toast } from "sonner";
-import {
-  checkLikeStatus,
-  toggleLike as toggleLikeAction,
-} from "@/server/actions/like";
+import { toggleLike as toggleLikeAction } from "@/server/actions/like";
+import { getLikeStatus } from "@/lib/api/likes";
 
 export const useLike = (
   placeId: string,
@@ -15,7 +13,7 @@ export const useLike = (
 
   const { data: isLiked } = useQuery({
     queryKey: [QUERY_KEYS.LIKES, placeId],
-    queryFn: () => checkLikeStatus(placeId),
+    queryFn: () => getLikeStatus(placeId),
     initialData: initialIsLiked,
     enabled,
   });
@@ -27,6 +25,9 @@ export const useLike = (
     onMutate: async () => {
       await queryClient.cancelQueries({
         queryKey: [QUERY_KEYS.LIKES, placeId],
+      });
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.LIKES_STATUSES],
       });
       const previousValue = queryClient.getQueryData([
         QUERY_KEYS.LIKES,
@@ -47,6 +48,9 @@ export const useLike = (
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.LIKES, placeId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.LIKES_STATUSES],
       });
     },
   });

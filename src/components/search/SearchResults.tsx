@@ -1,7 +1,6 @@
 "use client";
 
 import { PlaceCard } from "../places/PlaceCard";
-import { useLocation } from "@/contexts/LocationContext";
 import { useSearch } from "@/hooks/useSearch";
 import SearchSkeleton from "@/components/search/SearchSkeleton";
 import { NoResult } from "../places/NoResult";
@@ -11,15 +10,12 @@ interface SearchResultsProps {
 }
 
 export const SearchResults = ({ query }: SearchResultsProps) => {
-  const { coords, isLoading: isLoadingLocation } = useLocation();
   const { data, isPending, isError } = useSearch({
     query,
     size: 12,
-    coords,
-    enabled: !isLoadingLocation,
   });
 
-  if (isPending || isLoadingLocation) {
+  if (isPending) {
     return <SearchSkeleton />;
   }
 

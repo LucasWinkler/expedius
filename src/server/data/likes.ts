@@ -3,6 +3,7 @@ import { eq, and } from "drizzle-orm";
 import { db } from "@/server/db";
 import { like } from "@/server/db/schema";
 import type { DbLike, DbUser } from "@/server/db/schema";
+import { getServerSession } from "../auth/session";
 
 export const likes = {
   queries: {
@@ -35,6 +36,36 @@ export const likes = {
           revalidate: 60,
         },
       )();
+    },
+
+    getStatuses: async (placeIds: DbLike["placeId"][]) => {
+      const session = await getServerSession();
+      if (!session) return {};
+
+      if (!placeIds.length) return {};
+
+      const cachedFn = unstable_cache(
+        async () => {
+          const likedPlaces = await Promise.all(
+            placeIds.map(async (placeId) => {
+              const like = await likes.queries.getByPlaceId(
+                session.user.id,
+                placeId,
+              );
+              return [placeId, !!like] as const;
+            }),
+          );
+
+          return Object.fromEntries(likedPlaces);
+        },
+        [`user-${session.user.id}-likes-statuses-${placeIds.join("-")}`],
+        {
+          tags: [`user-likes`],
+          revalidate: 60,
+        },
+      );
+
+      return cachedFn();
     },
   },
 

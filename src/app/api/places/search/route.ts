@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { env } from "@/env";
 import { getServerSession } from "@/server/auth/session";
-import { getLikeStatuses } from "@/server/actions/like";
 import { lists } from "@/server/data/lists";
 import type { PlaceSearchResponse } from "@/types";
 import { DbListWithPlacesCount } from "@/server/db/schema";
 import { LikeStatuses } from "@/lib/api/types";
+import { likes } from "@/server/data/likes";
 
 const FIELD_MASK = [
   "places.id",
@@ -103,7 +103,7 @@ export async function GET(request: Request) {
 
   const placeIds = placesData.places.map((place) => place.id);
   if (session && placeIds.length > 0) {
-    likeStatuses = await getLikeStatuses(placeIds);
+    likeStatuses = await likes.queries.getStatuses(placeIds);
     const userListsResponse = await lists.queries.getAllByUserId(
       session.user.id,
       true,
