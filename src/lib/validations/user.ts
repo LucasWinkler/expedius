@@ -1,6 +1,19 @@
 import { maxUsernameLength, minUsernameLength } from "@/constants";
 import { z } from "zod";
 
+const profileImageSchema = z
+  .union([z.custom<File>(), z.null(), z.undefined()])
+  .optional()
+  .refine(
+    (file) => {
+      if (!file || file === null) return true;
+      return file.size <= 4 * 1024 * 1024;
+    },
+    {
+      message: "Image must be less than 4MB",
+    },
+  );
+
 export const updateProfileSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(50),
   username: z
@@ -20,7 +33,7 @@ export const updateProfileSchema = z.object({
     ),
   bio: z.string().trim().max(500).optional(),
   isPublic: z.boolean().optional(),
-  image: z.union([z.custom<File[]>(), z.string(), z.null()]).optional(),
+  image: profileImageSchema,
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

@@ -1,7 +1,10 @@
 "use server";
 
 import { getServerSession } from "@/server/auth/session";
-import { UpdateProfileInput } from "@/lib/validations/user";
+import {
+  updateProfileServerSchema,
+  type UpdateProfileRequest,
+} from "@/server/validations/user";
 import users from "@/server/data/users";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/server/auth/auth";
@@ -19,13 +22,21 @@ export const checkUsernameAvailability = async (username: string) => {
 };
 
 export const updateProfile = withRateLimit(
-  async (data: Partial<UpdateProfileInput> & { image?: string | null }) => {
+  async (input: Partial<UpdateProfileRequest>) => {
     try {
       const session = await getServerSession();
       if (!session) {
         return { error: "Unauthorized" };
       }
 
+      const validatedInput = updateProfileServerSchema
+        .partial()
+        .safeParse(input);
+      if (!validatedInput.success) {
+        return { error: "Invalid input" };
+      }
+
+      const data = validatedInput.data;
       const user = await users.queries.getById(session.user.id);
       if (!user) {
         return { error: "User not found" };
@@ -46,7 +57,7 @@ export const updateProfile = withRateLimit(
         }
       }
 
-      const updateData: typeof data = {};
+      const updateData: Partial<UpdateProfileRequest> = {};
       if (data.username && data.username !== user.username)
         updateData.username = data.username;
       if (data.name && data.name !== user.name) updateData.name = data.name;

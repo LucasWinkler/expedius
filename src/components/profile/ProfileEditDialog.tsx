@@ -136,14 +136,14 @@ export const ProfileEditDialog = ({
       try {
         let imageUrl: string | null | undefined = user.image;
 
-        if (changedFields.image && Array.isArray(changedFields.image)) {
-          const uploadResult = await startUpload([changedFields.image[0]]);
+        if (data.image instanceof File) {
+          const uploadResult = await startUpload([data.image]);
           if (!uploadResult) {
             toast.error("Failed to upload image");
             return;
           }
           imageUrl = uploadResult[0].appUrl;
-        } else if (changedFields.image === null) {
+        } else if (data.image === null) {
           imageUrl = null;
         }
 
@@ -261,7 +261,7 @@ export const ProfileEditDialog = ({
                     <FormLabel>Profile Picture</FormLabel>
                     <FormControl>
                       <FileInput
-                        onChange={(files) => onChange(files)}
+                        onChange={(file) => onChange(file)}
                         onClear={() => {
                           if (value) {
                             onChange(undefined);
