@@ -1,14 +1,15 @@
 export * from "./queryKeys";
 
 export const listColourPresets = [
-  "oklch(0.6 0.25 230)", // vibrant blue
-  "oklch(0.7 0.25 30)", // bright orange
-  "oklch(0.65 0.25 140)", // emerald green
-  "oklch(0.6 0.28 0)", // vivid red
-  "oklch(0.6 0.26 300)", // rich purple
-  "oklch(0.7 0.2 190)", // cyan
-  "oklch(0.75 0.22 90)", // chartreuse
-  "oklch(0.65 0.25 60)", // coral
+  "oklch(0.7 0.24 270)",
+  "oklch(0.6 0.25 230)",
+  "oklch(0.7 0.25 30)",
+  "oklch(0.65 0.25 140)",
+  "oklch(0.6 0.28 0)",
+  "oklch(0.6 0.26 300)",
+  "oklch(0.7 0.2 190)",
+  "oklch(0.75 0.22 90)",
+  "oklch(0.65 0.25 60)",
 ];
 
 export const SEARCH_SUGGESTIONS = [
