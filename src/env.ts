@@ -23,8 +23,10 @@ export const env = createEnv({
       .url()
       .min(1)
       .default(
-        process.env.NEXT_PUBLIC_VERCEL_URL
-          ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+        process.env.NEXT_PUBLIC_VERCEL_ENV
+          ? process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+            ? `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
+            : `https://${process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL}`
           : "http://localhost:3000",
       ),
   },
