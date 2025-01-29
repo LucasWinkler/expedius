@@ -36,17 +36,19 @@ const createListForPlaceSchema = z.object({
 type CreateListForPlaceInput = z.infer<typeof createListForPlaceSchema>;
 
 interface CreateListForPlaceDialogProps {
-  children: React.ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  children: React.ReactNode;
+  placeId: string;
 }
 
 export const CreateListForPlaceDialog = ({
-  children,
   open,
   onOpenChange,
+  children,
+  placeId,
 }: CreateListForPlaceDialogProps) => {
-  const { mutateAsync: createList, isPending } = useCreateList();
+  const { mutate: createList, isPending } = useCreateList(placeId);
 
   const form = useForm<CreateListForPlaceInput>({
     resolver: zodResolver(createListForPlaceSchema),

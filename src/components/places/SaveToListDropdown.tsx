@@ -91,6 +91,7 @@ export const SaveToListDropdown = ({
           <CreateListForPlaceDialog
             open={createListOpen}
             onOpenChange={setCreateListOpen}
+            placeId={placeId}
           >
             <Button variant="outline" size="icon">
               <Plus />

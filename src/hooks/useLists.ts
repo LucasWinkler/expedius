@@ -49,7 +49,7 @@ export const useList = (id: DbList["id"]) => {
   });
 };
 
-export const useCreateList = () => {
+export const useCreateList = (placeId?: string) => {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
 
@@ -58,6 +58,11 @@ export const useCreateList = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USER_LISTS] });
+      if (placeId) {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.PLACE_LISTS, placeId],
+        });
+      }
       if (session?.user.username) {
         queryClient.invalidateQueries({
           queryKey: [QUERY_KEYS.LISTS, "infinite", session.user.username],
