@@ -67,22 +67,27 @@ export const ListEditDialog = ({
       if (data.image instanceof File) {
         const uploadResult = await startUpload([data.image]);
         if (!uploadResult) {
-          toast.error("Failed to upload image");
-          return;
+          throw new Error("Failed to upload image");
         }
         imageUrl = uploadResult[0].appUrl;
       } else if (data.image === null) {
         imageUrl = null;
       }
 
-      await updateList({ ...data, image: imageUrl });
-      onOpenChange(false);
-      toast.success("List updated successfully");
-      form.reset();
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Something went wrong",
+      await updateList(
+        { ...data, image: imageUrl },
+        {
+          onSuccess: () => {
+            onOpenChange(false);
+            toast.success("List updated successfully");
+            form.reset();
+          },
+        },
       );
+    } catch (error) {
+      toast.error("Failed to update list", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   };
 
@@ -130,27 +135,24 @@ export const ListEditDialog = ({
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="isPublic"
                     render={({ field }) => (
-                      <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">
-                            Public List
-                          </FormLabel>
+                      <FormItem>
+                        <FormLabel>List Visibility</FormLabel>
+                        <div className="flex items-center justify-between rounded-lg border p-4">
                           <FormDescription>
-                            Make this list visible to everyone
+                            Allow others to view this list
                           </FormDescription>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              disabled={isPending || isUploading}
+                            />
+                          </FormControl>
                         </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            disabled={isPending}
-                          />
-                        </FormControl>
                       </FormItem>
                     )}
                   />
@@ -211,18 +213,16 @@ export const ListEditDialog = ({
                             onChange={(file) => onChange(file)}
                             onClear={() => {
                               if (value) {
-                                onChange(undefined); // undefined = no new image to upload
+                                onChange(undefined);
                               } else if (list.image) {
-                                onChange(null); // null = remove lists current image
+                                onChange(null);
                               }
                             }}
                             disabled={isPending}
                             existingImage={list.image}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Recommended size: 1200x630px. Maximum size: 4MB
-                        </FormDescription>
+                        <FormDescription>Maximum size: 4MB</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}

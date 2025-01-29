@@ -9,7 +9,7 @@ import users from "@/server/data/users";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/server/auth/auth";
 import { headers } from "next/headers";
-import { withRateLimit } from "../lib/rate-limit";
+import { withActionLimit } from "../lib/rate-limit";
 
 export const checkUsernameAvailability = async (username: string) => {
   if (username.length < 3) {
@@ -21,7 +21,7 @@ export const checkUsernameAvailability = async (username: string) => {
   return { available: !existingUser };
 };
 
-export const updateProfile = withRateLimit(
+export const updateProfile = withActionLimit(
   async (input: Partial<UpdateProfileRequest>) => {
     try {
       const session = await getServerSession();

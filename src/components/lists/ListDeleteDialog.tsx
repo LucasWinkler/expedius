@@ -31,11 +31,16 @@ export const ListDeleteDialog = ({
 
   const handleDelete = async () => {
     try {
-      await deleteList();
-      onOpenChange(false);
-      toast.success("List deleted successfully");
-    } catch {
-      toast.error("Failed to delete list");
+      await deleteList(undefined, {
+        onSuccess: () => {
+          onOpenChange(false);
+          toast.success("List deleted successfully");
+        },
+      });
+    } catch (error) {
+      toast.error("Failed to delete list", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   };
 

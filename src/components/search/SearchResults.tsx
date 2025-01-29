@@ -10,28 +10,23 @@ interface SearchResultsProps {
 }
 
 export const SearchResults = ({ query }: SearchResultsProps) => {
-  const { data, isPending, isError } = useSearch({
+  const { data: searchData, isPending: isSearchPending } = useSearch({
     query,
     size: 12,
   });
 
-  if (isPending) {
+  if (isSearchPending) {
     return <SearchSkeleton />;
   }
 
-  if (isError || !data?.places?.length) {
-    return <NoResult isError={isError} />;
+  if (!searchData?.places.length) {
+    return <NoResult />;
   }
 
   return (
     <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {data.places.map((place) => (
-        <PlaceCard
-          key={place.id}
-          place={place}
-          initialIsLiked={!!data.likeStatuses[place.id]}
-          initialLists={data.userLists}
-        />
+      {searchData.places.map((place) => (
+        <PlaceCard key={place.id} place={place} />
       ))}
     </ul>
   );

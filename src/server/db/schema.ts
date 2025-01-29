@@ -21,11 +21,14 @@ export type DbSession = InferSelectModel<typeof session>;
 export type DbAccount = InferSelectModel<typeof account>;
 export type DbVerification = InferSelectModel<typeof verification>;
 
-export type DbListWithPlacesCount = DbList & {
+export interface DbListWithPlacesCount extends DbList {
   _count: {
     savedPlaces: number;
   };
-};
+  savedPlaces?: {
+    placeId: string;
+  }[];
+}
 
 // Enums
 

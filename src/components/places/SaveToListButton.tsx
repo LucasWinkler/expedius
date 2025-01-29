@@ -23,23 +23,17 @@ export const SaveToListButton = ({ placeId }: SaveToListButtonProps) => {
     setIsDropdownOpen(open);
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
   return (
     <SaveToListDropdown
       placeId={placeId}
       open={isDropdownOpen}
       onOpenChange={handleOpenChange}
-      isAuthenticated={!!session}
     >
       <Button
         variant="secondary"
         size="icon"
         className="size-8 bg-background/80 backdrop-blur hover:bg-background/90"
-        onClick={handleClick}
+        onClick={(e) => e.preventDefault()}
       >
         <Bookmark aria-hidden="true" />
         <span className="sr-only">Save to list(s)</span>

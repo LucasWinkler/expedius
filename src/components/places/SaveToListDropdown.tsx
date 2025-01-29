@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BookmarkPlus, X, Loader2, Plus } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "../ui/button";
@@ -13,43 +13,54 @@ import {
 import { Checkbox } from "../ui/checkbox";
 import { cn } from "@/lib/utils";
 import { DropdownMenuSeparator } from "../ui/dropdown-menu";
-import { usePlaceLists } from "@/hooks/usePlaceLists";
+import { usePlaceInteractions } from "@/hooks/usePlaceInteractions";
 import { toast } from "sonner";
-import { ListForPlaceCard } from "@/types";
 
 interface SaveToListDropdownProps {
   placeId: string;
-  initialLists?: ListForPlaceCard[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
-  isAuthenticated: boolean;
 }
 
 export const SaveToListDropdown = ({
   placeId,
-  initialLists,
   open,
   onOpenChange,
   children,
-  isAuthenticated,
 }: SaveToListDropdownProps) => {
   const [createListOpen, setCreateListOpen] = useState(false);
-  const { lists, selectedListIds, isPending, updateLists } = usePlaceLists(
-    placeId,
-    isAuthenticated,
-    initialLists,
+  const { data: userData, places } = usePlaceInteractions();
+  const { save: savePlaces, isPending } = places;
+
+  const lists = useMemo(() => userData?.lists ?? [], [userData?.lists]);
+  const selectedListIds = useMemo(
+    () =>
+      new Set(
+        lists
+          .filter((list) =>
+            list.savedPlaces?.some(
+              (savedPlace) => savedPlace.placeId === placeId,
+            ),
+          )
+          .map((list) => list.id),
+      ),
+    [lists, placeId],
   );
 
-  const [currentSelection, setCurrentSelection] = useState(selectedListIds);
+  const [currentSelection, setCurrentSelection] = useState<Set<string>>(
+    new Set(),
+  );
 
   useEffect(() => {
-    setCurrentSelection(selectedListIds);
+    if (selectedListIds.size > 0) {
+      setCurrentSelection(new Set(selectedListIds));
+    }
   }, [selectedListIds]);
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
-      setCurrentSelection(selectedListIds);
+      setCurrentSelection(new Set(selectedListIds));
     }
     onOpenChange(newOpen);
   };
@@ -80,13 +91,23 @@ export const SaveToListDropdown = ({
       return;
     }
 
-    updateLists(Array.from(currentSelection), {
-      onSuccess: () => {
-        onOpenChange(false);
-        toast.success("Lists updated successfully");
+    savePlaces(
+      {
+        placeId,
+        selectedListIds: Array.from(currentSelection),
       },
-      onError: () => toast.error("Failed to update lists"),
-    });
+      {
+        onSuccess: () => {
+          onOpenChange(false);
+          toast.success("Lists updated successfully");
+        },
+        onError: (error) => {
+          toast.error("Failed to update lists", {
+            description: error.message,
+          });
+        },
+      },
+    );
   };
 
   return (
@@ -98,7 +119,6 @@ export const SaveToListDropdown = ({
           <CreateListForPlaceDialog
             open={createListOpen}
             onOpenChange={setCreateListOpen}
-            placeId={placeId}
           >
             <Button variant="outline" size="icon">
               <Plus />

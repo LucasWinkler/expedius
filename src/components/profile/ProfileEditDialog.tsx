@@ -36,16 +36,14 @@ import { updateProfile } from "@/server/actions/user";
 import { useDebouncedCallback } from "use-debounce";
 import { checkUsernameAvailability } from "@/server/actions/user";
 
-type ProfileEditDialogProps = {
+interface ProfileEditDialogProps {
   user: DbUser;
-  open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (user: DbUser) => void;
-};
+}
 
 export const ProfileEditDialog = ({
   user,
-  open,
   onOpenChange,
   onSuccess,
 }: ProfileEditDialogProps) => {
@@ -109,27 +107,11 @@ export const ProfileEditDialog = ({
   }, [username, checkUsername]);
 
   const onSubmit = async (data: UpdateProfileInput) => {
-    const changedFields: Partial<UpdateProfileInput> = {};
-
     if (data.username !== user.username) {
       const result = await checkUsernameAvailability(data.username);
       if (!result.available) {
-        form.setError("username", {
-          message: "Username is already taken",
-        });
-        return;
+        throw new Error("Username is already taken");
       }
-      changedFields.username = data.username;
-    }
-
-    if (data.name !== user.name) changedFields.name = data.name;
-    if (data.bio !== user.bio) changedFields.bio = data.bio;
-    if (data.isPublic !== user.isPublic) changedFields.isPublic = data.isPublic;
-    if (data.image !== undefined) changedFields.image = data.image;
-
-    if (Object.keys(changedFields).length === 0) {
-      toast.info("No changes to save");
-      return;
     }
 
     startTransition(async () => {
@@ -148,7 +130,7 @@ export const ProfileEditDialog = ({
         }
 
         const result = await updateProfile({
-          ...changedFields,
+          ...data,
           image: imageUrl,
         });
 
@@ -163,14 +145,23 @@ export const ProfileEditDialog = ({
           toast.success("Profile updated successfully");
           form.reset();
         }
-      } catch {
-        toast.error("Something went wrong");
+      } catch (error) {
+        toast.error("Failed to update profile", {
+          description: error instanceof Error ? error.message : "Unknown error",
+        });
       }
     });
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      form.reset();
+    }
+    onOpenChange(open);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={true} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
@@ -179,6 +170,19 @@ export const ProfileEditDialog = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid gap-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} disabled={isDisabled} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="username"
@@ -206,7 +210,7 @@ export const ProfileEditDialog = ({
                     </FormControl>
                     <FormDescription>
                       {canChangeUsername
-                        ? "Choose a unique username"
+                        ? "Username can only be changed once every 30 days"
                         : `Username can be changed again in ${
                             30 -
                             Math.ceil(
@@ -216,19 +220,6 @@ export const ProfileEditDialog = ({
                             )
                           } days`}
                     </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isDisabled} />
-                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -255,58 +246,58 @@ export const ProfileEditDialog = ({
               />
               <FormField
                 control={form.control}
-                name="image"
-                render={({ field: { onChange, value } }) => (
+                name="isPublic"
+                render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Profile Picture</FormLabel>
-                    <FormControl>
-                      <FileInput
-                        onChange={(file) => onChange(file)}
-                        onClear={() => {
-                          if (value) {
-                            onChange(undefined);
-                          } else if (user.image) {
-                            onChange(null);
-                          }
-                        }}
-                        disabled={isDisabled}
-                        existingImage={user.image}
-                        variant="square"
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Recommended size: 400x400px. Maximum size: 4MB
-                    </FormDescription>
-                    <FormMessage />
+                    <FormLabel>Profile Visibility</FormLabel>
+                    <div className="flex items-center justify-between rounded-lg border p-4">
+                      <FormDescription>
+                        Allow others to view your profile, public lists and
+                        likes
+                      </FormDescription>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={isDisabled}
+                        />
+                      </FormControl>
+                    </div>
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name="isPublic"
-                render={({ field }) => (
-                  <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        Public Profile
-                      </FormLabel>
-                      <FormDescription>
-                        Allow others to view your profile and public lists
-                      </FormDescription>
+                name="image"
+                render={({ field: { onChange, value } }) => (
+                  <FormItem>
+                    <FormLabel>Profile Picture</FormLabel>
+                    <div className="flex flex-col justify-between gap-4 rounded-lg border p-4">
+                      <FormControl>
+                        <FileInput
+                          className=""
+                          onChange={(file) => onChange(file)}
+                          onClear={() => {
+                            if (value) {
+                              onChange(undefined);
+                            } else if (user.image) {
+                              onChange(null);
+                            }
+                          }}
+                          disabled={isDisabled}
+                          existingImage={user.image}
+                          variant="square"
+                        />
+                      </FormControl>
+                      <FormDescription>Maximum size: 4MB</FormDescription>
                     </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={isDisabled}
-                      />
-                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <div className="flex justify-end space-x-2">
+            <div className="flex flex-wrap justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"

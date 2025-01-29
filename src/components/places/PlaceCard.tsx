@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { ListForPlaceCard, Place } from "@/types";
+import type { Place } from "@/types";
 import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { getPriceLevelDisplay } from "@/lib/utils";
@@ -12,20 +12,14 @@ import { SaveToListButton } from "./SaveToListButton";
 
 interface PlaceCardProps {
   place: Place;
-  initialIsLiked: boolean;
-  initialLists: ListForPlaceCard[];
   priority?: boolean;
 }
 
-export const PlaceCard = ({
-  place,
-  initialIsLiked,
-  priority = false,
-}: PlaceCardProps) => {
+export const PlaceCard = ({ place, priority }: PlaceCardProps) => {
   return (
     <li className="group list-none">
-      <Link href={`/place/${place.id}`} className="block">
-        <Card className="overflow-hidden bg-muted shadow-none transition-all hover:shadow-md">
+      <Card className="relative overflow-hidden bg-muted shadow-none transition-all hover:shadow-md">
+        <Link href={`/place/${place.id}`} className="block">
           <div className="relative m-4 overflow-hidden rounded-lg">
             {place.image ? (
               <Image
@@ -47,13 +41,6 @@ export const PlaceCard = ({
                 priority={priority}
               />
             )}
-            <div
-              className="absolute right-2 top-2 flex flex-col gap-2"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <LikeButton placeId={place.id} initialIsLiked={initialIsLiked} />
-              <SaveToListButton placeId={place.id} />
-            </div>
           </div>
           <CardHeader className="space-y-2 p-4 pb-2 pt-0">
             <div className="flex items-start justify-between gap-2">
@@ -87,8 +74,12 @@ export const PlaceCard = ({
               <span className="line-clamp-1">{place.formattedAddress}</span>
             </div>
           </CardContent>
-        </Card>
-      </Link>
+        </Link>
+        <div className="absolute right-6 top-6 flex flex-col gap-2">
+          <LikeButton placeId={place.id} />
+          <SaveToListButton placeId={place.id} />
+        </div>
+      </Card>
     </li>
   );
 };

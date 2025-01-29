@@ -3,9 +3,9 @@
 import { revalidateTag } from "next/cache";
 import { getServerSession } from "../auth/session";
 import { likes } from "@/server/data/likes";
-import { withRateLimit } from "../lib/rate-limit";
+import { withActionLimit } from "../lib/rate-limit";
 
-export const toggleLike = withRateLimit(async (placeId: string) => {
+export const toggleLike = withActionLimit(async (placeId: string) => {
   const session = await getServerSession();
   if (!session) throw new Error("Unauthorized");
 

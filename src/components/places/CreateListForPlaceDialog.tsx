@@ -22,9 +22,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useCreateList } from "@/hooks/useLists";
 import { z } from "zod";
 import { listColourPresets, maxNameLength, minNameLength } from "@/constants";
+import { useCreateListForPlace } from "@/hooks/useCreateListForPlace";
 
 const createListForPlaceSchema = z.object({
   name: z
@@ -39,16 +39,14 @@ interface CreateListForPlaceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
-  placeId: string;
 }
 
 export const CreateListForPlaceDialog = ({
   open,
   onOpenChange,
   children,
-  placeId,
 }: CreateListForPlaceDialogProps) => {
-  const { mutate: createList, isPending } = useCreateList(placeId);
+  const { createList, isPending } = useCreateListForPlace();
 
   const form = useForm<CreateListForPlaceInput>({
     resolver: zodResolver(createListForPlaceSchema),
@@ -57,21 +55,25 @@ export const CreateListForPlaceDialog = ({
     },
   });
 
-  const onSubmit = async (data: CreateListForPlaceInput) => {
-    try {
-      await createList({
+  const onSubmit = (data: CreateListForPlaceInput) => {
+    createList(
+      {
         name: data.name,
         colour: listColourPresets[0],
-      });
-
-      onOpenChange(false);
-      form.reset();
-      toast.success("List created successfully");
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to create list",
-      );
-    }
+      },
+      {
+        onSuccess: () => {
+          toast.success("List created successfully");
+          onOpenChange(false);
+          form.reset();
+        },
+        onError: (error) => {
+          toast.error("Failed to create list", {
+            description: error.message,
+          });
+        },
+      },
+    );
   };
 
   const handleOpenChange = (open: boolean) => {

@@ -64,28 +64,31 @@ export const ListCreateDialog = ({
       if (data.image) {
         const uploadResult = await startUpload([data.image]);
         if (!uploadResult) {
-          toast.error("Failed to upload list image");
-          return;
+          throw new Error("Failed to upload image");
         }
-
         imageUrl = uploadResult[0].appUrl;
       }
 
-      await createList({
-        name: data.name,
-        description: data.description,
-        isPublic: data.isPublic,
-        colour: data.colour,
-        image: imageUrl,
-      });
-
-      onOpenChange(false);
-      toast.success("List created successfully");
-      form.reset();
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Something went wrong",
+      await createList(
+        {
+          name: data.name,
+          description: data.description,
+          isPublic: data.isPublic,
+          colour: data.colour,
+          image: imageUrl,
+        },
+        {
+          onSuccess: () => {
+            onOpenChange(false);
+            toast.success("List created successfully");
+            form.reset();
+          },
+        },
       );
+    } catch (error) {
+      toast.error("Failed to create list", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   };
 
@@ -149,20 +152,20 @@ export const ListCreateDialog = ({
                   control={form.control}
                   name="isPublic"
                   render={({ field }) => (
-                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Public List</FormLabel>
+                    <FormItem>
+                      <FormLabel>List Visibility</FormLabel>
+                      <div className="flex items-center justify-between rounded-lg border p-4">
                         <FormDescription>
-                          Make this list visible to everyone
+                          Allow others to view this list
                         </FormDescription>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={isPending || isUploading}
+                          />
+                        </FormControl>
                       </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          disabled={isPending || isUploading}
-                        />
-                      </FormControl>
                     </FormItem>
                   )}
                 />
@@ -223,9 +226,7 @@ export const ListCreateDialog = ({
                           disabled={isPending || isUploading}
                         />
                       </FormControl>
-                      <FormDescription>
-                        Recommended size: 1200x630px. Maximum size: 4MB
-                      </FormDescription>
+                      <FormDescription>Maximum size: 4MB</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

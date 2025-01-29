@@ -1,5 +1,6 @@
 import type { Place, PlaceSearchResponse } from "@/types";
 import { getPlacePhotoUrl } from "./utils";
+import { toast } from "sonner";
 
 const processPlacePhotos = async (places: Place[]): Promise<Place[]> => {
   try {
@@ -57,9 +58,16 @@ export async function searchPlacesClient(
     }
 
     const res = await fetch(`/api/places/search?${searchParams.toString()}`);
-    if (!res.ok) throw new Error("Failed to fetch results");
+    if (!res.ok) {
+      if (res.status === 429) {
+        toast.error("Please wait a moment before searching again");
+        return null;
+      }
+      throw new Error("Failed to fetch results");
+    }
 
     const data = (await res.json()) as PlaceSearchResponse;
+
     if (!data.places) return null;
 
     const placesWithPhotos = await processPlacePhotos(data.places);

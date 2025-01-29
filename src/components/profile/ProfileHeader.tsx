@@ -22,7 +22,7 @@ export const ProfileHeader = ({
   isOwnProfile,
   totalLists,
 }: ProfileHeaderProps) => {
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<DbUser | null>(null);
   const router = useRouter();
 
   const handleEditSuccess = async (updatedUser: DbUser) => {
@@ -51,7 +51,7 @@ export const ProfileHeader = ({
 
         {isOwnProfile && (
           <ProfileActions
-            onEdit={() => setIsEditDialogOpen(true)}
+            onEdit={() => setEditingUser(user)}
             onShare={handleShare}
           />
         )}
@@ -76,12 +76,13 @@ export const ProfileHeader = ({
         </div>
       </div>
 
-      <ProfileEditDialog
-        user={user}
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        onSuccess={handleEditSuccess}
-      />
+      {editingUser && (
+        <ProfileEditDialog
+          user={editingUser}
+          onOpenChange={() => setEditingUser(null)}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </div>
   );
 };

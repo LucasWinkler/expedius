@@ -94,6 +94,32 @@ export const users = {
         lists: userLists,
       };
     },
+
+    getPlaceData: async (userId: string) => {
+      const userData = await db.query.user.findFirst({
+        where: (user, { eq }) => eq(user.id, userId),
+        with: {
+          lists: {
+            orderBy: (lists, { desc }) => [desc(lists.createdAt)],
+            with: {
+              savedPlaces: true,
+            },
+          },
+          likes: {
+            orderBy: (likes, { desc }) => [desc(likes.createdAt)],
+          },
+        },
+      });
+
+      if (!userData) {
+        throw new Error("User not found");
+      }
+
+      return {
+        likes: userData.likes,
+        lists: userData.lists,
+      };
+    },
   },
 
   mutations: {

@@ -5,14 +5,14 @@ import { lists } from "@/server/data/lists";
 import { getServerSession } from "../auth/session";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
-import { withRateLimit } from "@/server/lib/rate-limit";
+import { withActionLimit } from "@/server/lib/rate-limit";
 
 const updateSavedPlacesSchema = z.object({
   placeId: z.string(),
   selectedLists: z.array(z.string()),
 });
 
-export const updateSavedPlaces = withRateLimit(
+export const updateSavedPlaces = withActionLimit(
   async (input: z.infer<typeof updateSavedPlacesSchema>) => {
     try {
       const session = await getServerSession();

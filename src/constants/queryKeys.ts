@@ -7,4 +7,5 @@ export const QUERY_KEYS = {
   LIKES: "likes",
   PLACE_LISTS: "placeLists",
   LIKES_STATUSES: "likesStatuses",
+  USER_PLACE_DATA: "userPlaceData",
 } as const;

@@ -18,7 +18,7 @@ export const useFeaturedSections = (): FeaturedSectionData[] => {
   const queries = useQueries({
     queries: FEATURED_SECTIONS.map(({ query }) => ({
       queryKey: ["featuredSection", query, coords],
-      queryFn: () => searchPlacesClient(query, 5, coords),
+      queryFn: () => searchPlacesClient(query, 6, coords),
       enabled: !isLoadingLocation,
     })),
   });

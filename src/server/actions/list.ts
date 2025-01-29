@@ -10,9 +10,9 @@ import {
   UpdateListRequest,
   updateListServerSchema,
 } from "@/server/validations/lists";
-import { withRateLimit } from "@/server/lib/rate-limit";
+import { withActionLimit } from "@/server/lib/rate-limit";
 
-export const createList = withRateLimit(
+export const createList = withActionLimit(
   async (data: CreateListRequest): Promise<DbList> => {
     const session = await getServerSession();
     if (!session) throw new Error("Unauthorized");
@@ -33,7 +33,7 @@ export const createList = withRateLimit(
   "lists",
 );
 
-export const updateList = withRateLimit(
+export const updateList = withActionLimit(
   async (listId: DbList["id"], data: UpdateListRequest): Promise<DbList> => {
     const session = await getServerSession();
     if (!session) throw new Error("Unauthorized");
@@ -63,7 +63,7 @@ export const updateList = withRateLimit(
   "lists",
 );
 
-export const deleteList = withRateLimit(async (listId: DbList["id"]) => {
+export const deleteList = withActionLimit(async (listId: DbList["id"]) => {
   const session = await getServerSession();
   if (!session) throw new Error("Unauthorized");
 

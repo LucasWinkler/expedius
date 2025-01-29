@@ -66,12 +66,7 @@ export const FeaturedSection = ({ title, data }: FeaturedSectionProps) => {
                 key={place.id}
                 className="basis-full pl-2 sm:basis-1/2 md:pl-4 lg:basis-1/3"
               >
-                <PlaceCard
-                  place={place}
-                  priority={index < 3}
-                  initialIsLiked={!!data.likeStatuses[place.id]}
-                  initialLists={data.userLists}
-                />
+                <PlaceCard place={place} priority={index < 3} />
               </CarouselItem>
             ))}
           </CarouselContent>

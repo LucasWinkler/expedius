@@ -48,3 +48,5 @@ export const minQueryLength = 2;
 export const PAGINATION = {
   ITEMS_PER_PAGE: 10,
 };
+
+export const RATE_LIMIT_PREFIX = "ratelimit:" as const;
