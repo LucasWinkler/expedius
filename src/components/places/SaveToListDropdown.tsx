@@ -47,6 +47,13 @@ export const SaveToListDropdown = ({
     setCurrentSelection(selectedListIds);
   }, [selectedListIds]);
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      setCurrentSelection(selectedListIds);
+    }
+    onOpenChange(newOpen);
+  };
+
   const handleToggle = (listId: string) => {
     const newSelection = new Set(currentSelection);
     if (newSelection.has(listId)) {
@@ -83,7 +90,7 @@ export const SaveToListDropdown = ({
   };
 
   return (
-    <DropdownMenu modal={false} open={open} onOpenChange={onOpenChange}>
+    <DropdownMenu modal={false} open={open} onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72">
         <div className="flex items-center justify-between p-2">
