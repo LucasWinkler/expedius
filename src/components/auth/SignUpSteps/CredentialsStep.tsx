@@ -31,7 +31,12 @@ export const CredentialsStep = ({ form }: CredentialsStepProps) => {
           <FormItem>
             <FormLabel>Email</FormLabel>
             <FormControl>
-              <Input type="email" {...field} />
+              <Input
+                {...field}
+                type="email"
+                autoComplete="email"
+                placeholder="Enter your email"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -44,7 +49,12 @@ export const CredentialsStep = ({ form }: CredentialsStepProps) => {
           <FormItem>
             <FormLabel>Password</FormLabel>
             <FormControl>
-              <Input type="password" {...field} />
+              <Input
+                {...field}
+                type="password"
+                autoComplete="new-password"
+                placeholder="Create a password"
+              />
             </FormControl>
             <PasswordRequirements password={password} />
           </FormItem>

@@ -7,8 +7,7 @@ import { signOut } from "@/lib/auth-client";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Session } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
+
 type AuthButtonsProps = {
   user: Session["user"] | null | undefined;
   isPending: boolean;
@@ -22,8 +21,6 @@ export const AuthButtons = ({
   onAction,
   isMobile,
 }: AuthButtonsProps) => {
-  const router = useRouter();
-  const queryClient = useQueryClient();
   if (isPending) {
     return (
       <>
@@ -67,8 +64,6 @@ export const AuthButtons = ({
       size="sm"
       onClick={() => {
         void signOut();
-        router.refresh();
-        queryClient.clear();
         onAction?.();
       }}
       className={cn(

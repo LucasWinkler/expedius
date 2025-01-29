@@ -76,7 +76,12 @@ export const SignInForm = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input
+                    type="email"
+                    autoComplete="email"
+                    autoFocus
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -89,7 +94,11 @@ export const SignInForm = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input
+                    type="password"
+                    autoComplete="current-password"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

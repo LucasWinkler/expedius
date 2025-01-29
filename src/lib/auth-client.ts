@@ -6,7 +6,17 @@ export const authClient = createAuthClient({
   plugins: [inferAdditionalFields<typeof auth>()],
 });
 
-export const { signUp, signIn, signOut, useSession } = authClient;
+const { signOut: _signOut } = authClient;
+
+export const signOut = async () => {
+  const result = await _signOut();
+  if (typeof window !== "undefined") {
+    window.location.reload();
+  }
+  return result;
+};
+
+export const { signUp, signIn, useSession } = authClient;
 
 export type Session = typeof authClient.$Infer.Session;
 export type User = typeof authClient.$Infer.Session.user;

@@ -83,7 +83,11 @@ export const ProfileStep = ({ form }: ProfileStepProps) => {
           <FormItem>
             <FormLabel>Full Name</FormLabel>
             <FormControl>
-              <Input {...field} />
+              <Input
+                {...field}
+                autoComplete="name"
+                placeholder="Enter your full name"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -97,7 +101,11 @@ export const ProfileStep = ({ form }: ProfileStepProps) => {
             <FormLabel>Username</FormLabel>
             <FormControl>
               <div className="relative">
-                <Input {...field} />
+                <Input
+                  {...field}
+                  autoComplete="username"
+                  placeholder="Enter a username"
+                />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   {isChecking ? (
                     <Loader2 className="size-4 animate-spin text-muted-foreground" />
