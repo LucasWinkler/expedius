@@ -1,9 +1,9 @@
 "server-only";
 
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import type { DbUser } from "@/server/db/schema";
 import { db } from "@/server/db";
-import { user } from "@/server/db/schema";
+import { user, like } from "@/server/db/schema";
 import { getServerSession } from "@/server/auth/session";
 import type {
   PublicProfileData,
@@ -79,19 +79,23 @@ export const users = {
         };
       }
 
-      const userLists = await lists.queries.getAllByUserId(
-        foundUser.id,
-        isOwnProfile,
-        {
+      const [userLists, likesCount] = await Promise.all([
+        lists.queries.getAllByUserId(foundUser.id, isOwnProfile, {
           page,
           limit,
-        },
-      );
+        }),
+        db
+          .select({ count: sql<number>`count(*)` })
+          .from(like)
+          .where(eq(like.userId, foundUser.id))
+          .then((result) => Number(result[0].count)),
+      ]);
 
       return {
         user: { ...foundUser, type: "public" as const },
         isOwnProfile,
         lists: userLists,
+        totalLikes: likesCount,
       };
     },
 

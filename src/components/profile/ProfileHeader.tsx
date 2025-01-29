@@ -15,12 +15,14 @@ interface ProfileHeaderProps {
   user: DbUser;
   isOwnProfile: boolean;
   totalLists: number;
+  totalLikes: number;
 }
 
 export const ProfileHeader = ({
   user,
   isOwnProfile,
   totalLists,
+  totalLikes,
 }: ProfileHeaderProps) => {
   const [editingUser, setEditingUser] = useState<DbUser | null>(null);
   const router = useRouter();
@@ -74,7 +76,7 @@ export const ProfileHeader = ({
           )}
           <ProfileStats
             totalLists={totalLists}
-            totalLikes={0}
+            totalLikes={totalLikes}
             username={user.username}
           />
         </div>

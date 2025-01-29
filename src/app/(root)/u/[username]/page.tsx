@@ -72,6 +72,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         user={publicProfile.user}
         isOwnProfile={publicProfile.isOwnProfile}
         totalLists={publicProfile.lists.metadata.totalItems}
+        totalLikes={publicProfile.totalLikes}
       />
       <ProfileView
         username={publicProfile.user.username}

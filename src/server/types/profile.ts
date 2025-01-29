@@ -5,6 +5,7 @@ export interface PublicProfileData {
   user: DbUser & { type: "public" };
   lists: Awaited<ReturnType<typeof lists.queries.getAllByUserId>>;
   isOwnProfile: boolean;
+  totalLikes: number;
 }
 
 export interface PrivateProfileData {
