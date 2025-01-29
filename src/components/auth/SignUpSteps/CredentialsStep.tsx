@@ -6,6 +6,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { useWatch } from "react-hook-form";
 import type { UseFormReturn } from "react-hook-form";
 import type { SignUpInput } from "@/lib/validations/auth";
@@ -49,9 +50,8 @@ export const CredentialsStep = ({ form }: CredentialsStepProps) => {
           <FormItem>
             <FormLabel>Password</FormLabel>
             <FormControl>
-              <Input
+              <PasswordInput
                 {...field}
-                type="password"
                 autoComplete="new-password"
                 placeholder="Create a password"
               />
@@ -67,7 +67,11 @@ export const CredentialsStep = ({ form }: CredentialsStepProps) => {
           <FormItem>
             <FormLabel>Confirm Password</FormLabel>
             <FormControl>
-              <Input type="password" {...field} />
+              <PasswordInput
+                {...field}
+                autoComplete="new-password"
+                placeholder="Confirm your password"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

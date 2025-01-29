@@ -19,6 +19,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import AuthCard from "./AuthCard";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export const SignInForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -94,11 +95,7 @@ export const SignInForm = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    autoComplete="current-password"
-                    {...field}
-                  />
+                  <PasswordInput autoComplete="current-password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
