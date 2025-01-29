@@ -23,6 +23,7 @@ interface SaveToListDropdownProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
+  isAuthenticated: boolean;
 }
 
 export const SaveToListDropdown = ({
@@ -31,10 +32,12 @@ export const SaveToListDropdown = ({
   open,
   onOpenChange,
   children,
+  isAuthenticated,
 }: SaveToListDropdownProps) => {
   const [createListOpen, setCreateListOpen] = useState(false);
   const { lists, selectedListIds, isPending, updateLists } = usePlaceLists(
     placeId,
+    isAuthenticated,
     initialLists,
   );
 

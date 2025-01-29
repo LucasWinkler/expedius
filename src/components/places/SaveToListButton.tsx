@@ -33,6 +33,7 @@ export const SaveToListButton = ({ placeId }: SaveToListButtonProps) => {
       placeId={placeId}
       open={isDropdownOpen}
       onOpenChange={handleOpenChange}
+      isAuthenticated={!!session}
     >
       <Button
         variant="secondary"

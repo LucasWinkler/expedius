@@ -101,19 +101,23 @@ export const GET = withRateLimit(async (request: Request) => {
   const session = await getServerSession();
   let likeStatuses: LikeStatuses = {};
   let userLists: DbListWithPlacesCount[] = [];
-
   const placeIds = placesData.places.map((place) => place.id);
+
   if (session && placeIds.length > 0) {
-    likeStatuses = await likes.queries.getStatuses(placeIds);
-    const userListsResponse = await lists.queries.getAllByUserId(
-      session.user.id,
-      true,
-      {
-        page: 1,
-        limit: 10,
-      },
-    );
-    userLists = userListsResponse.items;
+    try {
+      likeStatuses = await likes.queries.getStatuses(placeIds);
+      const userListsResponse = await lists.queries.getAllByUserId(
+        session.user.id,
+        true,
+        {
+          page: 1,
+          limit: 10,
+        },
+      );
+      userLists = userListsResponse.items;
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
   }
 
   const responseData = {

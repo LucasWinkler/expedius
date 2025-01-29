@@ -7,6 +7,7 @@ import { useMemo } from "react";
 
 export const usePlaceLists = (
   placeId: string,
+  isAuthenticated: boolean,
   initialLists?: ListForPlaceCard[],
 ) => {
   const queryClient = useQueryClient();
@@ -15,6 +16,7 @@ export const usePlaceLists = (
     queryKey: [QUERY_KEYS.PLACE_LISTS, placeId],
     queryFn: () => getListsForPlaceCard(placeId),
     initialData: initialLists,
+    enabled: isAuthenticated,
   });
 
   const selectedListIds = useMemo(
@@ -39,7 +41,7 @@ export const usePlaceLists = (
   return {
     lists: lists ?? [],
     selectedListIds,
-    isLoading,
+    isLoading: isLoading && isAuthenticated,
     isPending,
     updateLists,
   };
