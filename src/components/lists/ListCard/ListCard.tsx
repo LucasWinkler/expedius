@@ -5,7 +5,7 @@ import { ListMetadata } from "./ListMetadata";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { DbListWithPlacesCount } from "@/server/db/schema";
+import { DbListWithPlacesCount } from "@/server/types/db";
 import { Loader2 } from "lucide-react";
 import { shouldBeLight } from "@/lib/utils";
 import { cn } from "@/lib/utils";

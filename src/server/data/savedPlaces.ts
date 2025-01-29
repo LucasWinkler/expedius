@@ -2,7 +2,7 @@ import { unstable_cache } from "next/cache";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { savedPlace } from "@/server/db/schema";
-import type { DbList } from "@/server/db/schema";
+import type { DbList } from "@/server/types/db";
 import type { PaginationParams } from "@/types";
 
 export const savedPlaces = {

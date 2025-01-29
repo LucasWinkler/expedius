@@ -15,7 +15,7 @@ import {
 import { ListCreateDialog } from "@/components/lists/ListCreateDialog";
 import { ListEditDialog } from "@/components/lists/ListEditDialog";
 import { ListDeleteDialog } from "@/components/lists/ListDeleteDialog";
-import type { DbListWithPlacesCount } from "@/server/db/schema";
+import type { DbListWithPlacesCount } from "@/server/types/db";
 import { ListCard } from "@/components/lists/ListCard";
 
 interface ListsViewProps {

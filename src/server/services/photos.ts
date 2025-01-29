@@ -7,7 +7,7 @@ import { getPlaiceholder } from "plaiceholder";
 
 export const getEnhancedPlacePhoto = cache(async (photoRef: string) => {
   try {
-    const apiUrl = `${env.BETTER_AUTH_URL}${getPlacePhotoUrl(photoRef)}`;
+    const apiUrl = `${env.NEXT_PUBLIC_BASE_URL}${getPlacePhotoUrl(photoRef)}`;
     const res = await fetch(apiUrl, {
       next: { revalidate: 604800 }, // Cache for 1 week
     });

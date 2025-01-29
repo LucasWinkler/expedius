@@ -1,7 +1,7 @@
 "server-only";
 
 import { eq, sql } from "drizzle-orm";
-import type { DbUser } from "@/server/db/schema";
+import type { DbUser } from "@/server/types/db";
 import { db } from "@/server/db";
 import { user, like } from "@/server/db/schema";
 import { getServerSession } from "@/server/auth/session";

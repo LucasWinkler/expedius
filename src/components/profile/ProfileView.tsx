@@ -5,7 +5,7 @@ import { useListsInfinite } from "@/hooks/useLists";
 import { ListCard } from "../lists/ListCard";
 import { Loader2, Plus } from "lucide-react";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
-import type { DbListWithPlacesCount } from "@/server/db/schema";
+import type { DbListWithPlacesCount } from "@/server/types/db";
 import { useState } from "react";
 import { ListDeleteDialog } from "../lists/ListDeleteDialog";
 import { Button } from "../ui/button";

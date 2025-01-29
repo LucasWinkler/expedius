@@ -1,6 +1,6 @@
 "server-only";
 
-import type { DbUser } from "@/server/db/schema";
+import type { DbUser } from "@/server/types/db";
 import { getServerSession } from "@/server/auth/session";
 
 export const canViewProfile = async (profileUser: DbUser) => {

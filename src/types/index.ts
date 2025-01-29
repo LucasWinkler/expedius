@@ -1,6 +1,6 @@
 import { LikeStatuses } from "@/lib/api/types";
 
-import { DbListWithPlacesCount } from "@/server/db/schema";
+import type { DbListWithPlacesCount } from "@/server/types/db";
 
 export * from "./pagination";
 

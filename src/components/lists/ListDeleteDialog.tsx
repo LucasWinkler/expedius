@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDeleteList } from "@/hooks/useLists";
-import type { DbList } from "@/server/db/schema";
+import type { DbList } from "@/server/types/db";
 import { toast } from "sonner";
 
 interface ListDeleteDialogProps {

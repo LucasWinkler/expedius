@@ -4,12 +4,15 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/server/db";
 import * as schema from "@/server/db/schema";
 import { lists } from "@/server/data/lists";
+import { env } from "@/env";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: schema,
   }),
+  appName: env.NEXT_PUBLIC_APP_NAME,
+  baseURL: env.NEXT_PUBLIC_BASE_URL,
   trustedOrigins: [
     "http://192.168.86.96:3000",
     "http://192.168.86.96:3000/api/auth",

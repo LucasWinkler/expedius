@@ -52,7 +52,7 @@ export const searchPlaces = cache(
       }
 
       const res = await fetch(
-        `${env.BETTER_AUTH_URL}/api/places/search?${searchParams.toString()}`,
+        `${env.NEXT_PUBLIC_BASE_URL}/api/places/search?${searchParams.toString()}`,
 
         {
           next: { revalidate: 86400 }, // 24 hours

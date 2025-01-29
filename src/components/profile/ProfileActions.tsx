@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { cn, shouldBeLight } from "@/lib/utils";
-import { DbUser } from "@/server/db/schema";
+import type { DbUser } from "@/server/types/db";
 
 interface ProfileActionsProps {
   colour: DbUser["colour"];

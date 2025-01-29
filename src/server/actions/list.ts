@@ -3,7 +3,7 @@
 import { lists } from "@/server/data/lists";
 import { revalidateTag } from "next/cache";
 import { getServerSession } from "../auth/session";
-import { DbList } from "@/server/db/schema";
+import type { DbList } from "@/server/types/db";
 import {
   CreateListRequest,
   createListServerSchema,

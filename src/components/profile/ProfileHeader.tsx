@@ -1,7 +1,7 @@
 "use client";
 
 import copyTextToClipboard from "@uiw/copy-to-clipboard";
-import type { DbUser } from "@/server/db/schema";
+import type { DbUser } from "@/server/types/db";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

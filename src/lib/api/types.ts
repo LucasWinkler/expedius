@@ -1,6 +1,5 @@
-import { DbListWithPlacesCount } from "@/server/db/schema";
 import type { List, SavedPlace } from "@/types";
-
+import type { DbListWithPlacesCount } from "@/server/types/db";
 export interface PaginatedResponse<T> {
   items: T[];
   metadata: {

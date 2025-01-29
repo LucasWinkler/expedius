@@ -2,7 +2,7 @@ import { unstable_cache } from "next/cache";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/server/db";
 import { like } from "@/server/db/schema";
-import type { DbLike, DbUser } from "@/server/db/schema";
+import type { DbLike, DbUser } from "@/server/types/db";
 import { getServerSession } from "../auth/session";
 
 export const likes = {

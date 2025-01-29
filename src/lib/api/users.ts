@@ -1,4 +1,4 @@
-import type { DbLike, DbListWithPlacesCount } from "@/server/db/schema";
+import type { DbLike, DbListWithPlacesCount } from "@/server/types/db";
 
 interface UserPlaceDataResponse {
   likes: DbLike[];

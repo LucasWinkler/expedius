@@ -13,7 +13,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { ListDeleteDialog } from "../lists/ListDeleteDialog";
-import type { DbListWithPlacesCount } from "@/server/db/schema";
+import type { DbListWithPlacesCount } from "@/server/types/db";
 import { ListCard } from "../lists/ListCard";
 import ListEditDialog from "../lists/ListEditDialog";
 import ListCreateDialog from "../lists/ListCreateDialog";

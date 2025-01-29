@@ -3,7 +3,7 @@
 import { cache } from "react";
 import { getServerSession } from "@/server/auth/session";
 import { users } from "@/server/data/users";
-import type { DbUser } from "@/server/db/schema";
+import type { DbUser } from "@/server/types/db";
 
 export interface PublicProfile extends DbUser {
   type: "public";

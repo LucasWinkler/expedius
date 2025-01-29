@@ -3,7 +3,7 @@ import { QUERY_KEYS } from "@/constants";
 import { useSession } from "@/lib/auth-client";
 import { toggleLike } from "@/server/actions/like";
 import { updateSavedPlaces } from "@/server/actions/savedPlace";
-import type { DbLike, DbListWithPlacesCount } from "@/server/db/schema";
+import type { DbLike, DbListWithPlacesCount } from "@/server/types/db";
 import { getUserPlaceData } from "@/lib/api";
 
 export interface PlaceInteractionsData {

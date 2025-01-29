@@ -1,4 +1,4 @@
-import { DbList } from "@/server/db/schema";
+import { DbList } from "@/server/types/db";
 import type { ListsResponse, ListsWithCountResponse } from "./types";
 import { CreateListInput, UpdateListInput } from "../validations/list";
 import { ListForPlaceCard } from "@/types";

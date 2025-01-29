@@ -27,7 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { FileInput } from "@/components/ui/file-input";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useUploadThing } from "@/lib/uploadthing";
-import type { DbUser } from "@/server/db/schema";
+import type { DbUser } from "@/server/types/db";
 import {
   updateProfileSchema,
   type UpdateProfileInput,

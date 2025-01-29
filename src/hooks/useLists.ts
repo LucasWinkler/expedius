@@ -7,7 +7,7 @@ import {
 import { QUERY_KEYS } from "@/constants";
 import { useSession } from "@/lib/auth-client";
 import { createList, deleteList, updateList } from "@/server/actions/list";
-import { DbList, DbUser } from "@/server/db/schema";
+import type { DbList, DbUser } from "@/server/types/db";
 import {
   CreateListRequest,
   UpdateListRequest,

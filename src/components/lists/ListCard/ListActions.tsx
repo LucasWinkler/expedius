@@ -11,9 +11,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DbListWithPlacesCount, DbUser } from "@/server/db/schema";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import type { DbUser, DbListWithPlacesCount } from "@/server/types/db";
 
 interface ListActionsProps {
   list: DbListWithPlacesCount;

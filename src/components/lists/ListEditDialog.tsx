@@ -26,7 +26,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useUploadThing } from "@/lib/uploadthing";
-import type { DbListWithPlacesCount } from "@/server/db/schema";
+import type { DbListWithPlacesCount } from "@/server/types/db";
 import { Loader2 } from "lucide-react";
 import { listColourPresets } from "@/constants";
 import { FileInput } from "@/components/ui/file-input";
