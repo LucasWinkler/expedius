@@ -15,23 +15,24 @@ export const SaveToListButton = ({ placeId }: SaveToListButtonProps) => {
   const { data: session } = useSession();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!session) {
+  const handleOpenChange = (open: boolean) => {
+    if (open && !session) {
       toast.error("Please sign in to save places to lists");
       return;
     }
+    setIsDropdownOpen(open);
+  };
 
-    setIsDropdownOpen(true);
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   return (
     <SaveToListDropdown
       placeId={placeId}
       open={isDropdownOpen}
-      onOpenChange={setIsDropdownOpen}
+      onOpenChange={handleOpenChange}
     >
       <Button
         variant="secondary"
