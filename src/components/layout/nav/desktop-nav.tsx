@@ -6,6 +6,8 @@ import { LogOut, LogIn, UserPlus } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import Link from "next/link";
 import NavLink from "./nav-link";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 type DesktopNavProps = {
   session: Session | null;
@@ -13,6 +15,9 @@ type DesktopNavProps = {
 };
 
 export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   return (
     <div className="flex w-full items-center">
       <Link
@@ -44,10 +49,15 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => void signOut()}
+                onClick={() => {
+                  void signOut();
+                  queryClient.clear();
+                  router.refresh();
+                }}
                 className="h-9 text-destructive transition-colors hover:text-destructive [@media(hover:hover)]:hover:bg-destructive/10"
               >
                 <LogOut className="size-4" />
+
                 <span>Sign Out</span>
               </Button>
             </>

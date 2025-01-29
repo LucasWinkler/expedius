@@ -16,6 +16,8 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { signOut } from "@/lib/auth-client";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 type MobileNavProps = {
   session: Session | null;
@@ -24,6 +26,8 @@ type MobileNavProps = {
 
 export const MobileNav = ({ session, isPending }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -63,6 +67,8 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
                 size="sm"
                 onClick={() => {
                   void signOut();
+                  router.refresh();
+                  queryClient.clear();
                   setIsOpen(false);
                 }}
                 className="h-9 w-full justify-start text-destructive hover:text-destructive [@media(hover:hover)]:hover:bg-destructive/10"
