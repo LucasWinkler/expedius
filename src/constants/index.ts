@@ -46,5 +46,5 @@ export const maxNameLength = 50;
 export const minQueryLength = 2;
 
 export const PAGINATION = {
-  ITEMS_PER_PAGE: 6,
+  ITEMS_PER_PAGE: 10,
 };

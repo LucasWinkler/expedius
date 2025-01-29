@@ -100,16 +100,18 @@ export const ListsView = ({
   };
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <div className="mb-8 flex items-end justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">
-            {isOwnProfile ? "My Lists" : `${username}'s Lists`}
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            {totalLists} List{totalLists === 1 ? "" : "s"}
-          </p>
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8 space-y-2">
+        <h1 className="text-3xl font-bold">
+          {isOwnProfile ? "My Lists" : `${username}'s Lists`}
+        </h1>
+        <p className="mt-1 text-muted-foreground">
+          {totalLists} List{totalLists === 1 ? "" : "s"}
+        </p>
+      </div>
+
+      <div className="mb-6 flex items-center justify-between">
+        <div>Search and filtering here later</div>
         {isOwnProfile && (
           <Button onClick={() => setIsCreateDialogOpen(true)}>
             <Plus className="mr-2 size-4" />
@@ -118,9 +120,7 @@ export const ListsView = ({
         )}
       </div>
 
-      <div className="mb-6">Search and filtering here later</div>
-
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         {lists.map((list) => (
           <ListCard
             key={list.id}

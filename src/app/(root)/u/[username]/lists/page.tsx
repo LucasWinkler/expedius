@@ -20,7 +20,7 @@ export default async function ListsPage({
   const validated = profileParamsSchema.safeParse({
     username: (await params).username,
     page: (await searchParams).page,
-    limit: 9,
+    limit: 10,
   });
 
   if (!validated.success) {
@@ -40,15 +40,13 @@ export default async function ListsPage({
   const publicProfile = profile as PublicProfileData;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <ListsView
-        lists={publicProfile.lists.items}
-        username={validated.data.username}
-        isOwnProfile={publicProfile.isOwnProfile}
-        totalPages={publicProfile.lists.metadata.totalPages}
-        currentPage={validated.data.page}
-        totalLists={publicProfile.lists.metadata.totalItems}
-      />
-    </div>
+    <ListsView
+      lists={publicProfile.lists.items}
+      username={validated.data.username}
+      isOwnProfile={publicProfile.isOwnProfile}
+      totalPages={publicProfile.lists.metadata.totalPages}
+      currentPage={validated.data.page}
+      totalLists={publicProfile.lists.metadata.totalItems}
+    />
   );
 }

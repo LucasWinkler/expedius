@@ -5,16 +5,6 @@ export const getLikeStatus = async (placeId: string): Promise<boolean> => {
   return data.isLiked;
 };
 
-export const getLikeStatuses = async (
-  placeIds: string[],
-): Promise<Record<string, boolean>> => {
-  const response = await fetch(
-    `/api/likes/status?placeIds=${placeIds.join(",")}`,
-  );
-  if (!response.ok) throw new Error("Failed to get like statuses");
-  return response.json();
-};
-
 export const toggleLike = async (
   placeId: string,
 ): Promise<{ liked: boolean }> => {
