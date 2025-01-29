@@ -35,6 +35,8 @@ import {
 import { updateProfile } from "@/server/actions/user";
 import { useDebouncedCallback } from "use-debounce";
 import { checkUsernameAvailability } from "@/server/actions/user";
+import { listColourPresets } from "@/constants";
+import { ColorSwatch } from "../lists/ColorSwatch";
 
 interface ProfileEditDialogProps {
   user: DbUser;
@@ -51,6 +53,7 @@ export const ProfileEditDialog = ({
   const { startUpload, isUploading } = useUploadThing("updateProfileImage");
   const [isChecking, setIsChecking] = useState(false);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+  const [customColor, setCustomColor] = useState<string>("#FF0000");
 
   const form = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
@@ -59,6 +62,7 @@ export const ProfileEditDialog = ({
       username: user.username,
       bio: user.bio ?? "",
       isPublic: user.isPublic ?? false,
+      colour: user.colour ?? listColourPresets[0],
     },
   });
 
@@ -121,7 +125,7 @@ export const ProfileEditDialog = ({
         if (data.image instanceof File) {
           const uploadResult = await startUpload([data.image]);
           if (!uploadResult) {
-            toast.error("Failed to upload image");
+            toast.error("Failed to upload profile image");
             return;
           }
           imageUrl = uploadResult[0].appUrl;
@@ -292,6 +296,46 @@ export const ProfileEditDialog = ({
                       <FormDescription>Maximum size: 4MB</FormDescription>
                     </div>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="colour"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Profile Color</FormLabel>
+                    <FormDescription>
+                      Choose a color for your profile header
+                    </FormDescription>
+                    <div className="space-y-4">
+                      <div
+                        className="grid grid-cols-5 gap-3"
+                        role="radiogroup"
+                        aria-label="Profile header color selection"
+                      >
+                        {listColourPresets.map((color) => (
+                          <ColorSwatch
+                            key={color}
+                            color={color}
+                            selected={field.value === color}
+                            onClick={() => field.onChange(color)}
+                            disabled={isDisabled}
+                          />
+                        ))}
+                        <ColorSwatch
+                          color={customColor}
+                          selected={field.value === customColor}
+                          onCustomColorChange={(color) => {
+                            setCustomColor(color);
+                            field.onChange(color);
+                          }}
+                          isCustom
+                          disabled={isDisabled}
+                        />
+                      </div>
+                    </div>
                   </FormItem>
                 )}
               />

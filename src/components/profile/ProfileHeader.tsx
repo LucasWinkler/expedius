@@ -46,11 +46,15 @@ export const ProfileHeader = ({
 
   return (
     <div className="relative bg-background">
-      <div className="h-48 w-full bg-muted">
-        {/* Possible future profile image */}
-
+      <div
+        className="relative h-48 w-full"
+        style={{
+          backgroundColor: user.colour || "hsl(var(--muted))",
+        }}
+      >
         {isOwnProfile && (
           <ProfileActions
+            colour={user.colour}
             onEdit={() => setEditingUser(user)}
             onShare={handleShare}
           />

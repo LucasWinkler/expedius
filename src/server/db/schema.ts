@@ -62,6 +62,7 @@ export const user = pgTable("user", {
     withTimezone: true,
   }),
   isPublic: boolean("is_public").notNull().default(false),
+  colour: text("colour").notNull().default(listColourPresets[0]),
   ...timestamps,
 });
 

@@ -66,6 +66,7 @@ export const updateProfile = withActionLimit(
       if (data.isPublic !== undefined && data.isPublic !== user.isPublic)
         updateData.isPublic = data.isPublic;
       if (data.image !== undefined) updateData.image = data.image;
+      if (data.colour !== undefined) updateData.colour = data.colour;
 
       if (Object.keys(updateData).length === 0) {
         return { data: user };
@@ -79,6 +80,7 @@ export const updateProfile = withActionLimit(
           image: updatedUser.image,
           username: updatedUser.username,
           isPublic: updatedUser.isPublic,
+          colour: updatedUser.colour,
         },
         headers: await headers(),
       });

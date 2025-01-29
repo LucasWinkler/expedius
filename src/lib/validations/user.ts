@@ -1,4 +1,8 @@
-import { maxUsernameLength, minUsernameLength } from "@/constants";
+import {
+  listColourPresets,
+  maxUsernameLength,
+  minUsernameLength,
+} from "@/constants";
 import { z } from "zod";
 
 const profileImageSchema = z
@@ -34,6 +38,14 @@ export const updateProfileSchema = z.object({
   bio: z.string().trim().max(500).optional(),
   isPublic: z.boolean().optional(),
   image: profileImageSchema,
+  colour: z
+    .string()
+    .min(1, "Colour is required")
+    .regex(
+      /^(#[0-9A-Fa-f]{6}|oklch\(\s*[0-9.]+\s+[0-9.]+\s+[0-9.]+\s*\)|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)|hsl\(\s*\d+\s*,\s*\d+%?\s*,\s*\d+%?\s*\))$/,
+      "Invalid color format. Must be hex, OKLCH, RGB, or HSL",
+    )
+    .default(listColourPresets[0]),
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

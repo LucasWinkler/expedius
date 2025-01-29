@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { DbListWithPlacesCount } from "@/server/db/schema";
 import { Loader2 } from "lucide-react";
-import { shouldUseLightText } from "@/lib/utils";
+import { shouldBeLight } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
 interface ListCardProps {
@@ -28,7 +28,7 @@ export const ListCard = ({
   onDelete,
 }: ListCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const textColour = shouldUseLightText(list.colour)
+  const textColour = shouldBeLight(list.colour)
     ? "text-muted-foreground"
     : "text-background";
 

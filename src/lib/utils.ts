@@ -58,11 +58,7 @@ export const getLuminance = (color: string): number => {
   return luminance(color);
 };
 
-export const shouldUseWhiteText = (color: string): boolean => {
-  return textColor(color) === "#ffffff";
-};
-
-export const shouldUseLightText = (color: string): boolean => {
+export const shouldBeLight = (color: string): boolean => {
   return getLuminance(color) > 0.5;
 };
 
