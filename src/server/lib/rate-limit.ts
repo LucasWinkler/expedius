@@ -41,6 +41,11 @@ const rateLimiters = {
     limiter: Ratelimit.slidingWindow(10, "1 m"),
     prefix: `${RATE_LIMIT_PREFIX}profile`,
   }),
+  availability: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(50, "1 m"),
+    prefix: `${RATE_LIMIT_PREFIX}availability`,
+  }),
 } as const;
 
 type RateLimitType = keyof typeof rateLimiters;

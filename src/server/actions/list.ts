@@ -20,6 +20,14 @@ export const createList = withActionLimit(
     const validation = createListServerSchema.safeParse(data);
     if (!validation.success) throw new Error("Invalid data provided");
 
+    const existingList = await lists.queries.getByNameAndUserId(
+      validation.data.name,
+      session.user.id,
+    );
+    if (existingList) {
+      throw new Error("You already have a list with this name");
+    }
+
     const newList = await lists.mutations.create(
       session.user.id,
       validation.data,
@@ -50,6 +58,16 @@ export const updateList = withActionLimit(
     const validation = updateListServerSchema.safeParse(data);
     if (!validation.success) {
       throw new Error("Invalid data provided");
+    }
+
+    if (validation.data.name && validation.data.name !== existingList.name) {
+      const nameExists = await lists.queries.getByNameAndUserId(
+        validation.data.name,
+        session.user.id,
+      );
+      if (nameExists && nameExists.id !== listId) {
+        throw new Error("You already have a list with this name");
+      }
     }
 
     const updatedList = await lists.mutations.update(listId, validation.data);

@@ -17,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -33,6 +32,7 @@ import { FileInput } from "@/components/ui/file-input";
 import { UpdateListInput, updateListSchema } from "@/lib/validations/list";
 import { useUpdateList } from "@/hooks/useLists";
 import { ColorSwatch } from "./ColorSwatch";
+import { AvailabilityInput } from "@/components/ui/availability-input";
 
 type ListEditDialogProps = {
   open: boolean;
@@ -110,7 +110,15 @@ export const ListEditDialog = ({
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input {...field} disabled={isPending} />
+                          <AvailabilityInput
+                            form={form}
+                            field={field}
+                            schema={updateListSchema.shape.name}
+                            type="list/name"
+                            placeholder="Enter list name"
+                            initialValue={list.name}
+                            disabled={isPending || isUploading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

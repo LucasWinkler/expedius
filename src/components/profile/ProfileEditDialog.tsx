@@ -1,7 +1,7 @@
 "use client";
 
-import { useTransition, useState, useEffect } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useTransition, useState } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { FileInput } from "@/components/ui/file-input";
-import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useUploadThing } from "@/lib/uploadthing";
 import type { DbUser } from "@/server/types/db";
 import {
@@ -33,11 +33,11 @@ import {
   type UpdateProfileInput,
 } from "@/lib/validations/user";
 import { updateProfile } from "@/server/actions/user";
-import { useDebouncedCallback } from "use-debounce";
 import { checkUsernameAvailability } from "@/server/actions/user";
 import { listColourPresets } from "@/constants";
 import { ColorSwatch } from "../lists/ColorSwatch";
-
+import { AvailabilityInput } from "@/components/ui/availability-input";
+import { usernameSchema } from "@/lib/validations/user";
 interface ProfileEditDialogProps {
   user: DbUser;
   onOpenChange: (open: boolean) => void;
@@ -51,8 +51,6 @@ export const ProfileEditDialog = ({
 }: ProfileEditDialogProps) => {
   const [isPending, startTransition] = useTransition();
   const { startUpload, isUploading } = useUploadThing("updateProfileImage");
-  const [isChecking, setIsChecking] = useState(false);
-  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [customColor, setCustomColor] = useState<string>("#FF0000");
 
   const form = useForm<UpdateProfileInput>({
@@ -66,49 +64,10 @@ export const ProfileEditDialog = ({
     },
   });
 
-  const username = useWatch({
-    control: form.control,
-    name: "username",
-    defaultValue: user.username,
-  });
-
   const isDisabled = isUploading || isPending;
   const canChangeUsername =
     !user.usernameUpdatedAt ||
     user.usernameUpdatedAt < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-
-  const checkUsername = useDebouncedCallback(async (value: string) => {
-    if (value === user.username) {
-      setIsAvailable(null);
-      return;
-    }
-
-    const validationResult =
-      updateProfileSchema.shape.username.safeParse(value);
-    if (!validationResult.success) {
-      setIsAvailable(false);
-      return;
-    }
-
-    setIsChecking(true);
-    try {
-      const { available } = await checkUsernameAvailability(value);
-      setIsAvailable(available);
-      if (!available) {
-        form.setError("username", {
-          message: "Username is already taken",
-        });
-      }
-    } catch {
-      setIsAvailable(null);
-    } finally {
-      setIsChecking(false);
-    }
-  }, 500);
-
-  useEffect(() => {
-    void checkUsername(username);
-  }, [username, checkUsername]);
 
   const onSubmit = async (data: UpdateProfileInput) => {
     if (data.username !== user.username) {
@@ -194,23 +153,19 @@ export const ProfileEditDialog = ({
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Input
-                          {...field}
-                          disabled={!canChangeUsername || isDisabled}
+                      {canChangeUsername ? (
+                        <AvailabilityInput
+                          form={form}
+                          field={field}
+                          schema={usernameSchema}
+                          type="username"
+                          placeholder="Choose a username"
+                          initialValue={user.username}
+                          disabled={isDisabled}
                         />
-                        {canChangeUsername && username !== user.username && (
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                            {isChecking ? (
-                              <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                            ) : isAvailable ? (
-                              <CheckCircle2 className="size-4 text-green-500" />
-                            ) : (
-                              <XCircle className="size-4 text-destructive" />
-                            )}
-                          </div>
-                        )}
-                      </div>
+                      ) : (
+                        <Input {...field} disabled />
+                      )}
                     </FormControl>
                     <FormDescription>
                       {canChangeUsername

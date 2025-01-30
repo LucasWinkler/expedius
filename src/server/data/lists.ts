@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, like, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { list, savedPlace } from "@/server/db/schema";
 import type { DbUser, DbList, DbListWithPlacesCount } from "@/server/types/db";
@@ -9,6 +9,8 @@ import {
   CreateListRequest,
   UpdateListRequest,
 } from "@/server/validations/lists";
+import { generateUniqueSlug } from "@/lib/slug";
+import { defaultListName } from "@/constants";
 
 export const lists = {
   queries: {
@@ -145,24 +147,57 @@ export const lists = {
         },
       )();
     },
+
+    getBySlug: async (slug: string, userId: string) => {
+      const foundList = await db.query.list.findFirst({
+        where: and(eq(list.slug, slug), eq(list.userId, userId)),
+        with: { savedPlaces: true },
+      });
+
+      return unstable_cache(async () => foundList, [`list-${userId}-${slug}`], {
+        tags: [`user-${userId}-lists`, `user-lists`],
+        revalidate: 60,
+      })();
+    },
+
+    getSlugsStartingWith: async (userId: string, baseSlug: string) => {
+      const results = await db
+        .select({ slug: list.slug })
+        .from(list)
+        .where(and(eq(list.userId, userId), like(list.slug, `${baseSlug}%`)));
+
+      return results.map((r) => r.slug);
+    },
+
+    getByNameAndUserId: async (name: string, userId: string) => {
+      const foundList = await db.query.list.findFirst({
+        where: and(eq(list.userId, userId), eq(list.name, name)),
+      });
+      return foundList;
+    },
   },
 
   mutations: {
     create: async (userId: DbUser["id"], data: CreateListRequest) => {
+      const slug = await generateUniqueSlug(data.name, userId);
+
       const [newList] = await db
         .insert(list)
-        .values({ ...data, userId })
+        .values({ ...data, userId, slug })
         .returning();
 
       return newList;
     },
 
     createDefault: async (userId: DbUser["id"]) => {
+      const defaultSlug = await generateUniqueSlug(defaultListName, userId);
+
       const [defaultList] = await db
         .insert(list)
         .values({
           userId,
-          name: "Saved Places",
+          name: defaultListName,
+          slug: defaultSlug,
           description: "Your default list for saved places",
         })
         .returning();
@@ -170,9 +205,23 @@ export const lists = {
     },
 
     update: async (id: DbList["id"], data: UpdateListRequest) => {
+      const existingList = await db.query.list.findFirst({
+        where: eq(list.id, id),
+      });
+
+      if (!existingList) throw new Error("List not found");
+
+      const slug = data.name
+        ? await generateUniqueSlug(
+            data.name,
+            existingList.userId,
+            existingList.slug,
+          )
+        : existingList.slug;
+
       const [updatedList] = await db
         .update(list)
-        .set(data)
+        .set({ ...data, slug })
         .where(eq(list.id, id))
         .returning();
 

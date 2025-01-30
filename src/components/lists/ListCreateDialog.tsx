@@ -20,7 +20,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -32,6 +31,7 @@ import { FileInput } from "@/components/ui/file-input";
 
 import { createListSchema, type CreateListInput } from "@/lib/validations/list";
 import { useCreateList } from "@/hooks/useLists";
+import { AvailabilityInput } from "../ui/availability-input";
 
 type ListCreateDialogProps = {
   open: boolean;
@@ -118,9 +118,12 @@ export const ListCreateDialog = ({
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input
+                        <AvailabilityInput
+                          form={form}
+                          field={field}
+                          schema={createListSchema.shape.name}
+                          type="list/name"
                           placeholder="My Favourite Places"
-                          {...field}
                           disabled={isPending || isUploading}
                         />
                       </FormControl>

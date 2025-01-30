@@ -6,6 +6,7 @@ export const createListServerSchema = createListSchema
   .extend({
     image: z.string().optional(),
   });
+
 export const updateListServerSchema = updateListSchema
   .omit({ image: true })
   .extend({

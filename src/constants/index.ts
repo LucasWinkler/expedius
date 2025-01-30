@@ -1,5 +1,7 @@
 export * from "./queryKeys";
 
+export const defaultListName = "Saved Places";
+
 export const listColourPresets = [
   "oklch(0.7 0.24 270)",
   "oklch(0.6 0.25 230)",
