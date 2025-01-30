@@ -13,27 +13,27 @@ const redis = new Redis({
 const rateLimiters = {
   likes: new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(10, "1 m"),
+    limiter: Ratelimit.slidingWindow(20, "1 m"),
     prefix: `${RATE_LIMIT_PREFIX}likes`,
   }),
   search: new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(10, "1 m"),
+    limiter: Ratelimit.slidingWindow(30, "1 m"),
     prefix: `${RATE_LIMIT_PREFIX}search`,
   }),
   lists: new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(10, "1 m"),
+    limiter: Ratelimit.slidingWindow(15, "1 m"),
     prefix: `${RATE_LIMIT_PREFIX}lists`,
   }),
   savePlaces: new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(10, "1 m"),
+    limiter: Ratelimit.slidingWindow(15, "1 m"),
     prefix: `${RATE_LIMIT_PREFIX}save-places`,
   }),
   profile: new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(5, "1 m"),
+    limiter: Ratelimit.slidingWindow(10, "1 m"),
     prefix: `${RATE_LIMIT_PREFIX}profile`,
   }),
 } as const;

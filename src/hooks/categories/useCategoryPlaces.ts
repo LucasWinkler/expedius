@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { searchPlacesClient } from "@/lib/search";
 import { useLocation } from "@/contexts/LocationContext";
+import { QUERY_KEYS } from "@/constants";
 
 interface UseCategoryPlacesOptions {
   query: string;
@@ -14,7 +15,7 @@ export const useCategoryPlaces = ({
   const { coords, isLoading: isLoadingLocation } = useLocation();
 
   return useQuery({
-    queryKey: ["categoryPlaces", query, coords],
+    queryKey: [QUERY_KEYS.CATEGORIES, query, coords],
     queryFn: () => searchPlacesClient(query, 6, coords),
     enabled: enabled && !isLoadingLocation,
   });

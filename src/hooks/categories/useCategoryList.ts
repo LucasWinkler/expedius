@@ -1,5 +1,5 @@
 import { useQueries } from "@tanstack/react-query";
-import { FEATURED_SECTIONS } from "@/constants";
+import { FEATURED_SECTIONS, QUERY_KEYS } from "@/constants";
 import { searchPlacesClient } from "@/lib/search";
 import { useLocation } from "@/contexts/LocationContext";
 import type { PlaceSearchResponse } from "@/types";
@@ -17,7 +17,7 @@ export const useCategoryList = (): UseCategoryListResponse[] => {
 
   const queries = useQueries({
     queries: FEATURED_SECTIONS.map(({ query }) => ({
-      queryKey: ["categoryPlaces", query, coords],
+      queryKey: [QUERY_KEYS.CATEGORIES, query, coords],
       queryFn: () => searchPlacesClient(query, 6, coords),
       enabled: !isLoadingLocation,
     })),
