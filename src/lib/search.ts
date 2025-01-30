@@ -67,7 +67,6 @@ export async function searchPlacesClient(
     }
 
     const data = (await res.json()) as PlaceSearchResponse;
-
     if (!data.places) return null;
 
     const placesWithPhotos = await processPlacePhotos(data.places);

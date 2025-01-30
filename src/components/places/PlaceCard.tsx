@@ -7,15 +7,13 @@ import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { getPriceLevelDisplay } from "@/lib/utils";
 import placeImageFallback from "../../../public/place-image-fallback.webp";
-import { LikeButton } from "./LikeButton";
-import { SaveToListButton } from "./SaveToListButton";
-
 interface PlaceCardProps {
   place: Place;
   priority?: boolean;
+  actions?: React.ReactNode;
 }
 
-export const PlaceCard = ({ place, priority }: PlaceCardProps) => {
+export const PlaceCard = ({ place, priority, actions }: PlaceCardProps) => {
   return (
     <li className="group list-none">
       <Card className="relative overflow-hidden bg-muted shadow-none transition-all hover:shadow-md">
@@ -76,8 +74,7 @@ export const PlaceCard = ({ place, priority }: PlaceCardProps) => {
           </CardContent>
         </Link>
         <div className="absolute right-6 top-6 flex flex-col gap-2">
-          <LikeButton placeId={place.id} />
-          <SaveToListButton placeId={place.id} />
+          {actions}
         </div>
       </Card>
     </li>

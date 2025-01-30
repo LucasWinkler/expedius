@@ -31,6 +31,11 @@ const rateLimiters = {
     limiter: Ratelimit.slidingWindow(15, "1 m"),
     prefix: `${RATE_LIMIT_PREFIX}save-places`,
   }),
+  removePlaceFromList: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(15, "1 m"),
+    prefix: `${RATE_LIMIT_PREFIX}remove-place-from-list`,
+  }),
   profile: new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(10, "1 m"),

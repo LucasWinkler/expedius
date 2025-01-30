@@ -15,6 +15,8 @@ import { CategoryHeader } from "./CategoryHeader";
 import { CarouselDots } from "./CarouselDots";
 import { useCarouselState } from "@/hooks/useCarouselState";
 import { useCategoryPlaces } from "@/hooks/categories";
+import { LikeButton } from "@/components/places/LikeButton";
+import { SaveToListButton } from "@/components/places/SaveToListButton";
 
 interface CategoryCarouselProps {
   title: string;
@@ -27,6 +29,7 @@ export const CategoryCarousel = ({ title, query }: CategoryCarouselProps) => {
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
+    rootMargin: "100px 0px",
   });
 
   const { data, isPending, isError } = useCategoryPlaces({
@@ -56,7 +59,16 @@ export const CategoryCarousel = ({ title, query }: CategoryCarouselProps) => {
                 key={place.id}
                 className="basis-full pl-2 sm:basis-1/2 md:pl-4 lg:basis-1/3"
               >
-                <PlaceCard place={place} priority={index < 3} />
+                <PlaceCard
+                  place={place}
+                  priority={index < 3}
+                  actions={
+                    <>
+                      <LikeButton placeId={place.id} />
+                      <SaveToListButton placeId={place.id} />
+                    </>
+                  }
+                />
               </CarouselItem>
             ))}
           </CarouselContent>

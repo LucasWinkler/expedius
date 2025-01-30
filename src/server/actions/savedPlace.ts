@@ -63,3 +63,25 @@ export const updateSavedPlaces = withActionLimit(
   },
   "savePlaces",
 );
+
+export const removeFromList = withActionLimit(
+  async (listId: string, placeId: string) => {
+    const session = await getServerSession();
+    if (!session) throw new Error("Unauthorized");
+
+    const list = await lists.queries.getById(listId);
+    if (!list) throw new Error("List not found");
+
+    if (list.userId !== session.user.id) {
+      throw new Error("You don't have permission to modify this list");
+    }
+
+    await savedPlaces.mutations.delete(listId, placeId);
+
+    revalidateTag(`list-${listId}-places`);
+    revalidateTag(`user-${session.user.id}-lists`);
+
+    return { success: true };
+  },
+  "removePlaceFromList",
+);
