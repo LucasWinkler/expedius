@@ -3,7 +3,7 @@
 import { PlaceCard } from "../places/PlaceCard";
 import { useSearch } from "@/hooks/useSearch";
 import SearchSkeleton from "@/components/search/SearchSkeleton";
-import { NoResult } from "../places/NoResult";
+import { NoPlaceResults } from "../places/NoPlaceResults";
 
 interface SearchResultsProps {
   query: string;
@@ -20,7 +20,7 @@ export const SearchResults = ({ query }: SearchResultsProps) => {
   }
 
   if (!searchData?.places.length) {
-    return <NoResult />;
+    return <NoPlaceResults />;
   }
 
   return (

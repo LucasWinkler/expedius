@@ -4,7 +4,7 @@ import { searchPlacesClient } from "@/lib/search";
 import { useLocation } from "@/contexts/LocationContext";
 import type { PlaceSearchResponse } from "@/types";
 
-interface FeaturedSectionData {
+interface UseCategoryListResponse {
   title: string;
   query: string;
   response: PlaceSearchResponse | null;
@@ -12,12 +12,12 @@ interface FeaturedSectionData {
   isError: boolean;
 }
 
-export const useFeaturedSections = (): FeaturedSectionData[] => {
+export const useCategoryList = (): UseCategoryListResponse[] => {
   const { coords, isLoading: isLoadingLocation } = useLocation();
 
   const queries = useQueries({
     queries: FEATURED_SECTIONS.map(({ query }) => ({
-      queryKey: ["featuredSection", query, coords],
+      queryKey: ["categoryPlaces", query, coords],
       queryFn: () => searchPlacesClient(query, 6, coords),
       enabled: !isLoadingLocation,
     })),

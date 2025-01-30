@@ -18,7 +18,6 @@ const HomeHero = () => {
             Find, organize, and share your favourite places from around the
             world.
           </p>
-
           <div
             className="animate-fade-up mt-6 opacity-0 sm:mt-8"
             style={{ animationDelay: "200ms" }}
@@ -26,7 +25,6 @@ const HomeHero = () => {
             <div className="relative mx-auto max-w-2xl">
               <SearchBar />
             </div>
-
             <SearchSuggestions />
           </div>
         </div>

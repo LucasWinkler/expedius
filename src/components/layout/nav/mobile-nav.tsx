@@ -8,7 +8,14 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, MapPin, LogIn, UserPlus, LogOut } from "lucide-react";
+import {
+  Menu,
+  MapPin,
+  LogIn,
+  UserPlus,
+  LogOut,
+  UserCircle,
+} from "lucide-react";
 import { NavLink } from "./nav-link";
 import type { Session } from "@/lib/auth-client";
 import { useState } from "react";
@@ -48,16 +55,25 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
             <>
               <Skeleton className="h-9 w-full" />
               <Skeleton className="h-9 w-full" />
+              <Skeleton className="h-9 w-full" />
             </>
           ) : session?.user ? (
             <>
               <NavLink
-                href={`/u/${session.user.username}`}
+                href={`/u/${session.user.username}/lists`}
                 icon={MapPin}
                 label="My Lists"
                 onClick={() => setIsOpen(false)}
                 className="w-full justify-start"
               />
+              <NavLink
+                href={`/u/${session.user.username}`}
+                icon={UserCircle}
+                label="My Profile"
+                onClick={() => setIsOpen(false)}
+                className="w-full justify-start"
+              />
+
               <Button
                 variant="ghost"
                 size="sm"

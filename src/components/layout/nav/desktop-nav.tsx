@@ -1,4 +1,4 @@
-import { MapPin } from "lucide-react";
+import { MapPin, UserCircle } from "lucide-react";
 import type { Session } from "@/lib/auth-client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -33,13 +33,19 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
             <>
               <Skeleton className="h-9 w-24" />
               <Skeleton className="h-9 w-24" />
+              <Skeleton className="h-9 w-24" />
             </>
           ) : session?.user ? (
             <>
               <NavLink
-                href={`/u/${session.user.username}`}
+                href={`/u/${session.user.username}/lists`}
                 icon={MapPin}
                 label="My Lists"
+              />
+              <NavLink
+                href={`/u/${session.user.username}`}
+                icon={UserCircle}
+                label="My Profile"
               />
               <Button
                 variant="ghost"

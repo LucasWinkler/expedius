@@ -2,11 +2,11 @@ import { MapPinOff } from "lucide-react";
 
 import { Card } from "../ui/card";
 
-interface NoResultProps {
+interface NoPlaceResultsProps {
   isError?: boolean;
 }
 
-export const NoResult = ({ isError }: NoResultProps) => {
+export const NoPlaceResults = ({ isError }: NoPlaceResultsProps) => {
   return (
     <Card className="flex min-h-48 flex-col items-center justify-center border-none text-muted-foreground shadow-none">
       <div className="flex h-full flex-col items-center justify-center gap-4 p-4">

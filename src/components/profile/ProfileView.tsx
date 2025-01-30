@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useListsInfinite } from "@/hooks/useLists";
 import { ListCard } from "../lists/ListCard";
 import { Loader2, Plus } from "lucide-react";
-import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+import { useInView } from "react-intersection-observer";
 import type { DbListWithPlacesCount } from "@/server/types/db";
 import { useState } from "react";
 import { ListDeleteDialog } from "../lists/ListDeleteDialog";
@@ -28,12 +28,14 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
     useState<DbListWithPlacesCount | null>(null);
   const [activeTab, setActiveTab] = useState<"lists" | "likes">("lists");
 
-  const loadMoreRef = useInfiniteScroll({
-    onLoadMore: async () => {
-      await fetchNextPage();
+  const { ref } = useInView({
+    threshold: 0,
+    rootMargin: "200px 0px",
+    onChange: (inView) => {
+      if (inView && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
     },
-    hasNextPage: !!hasNextPage,
-    isLoading: isFetchingNextPage,
   });
 
   const allLists =
@@ -95,7 +97,7 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
                 />
               ))}
 
-              <div ref={loadMoreRef} className="h-8 w-full">
+              <div ref={ref} className="h-8 w-full">
                 {hasNextPage ? (
                   isFetchingNextPage ? (
                     <div className="flex justify-center py-4">

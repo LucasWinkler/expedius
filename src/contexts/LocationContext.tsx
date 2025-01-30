@@ -8,104 +8,102 @@ import {
   type ReactNode,
 } from "react";
 
-interface LocationContextType {
+interface LocationState {
   coords: {
     latitude: number | null;
     longitude: number | null;
   };
   isLoading: boolean;
   error: string | null;
+  permissionStatus: PermissionState | null;
 }
 
-const LocationContext = createContext<LocationContextType>({
+const LocationContext = createContext<LocationState>({
   coords: {
     latitude: null,
     longitude: null,
   },
   isLoading: true,
   error: null,
+  permissionStatus: null,
 });
 
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
-  const [coords, setCoords] = useState<{
-    latitude: number | null;
-    longitude: number | null;
-  }>({
-    latitude: null,
-    longitude: null,
+  const [state, setState] = useState<LocationState>({
+    coords: {
+      latitude: null,
+      longitude: null,
+    },
+    isLoading: true,
+    error: null,
+    permissionStatus: null,
   });
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setIsLoading(false);
-      return;
-    }
+    let mounted = true;
 
     const handleSuccess = (position: GeolocationPosition) => {
-      setCoords({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      });
-      setIsLoading(false);
+      if (!mounted) return;
+      setState((prev) => ({
+        ...prev,
+        coords: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        },
+        isLoading: false,
+      }));
     };
 
-    const handleError = () => {
-      setCoords({ latitude: null, longitude: null });
-      setIsLoading(false);
+    const handleError = (error: GeolocationPositionError) => {
+      if (!mounted) return;
+      setState((prev) => ({
+        ...prev,
+        error: error.message,
+        isLoading: false,
+      }));
     };
 
-    const options: PositionOptions = {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0,
-    };
-
-    const requestLocation = () => {
-      navigator.geolocation.getCurrentPosition(
-        handleSuccess,
-        handleError,
-        options,
-      );
-    };
-
-    const checkPermission = async () => {
+    const checkPermissionAndGetLocation = async () => {
       try {
         const permission = await navigator.permissions.query({
           name: "geolocation",
         });
 
-        if (permission.state === "granted") {
-          requestLocation();
-        } else {
-          requestLocation();
-        }
+        setState((prev) => ({
+          ...prev,
+          permissionStatus: permission.state,
+        }));
 
-        permission.addEventListener("change", () => {
-          if (permission.state === "granted") {
-            requestLocation();
-          } else {
-            setCoords({ latitude: null, longitude: null });
-            setIsLoading(false);
-          }
-        });
-      } catch (error) {
-        console.error("Error checking geolocation permission:", error);
-        requestLocation();
+        if (permission.state === "granted") {
+          navigator.geolocation.getCurrentPosition(handleSuccess, handleError, {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+          });
+        } else {
+          setState((prev) => ({ ...prev, isLoading: false }));
+        }
+      } catch (error: unknown) {
+        setState((prev) => ({
+          ...prev,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Location permission check failed",
+          isLoading: false,
+        }));
       }
     };
 
-    void checkPermission();
+    void checkPermissionAndGetLocation();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const value = {
-    coords,
-    isLoading,
-    error: null,
-  };
-
   return (
-    <LocationContext.Provider value={value}>
+    <LocationContext.Provider value={state}>
       {children}
     </LocationContext.Provider>
   );
