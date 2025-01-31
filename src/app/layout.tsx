@@ -16,7 +16,27 @@ export const metadata: Metadata = {
     default: "PoiToGo",
   },
   description:
-    "PoiToGo is your travel guide. Find, organize, and share your favourite places from around the world.",
+    "Find and save your favourite places near you or anywhere in the world with PoiToGo. Create custom lists and share your public profile with others.",
+  openGraph: {
+    type: "website",
+    url: "https://poitogo.vercel.app/",
+    title: "PoiToGo",
+    description:
+      "Find and save your favourite places near you or anywhere in the world with PoiToGo. Create custom lists and share your public profile with others.",
+    siteName: "PoiToGo",
+    images: [
+      {
+        url: "https://poitogo.vercel.app/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Homepage screenshot showing a hero section with a search bar and suggested search terms.",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    creator: "@LucasJWinkler",
+  },
 };
 
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
