@@ -29,6 +29,7 @@ export const SearchResults = ({ query }: SearchResultsProps) => {
     <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {searchData.places.map((place) => (
         <PlaceCard
+          isListItem
           key={place.id}
           place={place}
           actions={

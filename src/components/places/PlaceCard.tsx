@@ -11,11 +11,18 @@ interface PlaceCardProps {
   place: Place;
   priority?: boolean;
   actions?: React.ReactNode;
+  isListItem?: boolean;
 }
 
-export const PlaceCard = ({ place, priority, actions }: PlaceCardProps) => {
+export const PlaceCard = ({
+  place,
+  priority,
+  actions,
+  isListItem,
+}: PlaceCardProps) => {
+  const Comp = isListItem ? "li" : "div";
   return (
-    <li className="group list-none">
+    <Comp className="group list-none">
       <Card className="relative overflow-hidden bg-muted shadow-none transition-all hover:shadow-md">
         <Link href={`/place/${place.id}`} className="block">
           <div className="relative m-4 overflow-hidden rounded-lg">
@@ -77,6 +84,6 @@ export const PlaceCard = ({ place, priority, actions }: PlaceCardProps) => {
           {actions}
         </div>
       </Card>
-    </li>
+    </Comp>
   );
 };
