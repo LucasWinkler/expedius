@@ -22,7 +22,7 @@ export const Footer = () => {
             </p>
           </div>
 
-          <div className="flex flex-col items-center gap-4 self-end md:items-end">
+          <div className="flex flex-col items-center gap-4 md:items-end">
             <nav aria-label="Footer navigation" className="flex gap-4">
               <Link
                 href="/"
