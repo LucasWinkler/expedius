@@ -8,102 +8,104 @@ import {
   type ReactNode,
 } from "react";
 
-interface LocationState {
+interface LocationContextType {
   coords: {
     latitude: number | null;
     longitude: number | null;
   };
   isLoading: boolean;
   error: string | null;
-  permissionStatus: PermissionState | null;
 }
 
-const LocationContext = createContext<LocationState>({
+const LocationContext = createContext<LocationContextType>({
   coords: {
     latitude: null,
     longitude: null,
   },
   isLoading: true,
   error: null,
-  permissionStatus: null,
 });
 
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
-  const [state, setState] = useState<LocationState>({
-    coords: {
-      latitude: null,
-      longitude: null,
-    },
-    isLoading: true,
-    error: null,
-    permissionStatus: null,
+  const [coords, setCoords] = useState<{
+    latitude: number | null;
+    longitude: number | null;
+  }>({
+    latitude: null,
+    longitude: null,
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
+    if (!navigator.geolocation) {
+      setIsLoading(false);
+      return;
+    }
 
     const handleSuccess = (position: GeolocationPosition) => {
-      if (!mounted) return;
-      setState((prev) => ({
-        ...prev,
-        coords: {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        },
-        isLoading: false,
-      }));
+      setCoords({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      });
+      setIsLoading(false);
     };
 
-    const handleError = (error: GeolocationPositionError) => {
-      if (!mounted) return;
-      setState((prev) => ({
-        ...prev,
-        error: error.message,
-        isLoading: false,
-      }));
+    const handleError = () => {
+      setCoords({ latitude: null, longitude: null });
+      setIsLoading(false);
     };
 
-    const checkPermissionAndGetLocation = async () => {
+    const options: PositionOptions = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0,
+    };
+
+    const requestLocation = () => {
+      navigator.geolocation.getCurrentPosition(
+        handleSuccess,
+        handleError,
+        options,
+      );
+    };
+
+    const checkPermission = async () => {
       try {
         const permission = await navigator.permissions.query({
           name: "geolocation",
         });
 
-        setState((prev) => ({
-          ...prev,
-          permissionStatus: permission.state,
-        }));
-
         if (permission.state === "granted") {
-          navigator.geolocation.getCurrentPosition(handleSuccess, handleError, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0,
-          });
+          requestLocation();
         } else {
-          setState((prev) => ({ ...prev, isLoading: false }));
+          requestLocation();
         }
-      } catch (error: unknown) {
-        setState((prev) => ({
-          ...prev,
-          error:
-            error instanceof Error
-              ? error.message
-              : "Location permission check failed",
-          isLoading: false,
-        }));
+
+        permission.addEventListener("change", () => {
+          if (permission.state === "granted") {
+            requestLocation();
+          } else {
+            setCoords({ latitude: null, longitude: null });
+            setIsLoading(false);
+          }
+        });
+      } catch (error) {
+        console.error("Error checking geolocation permission:", error);
+        requestLocation();
       }
     };
 
-    void checkPermissionAndGetLocation();
-
-    return () => {
-      mounted = false;
-    };
+    void checkPermission();
   }, []);
 
+  const value = {
+    coords,
+    isLoading,
+    error: null,
+  };
+
   return (
-    <LocationContext.Provider value={state}>
+    <LocationContext.Provider value={value}>
       {children}
     </LocationContext.Provider>
   );
