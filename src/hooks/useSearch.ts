@@ -15,7 +15,11 @@ export const useSearch = ({ query, size = 9 }: UseSearchProps) => {
   return useQuery({
     queryKey: [QUERY_KEYS.SEARCH, query, coords?.latitude, coords?.longitude],
     queryFn: () => searchPlacesClient(query, size, coords),
-    enabled: !isLoadingLocation && query.length > 0,
+    enabled:
+      !isLoadingLocation &&
+      query.length > 0 &&
+      coords.latitude !== null &&
+      coords.longitude !== null,
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
   });

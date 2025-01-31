@@ -17,6 +17,10 @@ export const useCategoryPlaces = ({
   return useQuery({
     queryKey: [QUERY_KEYS.CATEGORIES, query, coords],
     queryFn: () => searchPlacesClient(query, 6, coords),
-    enabled: enabled && !isLoadingLocation,
+    enabled:
+      enabled &&
+      !isLoadingLocation &&
+      coords.latitude !== null &&
+      coords.longitude !== null,
   });
 };

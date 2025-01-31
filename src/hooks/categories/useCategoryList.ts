@@ -19,7 +19,10 @@ export const useCategoryList = (): UseCategoryListResponse[] => {
     queries: HOME_CATEGORIES.map(({ query }) => ({
       queryKey: [QUERY_KEYS.CATEGORIES, query, coords],
       queryFn: () => searchPlacesClient(query, 6, coords),
-      enabled: !isLoadingLocation,
+      enabled:
+        !isLoadingLocation &&
+        coords.latitude !== null &&
+        coords.longitude !== null,
     })),
   });
 
