@@ -14,7 +14,9 @@ export const ListMetadata = ({
   <div className="flex items-end justify-between pt-3 sm:pt-0">
     <div className="inline-flex items-center rounded-md text-sm text-muted-foreground">
       <MapPin className="mr-1.5 size-3.5" />
-      <span>{placesCount} places</span>
+      <span>
+        {placesCount} place{placesCount !== 1 ? "s" : ""}
+      </span>
     </div>
 
     {showPrivacyBadge && (

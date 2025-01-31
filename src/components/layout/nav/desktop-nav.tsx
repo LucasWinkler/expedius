@@ -69,9 +69,12 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium">{session.user.name}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <Link
+                      href={`/users/${session.user.username}`}
+                      className="text-xs text-muted-foreground"
+                    >
                       @{session.user.username}
-                    </p>
+                    </Link>
                   </div>
                 </div>
                 <DropdownMenuSeparator />
