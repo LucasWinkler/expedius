@@ -16,6 +16,7 @@ export const ProfileStats = ({
       <Link
         href={`/u/${username}/lists`}
         className="text-center transition-colors hover:text-primary"
+        aria-label={`View ${username}'s lists`}
       >
         <p className="text-2xl font-bold">{totalLists}</p>
         <p className="text-sm text-muted-foreground group-hover:text-primary/75">
@@ -25,6 +26,7 @@ export const ProfileStats = ({
       <Link
         href={`/u/${username}/likes`}
         className="text-center transition-colors hover:text-primary"
+        aria-label={`View ${username}'s likes`}
       >
         <p className="text-2xl font-bold">{totalLikes}</p>
         <p className="text-sm text-muted-foreground group-hover:text-primary/75">

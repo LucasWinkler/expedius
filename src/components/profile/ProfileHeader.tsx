@@ -47,7 +47,7 @@ export const ProfileHeader = ({
   };
 
   return (
-    <div className="relative bg-background">
+    <header>
       <div
         className="relative h-48 w-full"
         style={{
@@ -55,31 +55,31 @@ export const ProfileHeader = ({
         }}
       >
         {isOwnProfile && (
-          <ProfileActions
-            colour={user.colour}
-            onEdit={() => setEditingUser(user)}
-            onShare={handleShare}
-          />
+          <div className="container mx-auto flex justify-end gap-2 px-4 pt-6 md:max-w-3xl">
+            <ProfileActions
+              colour={user.colour}
+              onEdit={() => setEditingUser(user)}
+              onShare={handleShare}
+            />
+          </div>
         )}
       </div>
 
-      <div className="container mx-auto max-w-3xl px-4">
-        <div className="relative -mt-24 flex flex-col items-center">
-          <ProfileAvatar
-            image={user.image}
-            name={user.name}
-            username={user.username}
-          />
-          <ProfileInfo name={user.name} username={user.username} />
-          {user.bio && (
-            <p className="mt-4 text-center text-muted-foreground">{user.bio}</p>
-          )}
-          <ProfileStats
-            totalLists={totalLists}
-            totalLikes={totalLikes}
-            username={user.username}
-          />
-        </div>
+      <div className="container relative mx-auto -mt-24 flex flex-col items-center px-4 md:max-w-3xl">
+        <ProfileAvatar
+          image={user.image}
+          name={user.name}
+          username={user.username}
+        />
+        <ProfileInfo name={user.name} username={user.username} />
+        {user.bio && (
+          <p className="mt-4 text-center text-muted-foreground">{user.bio}</p>
+        )}
+        <ProfileStats
+          totalLists={totalLists}
+          totalLikes={totalLikes}
+          username={user.username}
+        />
       </div>
 
       {editingUser && (
@@ -89,6 +89,6 @@ export const ProfileHeader = ({
           onSuccess={handleEditSuccess}
         />
       )}
-    </div>
+    </header>
   );
 };

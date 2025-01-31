@@ -33,7 +33,10 @@ export const ListCard = ({
     : "text-background";
 
   return (
-    <Card className="relative overflow-hidden border-0 bg-muted/50 transition-all duration-200 ease-out hover:shadow-md">
+    <Card
+      role="listitem"
+      className="relative overflow-hidden border-0 bg-muted/50 transition-all duration-200 ease-out hover:shadow-md"
+    >
       <div
         className="absolute inset-0 bg-gradient-to-br from-background to-muted"
         style={
@@ -52,7 +55,7 @@ export const ListCard = ({
         />
       </div>
 
-      <div className="relative flex flex-col xs:flex-row">
+      <article className="relative flex flex-col xs:flex-row">
         <Link
           href={`/u/${username}/lists/${list.id}`}
           className="relative aspect-[4/3] overflow-hidden rounded-xl p-5 xs:w-48 sm:w-60 md:w-72"
@@ -72,24 +75,22 @@ export const ListCard = ({
         </Link>
 
         <div className="relative flex flex-1 flex-col justify-between p-4">
-          <div>
-            <div className="flex items-start justify-between gap-2">
-              <Link
-                href={`/u/${username}/lists/${list.id}`}
-                className="group flex items-start gap-2"
-              >
-                <ListTitle name={list.name} />
-              </Link>
+          <div className="flex items-start justify-between gap-2">
+            <Link
+              href={`/u/${username}/lists/${list.id}`}
+              className="group flex items-start gap-2"
+            >
+              <ListTitle name={list.name} />
+            </Link>
 
-              {isOwnProfile && (
-                <ListActions
-                  list={list}
-                  username={username}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                />
-              )}
-            </div>
+            {isOwnProfile && (
+              <ListActions
+                list={list}
+                username={username}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
+            )}
           </div>
 
           <ListMetadata
@@ -98,7 +99,7 @@ export const ListCard = ({
             showPrivacyBadge={showPrivacyBadge}
           />
         </div>
-      </div>
+      </article>
     </Card>
   );
 };

@@ -15,7 +15,7 @@ export const ClearButton = memo(({ onClick }: ClearButtonProps) => (
     className="absolute right-[5.5rem] top-1/2 -translate-y-1/2 p-0 text-muted-foreground transition-all duration-200 ease-out hover:text-foreground"
   >
     <XCircle className="h-4 w-4" />
-    <span className="sr-only">Clear search</span>
+    <span className="sr-only">Clear search input</span>
   </Button>
 ));
 

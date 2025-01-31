@@ -47,7 +47,7 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
     ) ?? [];
 
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-8">
+    <div className="container mx-auto px-4 py-8 md:max-w-3xl">
       <Tabs
         defaultValue="lists"
         onValueChange={(value) => setActiveTab(value as "lists" | "likes")}
@@ -124,6 +124,7 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
 
         <TabsContent value="likes">Likes... eventually</TabsContent>
       </Tabs>
+
       {isOwnProfile && activeTab === "lists" && (
         <ListCreateDialog
           open={isCreateDialogOpen}

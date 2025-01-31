@@ -67,7 +67,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const publicProfile = profile as PublicProfileData;
 
   return (
-    <>
+    <article>
       <ProfileHeader
         user={publicProfile.user}
         isOwnProfile={publicProfile.isOwnProfile}
@@ -78,6 +78,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         username={publicProfile.user.username}
         isOwnProfile={publicProfile.isOwnProfile}
       />
-    </>
+    </article>
   );
 }

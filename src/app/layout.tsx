@@ -22,10 +22,10 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} bg-background font-sans antialiased`}>
         <Providers>{children}</Providers>
         <Toaster
-          position="top-right"
+          position="bottom-right"
           expand={true}
           richColors={true}
           closeButton={true}

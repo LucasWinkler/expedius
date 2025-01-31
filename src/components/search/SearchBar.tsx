@@ -27,7 +27,13 @@ const searchSchema = z.object({
 
 type SearchFormValues = z.infer<typeof searchSchema>;
 
-export const SearchBar = ({ initialQuery = "" }: { initialQuery?: string }) => {
+export const SearchBar = ({
+  initialQuery = "",
+  className,
+}: {
+  initialQuery?: string;
+  className?: string;
+}) => {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -55,7 +61,7 @@ export const SearchBar = ({ initialQuery = "" }: { initialQuery?: string }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form className={className} onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="query"

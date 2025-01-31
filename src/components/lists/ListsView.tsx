@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 import {
   Pagination,
@@ -41,6 +42,8 @@ export const ListsView = ({
   );
   const [deletingList, setDeletingList] =
     useState<DbListWithPlacesCount | null>(null);
+
+  const hasLists = lists.length > 0;
 
   const createPageLink = (page: number) => `/u/${username}/lists?page=${page}`;
 
@@ -101,72 +104,81 @@ export const ListsView = ({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 space-y-2">
+      <header className="mb-8 space-y-2">
         <h1 className="text-3xl font-bold">
           {isOwnProfile ? "My Lists" : `${username}'s Lists`}
         </h1>
         <p className="mt-1 text-muted-foreground">
           {totalLists} List{totalLists === 1 ? "" : "s"}
         </p>
-      </div>
+      </header>
 
-      <div className="mb-6 flex items-center justify-between">
-        <div>Search and filtering here later</div>
-        {isOwnProfile && (
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="mr-2 size-4" />
-            New List
-          </Button>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        {lists.map((list) => (
-          <ListCard
-            key={list.id}
-            list={list}
-            username={username}
-            isOwnProfile={isOwnProfile}
-            showPrivacyBadge={isOwnProfile}
-            onEdit={() => setEditingList(list)}
-            onDelete={() => setDeletingList(list)}
-          />
-        ))}
-      </div>
-
-      {lists.length === 0 && (
-        <p className="py-8 text-center text-muted-foreground">
-          No lists created yet.
-        </p>
-      )}
-
-      {totalPages > 1 && (
-        <div className="mt-8 flex justify-center">
-          <Pagination>
-            <PaginationContent>
-              <PaginationPrevious
-                href={createPageLink(currentPage - 1)}
-                aria-disabled={currentPage <= 1}
-                tabIndex={currentPage <= 1 ? -1 : 0}
-                className={
-                  currentPage <= 1 ? "pointer-events-none opacity-50" : ""
-                }
-              />
-              {renderPaginationItems()}
-              <PaginationNext
-                href={createPageLink(currentPage + 1)}
-                aria-disabled={currentPage >= totalPages}
-                tabIndex={currentPage >= totalPages ? -1 : 0}
-                className={
-                  currentPage >= totalPages
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              />
-            </PaginationContent>
-          </Pagination>
+      <section>
+        <div className="mb-6 flex items-center justify-between">
+          <div className="rounded-md border p-3">
+            Search and filtering here later
+          </div>
+          {isOwnProfile && (
+            <Button onClick={() => setIsCreateDialogOpen(true)}>
+              <Plus className="mr-2 size-4" />
+              New List
+            </Button>
+          )}
         </div>
-      )}
+
+        <ul
+          className={cn(
+            "mb-8",
+            hasLists && "grid grid-cols-1 gap-6 xl:grid-cols-2",
+          )}
+        >
+          {hasLists ? (
+            lists.map((list) => (
+              <ListCard
+                key={list.id}
+                list={list}
+                username={username}
+                isOwnProfile={isOwnProfile}
+                showPrivacyBadge={isOwnProfile}
+                onEdit={() => setEditingList(list)}
+                onDelete={() => setDeletingList(list)}
+              />
+            ))
+          ) : (
+            <li className="py-8 text-center text-muted-foreground">
+              No lists created yet.
+            </li>
+          )}
+        </ul>
+
+        {totalPages > 1 && (
+          <nav aria-label="Pagination">
+            <Pagination>
+              <PaginationContent>
+                <PaginationPrevious
+                  href={createPageLink(currentPage - 1)}
+                  aria-disabled={currentPage <= 1}
+                  tabIndex={currentPage <= 1 ? -1 : 0}
+                  className={
+                    currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                  }
+                />
+                {renderPaginationItems()}
+                <PaginationNext
+                  href={createPageLink(currentPage + 1)}
+                  aria-disabled={currentPage >= totalPages}
+                  tabIndex={currentPage >= totalPages ? -1 : 0}
+                  className={
+                    currentPage >= totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
+              </PaginationContent>
+            </Pagination>
+          </nav>
+        )}
+      </section>
 
       <ListCreateDialog
         open={isCreateDialogOpen}

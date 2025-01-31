@@ -27,6 +27,7 @@ export const useSignUpForm = () => {
       name: "",
       username: "",
       isPublic: false,
+      image: undefined,
     },
   });
 
@@ -68,16 +69,15 @@ export const useSignUpForm = () => {
     setIsLoading(true);
     try {
       let imageUrl: string | undefined;
-      if (data.image?.[0]) {
-        const uploadResult = await startUpload([data.image[0]]);
+      if (data.image instanceof File) {
+        const uploadResult = await startUpload([data.image]);
         if (!uploadResult) {
-          toast.error("Image upload failed", {
-            description: "Please try uploading your profile image again.",
-          });
+          toast.error("Failed to upload profile image");
           return;
         }
         imageUrl = uploadResult[0].appUrl;
       }
+
       await signUp.email(
         {
           email: data.email,

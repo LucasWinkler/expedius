@@ -99,7 +99,6 @@ export const SaveToListDropdown = ({
       {
         onSuccess: () => {
           onOpenChange(false);
-          toast.success("Lists updated successfully");
         },
         onError: (error) => {
           toast.error("Failed to update lists", {

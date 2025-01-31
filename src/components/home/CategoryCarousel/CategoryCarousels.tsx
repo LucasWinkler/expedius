@@ -7,11 +7,11 @@ import { LocationProvider } from "@/contexts/LocationContext";
 export const CategoryCarousels = () => {
   return (
     <LocationProvider>
-      <div className="space-y-12">
+      <section className="container mx-auto space-y-12 px-4 py-8 md:py-12">
         {FEATURED_SECTIONS.map(({ title, query }) => {
           return <CategoryCarousel key={title} title={title} query={query} />;
         })}
-      </div>
+      </section>
     </LocationProvider>
   );
 };

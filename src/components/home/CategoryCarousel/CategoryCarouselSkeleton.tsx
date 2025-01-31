@@ -28,6 +28,15 @@ export const CategoryCarouselSkeleton = () => {
           <CategoryCarouselSkeletonCard />
         </div>
       </div>
+      <div className="flex justify-center gap-1 py-2">
+        <Skeleton className="h-2 w-4 rounded-full sm:h-3 sm:w-6" />
+        {Array.from({ length: 2 }).map((_, index) => (
+          <Skeleton
+            key={index}
+            className="h-2 w-2 rounded-full sm:h-3 sm:w-3"
+          />
+        ))}
+      </div>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import { CardTitle } from "@/components/ui/card";
 import { ArrowUpRight } from "lucide-react";
 
 interface ListTitleProps {
@@ -6,10 +5,8 @@ interface ListTitleProps {
 }
 
 export const ListTitle = ({ name }: ListTitleProps) => (
-  <div className="flex items-start gap-2">
-    <CardTitle className="line-clamp-1 text-lg group-hover:underline group-hover:underline-offset-4">
-      {name}
-    </CardTitle>
+  <h2 className="line-clamp-1 flex items-start gap-2 text-lg font-semibold leading-none tracking-tight group-hover:underline group-hover:underline-offset-4">
+    {name}
     <ArrowUpRight className="size-4 text-muted-foreground transition-all duration-300 group-hover:rotate-45 group-hover:text-foreground peer-hover:rotate-45 peer-hover:text-foreground" />
-  </div>
+  </h2>
 );

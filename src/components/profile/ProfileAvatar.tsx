@@ -12,17 +12,15 @@ export const ProfileAvatar = ({
   username,
 }: ProfileAvatarProps) => {
   return (
-    <div className="relative size-40 overflow-hidden rounded-full border-4 border-background bg-muted">
-      <Avatar className="size-full">
-        <AvatarImage
-          className="object-cover"
-          src={image ?? undefined}
-          alt={name ?? username}
-        />
-        <AvatarFallback className="text-2xl">
-          {name?.[0] ?? username[0]}
-        </AvatarFallback>
-      </Avatar>
-    </div>
+    <Avatar className="size-40 overflow-hidden rounded-full border-4 border-background bg-muted">
+      <AvatarImage
+        className="object-cover"
+        src={image ?? undefined}
+        alt={name ?? username}
+      />
+      <AvatarFallback className="text-2xl">
+        {name?.[0] ?? username[0]}
+      </AvatarFallback>
+    </Avatar>
   );
 };
