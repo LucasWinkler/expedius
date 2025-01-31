@@ -23,6 +23,8 @@ export const SignUpForm = () => {
     altActionLink,
   } = useSignUpForm();
 
+  const isDisabled = isUploading || isLoading;
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter" && !e.shiftKey) {
@@ -58,10 +60,14 @@ export const SignUpForm = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-4">
             <StepIndicator currentStep={step} />
-            {step === "credentials" && <CredentialsStep form={form} />}
-            {step === "profile" && <ProfileStep form={form} />}
+            {step === "credentials" && (
+              <CredentialsStep isDisabled={isDisabled} form={form} />
+            )}
+            {step === "profile" && (
+              <ProfileStep isDisabled={isDisabled} form={form} />
+            )}
             {step === "final" && (
-              <FinalStep form={form} isUploading={isUploading} />
+              <FinalStep form={form} isDisabled={isDisabled} />
             )}
           </div>
 
@@ -72,6 +78,7 @@ export const SignUpForm = () => {
                 variant="outline"
                 onClick={prevStep}
                 className="w-[120px]"
+                disabled={isDisabled}
               >
                 <ArrowLeft className="mr-2 size-4" />
                 Back
@@ -79,12 +86,8 @@ export const SignUpForm = () => {
             )}
 
             {step === "final" ? (
-              <Button
-                type="submit"
-                className="w-[120px]"
-                disabled={isLoading || isUploading}
-              >
-                {isLoading || isUploading ? (
+              <Button type="submit" className="w-[120px]" disabled={isDisabled}>
+                {isDisabled ? (
                   <>
                     <Loader2 className="mr-2 size-4 animate-spin" />
                     {isUploading ? "Uploading..." : "Creating..."}
@@ -98,7 +101,7 @@ export const SignUpForm = () => {
                 type="button"
                 onClick={(e) => void nextStep(e)}
                 className="w-[120px]"
-                disabled={isLoading}
+                disabled={isDisabled}
               >
                 Next
                 <ArrowRight className="ml-2 size-4" />

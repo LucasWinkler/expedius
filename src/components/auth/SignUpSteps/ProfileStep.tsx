@@ -14,9 +14,10 @@ import { usernameSchema } from "@/lib/validations/user";
 
 type ProfileStepProps = {
   form: UseFormReturn<SignUpInput>;
+  isDisabled: boolean;
 };
 
-export const ProfileStep = ({ form }: ProfileStepProps) => {
+export const ProfileStep = ({ form, isDisabled }: ProfileStepProps) => {
   return (
     <>
       <FormField
@@ -30,6 +31,7 @@ export const ProfileStep = ({ form }: ProfileStepProps) => {
                 {...field}
                 autoComplete="name"
                 placeholder="Enter your full name"
+                disabled={isDisabled}
               />
             </FormControl>
             <FormMessage />
@@ -49,6 +51,7 @@ export const ProfileStep = ({ form }: ProfileStepProps) => {
                 schema={usernameSchema}
                 type="username"
                 placeholder="Choose a username"
+                disabled={isDisabled}
               />
             </FormControl>
             <FormDescription>

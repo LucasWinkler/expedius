@@ -14,9 +14,10 @@ import { PasswordRequirements } from "./PasswordRequirements";
 
 type CredentialsStepProps = {
   form: UseFormReturn<SignUpInput>;
+  isDisabled: boolean;
 };
 
-export const CredentialsStep = ({ form }: CredentialsStepProps) => {
+export const CredentialsStep = ({ form, isDisabled }: CredentialsStepProps) => {
   const password = useWatch({
     control: form.control,
     name: "password",
@@ -37,6 +38,7 @@ export const CredentialsStep = ({ form }: CredentialsStepProps) => {
                 type="email"
                 autoComplete="email"
                 placeholder="Enter your email"
+                disabled={isDisabled}
               />
             </FormControl>
             <FormMessage />
@@ -54,6 +56,7 @@ export const CredentialsStep = ({ form }: CredentialsStepProps) => {
                 {...field}
                 autoComplete="new-password"
                 placeholder="Create a password"
+                disabled={isDisabled}
               />
             </FormControl>
             <PasswordRequirements password={password} />
@@ -71,6 +74,7 @@ export const CredentialsStep = ({ form }: CredentialsStepProps) => {
                 {...field}
                 autoComplete="new-password"
                 placeholder="Confirm your password"
+                disabled={isDisabled}
               />
             </FormControl>
             <FormMessage />

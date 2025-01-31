@@ -13,10 +13,10 @@ import type { SignUpInput } from "@/lib/validations/auth";
 
 type FinalStepProps = {
   form: UseFormReturn<SignUpInput>;
-  isUploading: boolean;
+  isDisabled: boolean;
 };
 
-export const FinalStep = ({ form, isUploading }: FinalStepProps) => {
+export const FinalStep = ({ form, isDisabled }: FinalStepProps) => {
   return (
     <>
       <FormField
@@ -29,7 +29,7 @@ export const FinalStep = ({ form, isUploading }: FinalStepProps) => {
               <FileInput
                 onChange={(files) => onChange(files)}
                 onClear={() => onChange(undefined)}
-                disabled={isUploading}
+                disabled={isDisabled}
                 variant="square"
               />
             </FormControl>
@@ -55,7 +55,7 @@ export const FinalStep = ({ form, isUploading }: FinalStepProps) => {
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  disabled={isUploading}
+                  disabled={isDisabled}
                 />
               </FormControl>
             </div>
