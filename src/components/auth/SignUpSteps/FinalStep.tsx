@@ -45,20 +45,20 @@ export const FinalStep = ({ form, isUploading }: FinalStepProps) => {
         control={form.control}
         name="isPublic"
         render={({ field }) => (
-          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <FormLabel className="text-base">Public Profile</FormLabel>
+          <FormItem>
+            <FormLabel>Profile Visibility</FormLabel>
+            <div className="flex items-center justify-between gap-2 rounded-lg border p-4">
               <FormDescription>
-                Allow others to view your profile and public lists
+                Allow others to view your profile
               </FormDescription>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  disabled={isUploading}
+                />
+              </FormControl>
             </div>
-            <FormControl>
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-                disabled={isUploading}
-              />
-            </FormControl>
           </FormItem>
         )}
       />

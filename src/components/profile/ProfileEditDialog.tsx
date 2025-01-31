@@ -209,10 +209,9 @@ export const ProfileEditDialog = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Profile Visibility</FormLabel>
-                    <div className="flex items-center justify-between rounded-lg border p-4">
+                    <div className="flex items-center justify-between gap-2 rounded-lg border p-4">
                       <FormDescription>
-                        Allow others to view your profile, public lists and
-                        likes
+                        Allow others to view your profile
                       </FormDescription>
                       <FormControl>
                         <Switch
