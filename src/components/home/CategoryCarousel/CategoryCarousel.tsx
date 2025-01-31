@@ -17,13 +17,19 @@ import { useCarouselState } from "@/hooks/useCarouselState";
 import { useCategoryPlaces } from "@/hooks/categories";
 import { LikeButton } from "@/components/places/LikeButton";
 import { SaveToListButton } from "@/components/places/SaveToListButton";
+import { LucideIcon } from "lucide-react";
 
 interface CategoryCarouselProps {
   title: string;
   query: string;
+  icon: LucideIcon;
 }
 
-export const CategoryCarousel = ({ title, query }: CategoryCarouselProps) => {
+export const CategoryCarousel = ({
+  title,
+  query,
+  icon: Icon,
+}: CategoryCarouselProps) => {
   const { currentSnapPoint, snapPointCount, api, setApi } = useCarouselState();
 
   const { ref, inView } = useInView({
@@ -39,7 +45,7 @@ export const CategoryCarousel = ({ title, query }: CategoryCarouselProps) => {
 
   return (
     <section className="space-y-2" ref={ref}>
-      <CategoryHeader title={title} />
+      <CategoryHeader title={title} icon={Icon} />
       {isPending ? (
         <CategoryCarouselSkeleton />
       ) : isError || !data?.places?.length ? (

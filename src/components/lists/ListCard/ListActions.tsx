@@ -40,7 +40,7 @@ export const ListActions = ({
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" className="w-48">
       <DropdownMenuItem asChild>
-        <Link href={`/u/${username}/lists/${list.id}`}>
+        <Link href={`/u/${username}/lists/${list.slug}`}>
           <ExternalLink className="mr-2 size-4" />
           Open List
         </Link>

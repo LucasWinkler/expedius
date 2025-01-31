@@ -1,5 +1,5 @@
 import { useQueries } from "@tanstack/react-query";
-import { FEATURED_SECTIONS, QUERY_KEYS } from "@/constants";
+import { HOME_CATEGORIES, QUERY_KEYS } from "@/constants";
 import { searchPlacesClient } from "@/lib/search";
 import { useLocation } from "@/contexts/LocationContext";
 import type { PlaceSearchResponse } from "@/types";
@@ -16,7 +16,7 @@ export const useCategoryList = (): UseCategoryListResponse[] => {
   const { coords, isLoading: isLoadingLocation } = useLocation();
 
   const queries = useQueries({
-    queries: FEATURED_SECTIONS.map(({ query }) => ({
+    queries: HOME_CATEGORIES.map(({ query }) => ({
       queryKey: [QUERY_KEYS.CATEGORIES, query, coords],
       queryFn: () => searchPlacesClient(query, 6, coords),
       enabled: !isLoadingLocation,
@@ -24,8 +24,8 @@ export const useCategoryList = (): UseCategoryListResponse[] => {
   });
 
   return queries.map(({ data, isPending, isError }, index) => ({
-    title: FEATURED_SECTIONS[index].title,
-    query: FEATURED_SECTIONS[index].query,
+    title: HOME_CATEGORIES[index].title,
+    query: HOME_CATEGORIES[index].query,
     response: data ?? null,
     isPending,
     isError,

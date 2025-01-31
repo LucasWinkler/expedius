@@ -57,7 +57,7 @@ export const ListCard = ({
 
       <article className="relative flex flex-col xs:flex-row">
         <Link
-          href={`/u/${username}/lists/${list.id}`}
+          href={`/u/${username}/lists/${list.slug}`}
           className="relative aspect-[4/3] overflow-hidden rounded-xl p-5 xs:w-48 sm:w-60 md:w-72"
         >
           {!imageLoaded && list.image && (
@@ -77,7 +77,7 @@ export const ListCard = ({
         <div className="relative flex flex-1 flex-col justify-between p-4">
           <div className="flex items-start justify-between gap-2">
             <Link
-              href={`/u/${username}/lists/${list.id}`}
+              href={`/u/${username}/lists/${list.slug}`}
               className="group flex items-start gap-2"
             >
               <ListTitle name={list.name} />

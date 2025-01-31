@@ -11,10 +11,12 @@ export const Nav = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setHasScrolled(window.scrollY > 10);
+      setHasScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -22,12 +24,12 @@ export const Nav = () => {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full bg-background/95 backdrop-blur transition-[border-color] duration-200 supports-[backdrop-filter]:bg-background/60 ${
+      className={`sticky top-0 z-50 h-16 w-full bg-background/95 backdrop-blur transition-[border-color,background-color] duration-200 supports-[backdrop-filter]:bg-background/60 ${
         hasScrolled ? "border-b" : "border-b border-transparent"
       }`}
       role="banner"
     >
-      <div className="container mx-auto flex h-14 items-center px-4">
+      <div className="container mx-auto flex h-full items-center px-4">
         <DesktopNav session={data} isPending={isPending} />
         <MobileNav session={data} isPending={isPending} />
       </div>
