@@ -10,9 +10,28 @@ type DiscoverPageProps = {
 
 export const generateMetadata = async ({ searchParams }: DiscoverPageProps) => {
   const query = (await searchParams).q;
-  if (!query) return { title: "Start discovering" };
+  if (!query)
+    return {
+      title: "Start discovering",
+      description:
+        "Search near you or anywhere in the world. Find the perfect spots for your next adventure.",
+      openGraph: {
+        title: "Start discovering - PoiToGo",
+        description:
+          "Search near you or anywhere in the world. Find the perfect spots for your next adventure.",
+      },
+    };
 
-  return { title: `Discover ${query}` };
+  return {
+    title: `Discover ${query}`,
+    description:
+      "Search near you or anywhere in the world. Find the perfect spots for your next adventure.",
+    openGraph: {
+      title: `Discover ${query} - PoiToGo`,
+      description:
+        "Search near you or anywhere in the world. Find the perfect spots for your next adventure.",
+    },
+  };
 };
 
 const DiscoverPage = async ({ searchParams }: DiscoverPageProps) => {

@@ -21,6 +21,11 @@ export const generateMetadata = async ({
   if (!validated.success) {
     return {
       title: "Profile not found",
+      description: "The PoiToGo profile you are looking for does not exist.",
+      openGraph: {
+        title: "Profile not found",
+        description: "The PoiToGo profile you are looking for does not exist.",
+      },
     };
   }
 
@@ -30,6 +35,11 @@ export const generateMetadata = async ({
   if (!profile) {
     return {
       title: "Profile not found",
+      description: "The PoiToGo profile you are looking for does not exist.",
+      openGraph: {
+        title: "Profile not found",
+        description: "The PoiToGo profile you are looking for does not exist.",
+      },
     };
   }
 
@@ -38,12 +48,23 @@ export const generateMetadata = async ({
   const privateProfileTitle = `Private Profile (@${username})`;
   const publicProfileTitle = `${name} (@${username})`;
 
+  const title = isOwnProfile
+    ? `${name} (@${username})`
+    : isPublic
+      ? publicProfileTitle
+      : privateProfileTitle;
+
   return {
-    title: isOwnProfile
-      ? `${name} (@${username})`
-      : isPublic
-        ? publicProfileTitle
-        : privateProfileTitle,
+    title,
+    description: isPublic
+      ? `Check out ${name}'s curated lists and favourite places on PoiToGo`
+      : "This profile is private",
+    openGraph: {
+      title,
+      description: isPublic
+        ? `Check out ${name}'s curated lists and favourite places on PoiToGo`
+        : "This profile is private",
+    },
   };
 };
 

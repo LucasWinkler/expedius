@@ -4,7 +4,13 @@ import { CategoryCard } from "@/components/categories/CategoryCard";
 
 export const metadata: Metadata = {
   title: "Browse Categories",
-  description: "Explore places by category",
+  description:
+    "Explore places by category - restaurants, cafes, bars, and more. Find the perfect spots in your area.",
+  openGraph: {
+    title: "Browse Categories - PoiToGo",
+    description:
+      "Explore places by category - restaurants, cafes, bars, and more. Find the perfect spots in your area.",
+  },
 };
 
 export default function CategoriesPage() {
