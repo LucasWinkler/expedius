@@ -135,6 +135,7 @@
 - [ ] Count of likes each place has
 - [ ] Filtering, sorting, and searching for lists
 - [ ] Searching for places in a list
+- [ ] Save search queries
 - [ ] Full authentication system
   - [ ] Password reset
   - [ ] Email verification
