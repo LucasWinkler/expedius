@@ -82,7 +82,7 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
                   <DropdownMenuItem key={label} asChild>
                     <Link
                       href={href(session.user.username)}
-                      className="flex cursor-pointer items-center gap-2"
+                      className="flex items-center gap-2"
                     >
                       <Icon className="h-4 w-4" />
                       <span>{label}</span>
@@ -90,10 +90,7 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuItem asChild>
-                  <Link
-                    href="/settings"
-                    className="flex cursor-pointer items-center gap-2"
-                  >
+                  <Link href="/settings" className="flex items-center gap-2">
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
                   </Link>
@@ -101,7 +98,7 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => void signOut()}
-                  className="flex cursor-pointer items-center gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
+                  className="flex items-center gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Sign out</span>
