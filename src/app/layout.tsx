@@ -13,14 +13,14 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: {
     template: "%s - PoiToGo",
-    default: "PoiToGo",
+    default: "Discover your next adventure - PoiToGo",
   },
   description:
     "Find and save your favourite places near you or anywhere in the world with PoiToGo. Create custom lists and share your public profile with others.",
   openGraph: {
     type: "website",
     url: "https://poitogo.vercel.app/",
-    title: "PoiToGo",
+    title: "Discover your next adventure - PoiToGo",
     description:
       "Find and save your favourite places near you or anywhere in the world with PoiToGo. Create custom lists and share your public profile with others.",
     siteName: "PoiToGo",
