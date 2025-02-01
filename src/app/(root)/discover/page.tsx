@@ -3,6 +3,7 @@ import SearchBar from "@/components/search/SearchBar";
 import { SearchResults } from "@/components/search/SearchResults";
 import SearchSkeleton from "@/components/search/SearchSkeleton";
 import { LocationProvider } from "@/contexts/LocationContext";
+import { createMetadata } from "@/lib/metadata";
 
 type DiscoverPageProps = {
   searchParams: Promise<{ q?: string }>;
@@ -10,28 +11,12 @@ type DiscoverPageProps = {
 
 export const generateMetadata = async ({ searchParams }: DiscoverPageProps) => {
   const query = (await searchParams).q;
-  if (!query)
-    return {
-      title: "Start discovering",
-      description:
-        "Search near you or anywhere in the world. Find the perfect spots for your next adventure.",
-      openGraph: {
-        title: "Start discovering - PoiToGo",
-        description:
-          "Search near you or anywhere in the world. Find the perfect spots for your next adventure.",
-      },
-    };
 
-  return {
-    title: `Discover ${query}`,
+  return createMetadata({
+    title: query ? `Discover ${query}` : "Start discovering",
     description:
       "Search near you or anywhere in the world. Find the perfect spots for your next adventure.",
-    openGraph: {
-      title: `Discover ${query} - PoiToGo`,
-      description:
-        "Search near you or anywhere in the world. Find the perfect spots for your next adventure.",
-    },
-  };
+  });
 };
 
 const DiscoverPage = async ({ searchParams }: DiscoverPageProps) => {

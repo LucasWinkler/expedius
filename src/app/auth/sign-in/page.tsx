@@ -1,18 +1,13 @@
 import { Suspense } from "react";
 import { SignInForm } from "@/components/auth/SignInForm";
 import AuthLoading from "../loading";
-import { Metadata } from "next";
+import { createMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = createMetadata({
   title: "Sign In",
   description:
     "Sign in to your PoiToGo account to access your saved places and lists.",
-  openGraph: {
-    title: "Sign In",
-    description:
-      "Sign in to your PoiToGo account to access your saved places and lists.",
-  },
-};
+});
 
 const SignInPage = () => {
   return (

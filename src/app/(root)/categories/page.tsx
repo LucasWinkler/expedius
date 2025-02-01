@@ -1,17 +1,12 @@
-import type { Metadata } from "next";
 import { ALL_CATEGORIES } from "@/constants";
 import { CategoryCard } from "@/components/categories/CategoryCard";
+import { createMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = createMetadata({
   title: "Browse Categories",
   description:
     "Explore places by category - restaurants, cafes, bars, and more. Find the perfect spots in your area.",
-  openGraph: {
-    title: "Browse Categories - PoiToGo",
-    description:
-      "Explore places by category - restaurants, cafes, bars, and more. Find the perfect spots in your area.",
-  },
-};
+});
 
 export default function CategoriesPage() {
   return (

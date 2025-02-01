@@ -6,6 +6,7 @@ import type { PublicProfileData } from "@/server/types/profile";
 import { profileParamsSchema } from "@/lib/validations/profile";
 import { ProfilePrivateView } from "@/components/profile/ProfilePrivateView";
 import { Metadata } from "next";
+import { createMetadata } from "@/lib/metadata";
 
 interface ProfilePageProps {
   params: Promise<{ username: string }>;
@@ -19,28 +20,20 @@ export const generateMetadata = async ({
   });
 
   if (!validated.success) {
-    return {
+    return createMetadata({
       title: "Profile not found",
       description: "The PoiToGo profile you are looking for does not exist.",
-      openGraph: {
-        title: "Profile not found",
-        description: "The PoiToGo profile you are looking for does not exist.",
-      },
-    };
+    });
   }
 
   const profile = await users.queries.getProfileMetadata(
     validated.data.username,
   );
   if (!profile) {
-    return {
+    return createMetadata({
       title: "Profile not found",
       description: "The PoiToGo profile you are looking for does not exist.",
-      openGraph: {
-        title: "Profile not found",
-        description: "The PoiToGo profile you are looking for does not exist.",
-      },
-    };
+    });
   }
 
   const { name, username, isPublic, isOwnProfile } = profile;
@@ -54,18 +47,12 @@ export const generateMetadata = async ({
       ? publicProfileTitle
       : privateProfileTitle;
 
-  return {
+  return createMetadata({
     title,
     description: isPublic
       ? `Check out ${name}'s curated lists and favourite places on PoiToGo`
       : "This profile is private",
-    openGraph: {
-      title,
-      description: isPublic
-        ? `Check out ${name}'s curated lists and favourite places on PoiToGo`
-        : "This profile is private",
-    },
-  };
+  });
 };
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
