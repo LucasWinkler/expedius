@@ -256,3 +256,25 @@ export const USER_NAV_ITEMS = [
     label: "Profile",
   },
 ] as const;
+
+export const PLACE_FILTERS = {
+  RADIUS: {
+    DEFAULT: 5000, // 5km radius
+    MIN: 0,
+    MAX: 50000,
+    STEP: 1000,
+    formatLabel: (value: number) => `${value / 1000}km`,
+  },
+  RATING: {
+    MIN: 0,
+    MAX: 5,
+    STEP: 0.5,
+    formatLabel: (value: number) => `${value}★`,
+  },
+} as const;
+
+export const FILTER_LABELS = {
+  radius: "Search radius",
+  rating: "Minimum rating",
+  openNow: "Show only open places",
+} as const;

@@ -1,6 +1,8 @@
 import type { Place, PlaceSearchResponse } from "@/types";
 import { getPlacePhotoUrl } from "./utils";
 import { toast } from "sonner";
+import { SearchFilters } from "@/hooks/useSearch";
+import { LocationCoords } from "@/contexts/LocationContext";
 
 const processPlacePhotos = async (places: Place[]): Promise<Place[]> => {
   try {
@@ -44,18 +46,19 @@ const processPlacePhotos = async (places: Place[]): Promise<Place[]> => {
 export async function searchPlacesClient(
   query: string,
   size: number,
-  coords?: { latitude: number | null; longitude: number | null },
+  coords: LocationCoords,
+  filters?: SearchFilters,
 ): Promise<PlaceSearchResponse | null> {
   try {
     const searchParams = new URLSearchParams({
       q: query,
+      minRating: filters?.minRating?.toString() || "",
+      openNow: filters?.openNow?.toString() || "",
+      radius: filters?.radius?.toString() || "",
       size: size.toString(),
+      lat: coords.latitude?.toString() || "",
+      lng: coords.longitude?.toString() || "",
     });
-
-    if (coords?.latitude && coords?.longitude) {
-      searchParams.append("lat", coords.latitude.toString());
-      searchParams.append("lng", coords.longitude.toString());
-    }
 
     const res = await fetch(`/api/places/search?${searchParams.toString()}`);
     if (!res.ok) {

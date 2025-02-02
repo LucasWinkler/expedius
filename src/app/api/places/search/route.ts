@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { env } from "@/env";
 import type { PlaceSearchResponse } from "@/types";
 import { withApiLimit } from "@/server/lib/rate-limit";
+import { PLACE_FILTERS } from "@/constants";
 
 const FIELD_MASK = [
   "places.id",
@@ -17,6 +18,7 @@ const placesCache = new Map<
   string,
   { data: PlaceSearchResponse; timestamp: number }
 >();
+
 const CACHE_DURATION = 24 * 3600000; // 24 hours
 
 export const GET = withApiLimit(async (request: Request) => {
@@ -25,16 +27,39 @@ export const GET = withApiLimit(async (request: Request) => {
   const size = searchParams.get("size") ?? "12";
   const lat = searchParams.get("lat");
   const lng = searchParams.get("lng");
+  const radius = searchParams.get("radius");
+  const minRating = searchParams.get("minRating");
+  const openNow = searchParams.get("openNow");
 
   if (!query) {
     return new NextResponse("Missing query parameter", { status: 400 });
   }
 
-  const cacheKey =
-    lat && lng
-      ? `search:${query}:${lat}:${lng}:${size}`
-      : `search:${query}:${size}`;
+  const parsedRadius = radius ? Number(radius) : PLACE_FILTERS.RADIUS.DEFAULT;
+  const validatedRadius = Math.min(
+    Math.max(parsedRadius, PLACE_FILTERS.RADIUS.MIN),
+    PLACE_FILTERS.RADIUS.MAX,
+  );
 
+  const parsedSize = Number(size);
+  const parsedMinRating = minRating
+    ? Math.min(
+        Math.max(Number(minRating), PLACE_FILTERS.RATING.MIN),
+        PLACE_FILTERS.RATING.MAX,
+      )
+    : undefined;
+  const parsedOpenNow = openNow === "true" ? true : undefined;
+
+  const cacheKeyParams = [
+    `query:${query}`,
+    `size:${parsedSize}`,
+    lat && `lat:${lat}`,
+    lng && `lng:${lng}`,
+    `radius:${validatedRadius}`,
+    ...(parsedMinRating ? [`minRating:${parsedMinRating}`] : []),
+    ...(parsedOpenNow ? [`openNow:${parsedOpenNow}`] : []),
+  ].filter(Boolean);
+  const cacheKey = `search:${cacheKeyParams.join(":")}`;
   const cachedPlaces = placesCache.get(cacheKey);
 
   if (cachedPlaces && Date.now() - cachedPlaces.timestamp < CACHE_DURATION) {
@@ -45,7 +70,9 @@ export const GET = withApiLimit(async (request: Request) => {
     const body = {
       textQuery: query,
       languageCode: "en",
-      pageSize: Number(size),
+      pageSize: parsedSize,
+      ...(parsedMinRating && { minRating: parsedMinRating }),
+      ...(parsedOpenNow !== undefined && { openNow: parsedOpenNow }),
       ...(lat && lng
         ? {
             locationBias: {
@@ -54,7 +81,7 @@ export const GET = withApiLimit(async (request: Request) => {
                   latitude: Number(lat),
                   longitude: Number(lng),
                 },
-                radius: 0,
+                radius: validatedRadius,
               },
             },
           }

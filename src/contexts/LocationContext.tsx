@@ -9,13 +9,15 @@ import {
 } from "react";
 
 interface LocationContextType {
-  coords: {
-    latitude: number | null;
-    longitude: number | null;
-  };
+  coords: LocationCoords;
   isLoading: boolean;
   error: string | null;
 }
+
+export type LocationCoords = {
+  latitude: number | null;
+  longitude: number | null;
+};
 
 const LocationContext = createContext<LocationContextType>({
   coords: {
