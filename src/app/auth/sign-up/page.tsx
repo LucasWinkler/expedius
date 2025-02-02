@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { SignUpForm } from "@/components/auth/SignUpForm";
-import AuthLoading from "../loading";
+import AuthLoading from "../../loading";
 import { createMetadata } from "@/lib/metadata";
 
 export const metadata = createMetadata({

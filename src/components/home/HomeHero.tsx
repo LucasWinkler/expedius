@@ -1,5 +1,5 @@
-import SearchBar from "@/components/search/SearchBar";
 import SearchSuggestions from "@/components/search/SearchSuggestions";
+import SearchBar from "../search/SearchBar";
 
 const HomeHero = () => {
   return (
