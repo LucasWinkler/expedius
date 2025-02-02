@@ -37,6 +37,8 @@
     "@uploadthing/react": "^7.1.5",
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.3",
+    "@vercel/analytics": "^1.4.1",
+    "@vercel/speed-insights": "^1.1.0",
     "better-auth": "^1.1.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

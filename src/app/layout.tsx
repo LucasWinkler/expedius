@@ -4,6 +4,8 @@ import "@/styles/globals.css";
 import { Toaster } from "sonner";
 import { Providers } from "@/providers";
 import { createMetadata } from "@/lib/metadata";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,6 +26,8 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
           closeButton={true}
           duration={3000}
         />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
