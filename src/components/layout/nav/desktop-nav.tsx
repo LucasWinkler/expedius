@@ -115,7 +115,7 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
                 <Link href="/auth/sign-in">Sign in</Link>
               </Button>
               <Button
-                className="bg-primary text-sm font-medium text-primary-foreground transition-all duration-200 hover:bg-foreground hover:text-background 2xl:h-10 2xl:text-base"
+                className="text-sm font-medium transition-all duration-200 2xl:h-10 2xl:text-base"
                 asChild
               >
                 <Link href="/auth/sign-up">Start exploring</Link>
