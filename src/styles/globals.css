@@ -134,6 +134,7 @@
 
 .animate-fade-up {
   animation: fade-up 0.5s ease forwards;
+  will-change: transform, opacity;
 }
 
 .bg-grid-white {

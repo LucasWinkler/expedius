@@ -12,22 +12,22 @@ import {
 } from "../ui/form";
 import { useEffect, useRef, useState } from "react";
 import { minQueryLength } from "@/constants";
-import { SearchInput } from "../ui/search-input";
+import { SearchInput } from "@/components/ui/search-input";
 import { useSearch } from "@/hooks/useSearch";
-import { Slider } from "../ui/slider";
-import { Switch } from "../ui/switch";
-import { Label } from "../ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { PLACE_FILTERS, FILTER_LABELS } from "@/constants";
 import { ChevronDown, X, Clock } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../ui/collapsible";
+} from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { ScrollArea, ScrollBar } from "../ui/scroll-area";
-import { useClickOutside } from "@/hooks/useClickOutside";
+import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useClickOutside } from "@/hooks";
 
 const searchSchema = z.object({
   query: z
