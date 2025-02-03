@@ -33,10 +33,11 @@ export const HomeFeatures = () => {
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-        {features.map(({ title, description, icon: Icon }) => (
+        {features.map(({ title, description, icon: Icon }, index) => (
           <div
             key={title}
-            className="group space-y-3 rounded-lg p-4 transition-colors hover:bg-muted/50"
+            className="animate-fade-up group space-y-3 rounded-lg p-4 opacity-0 transition-colors hover:bg-muted/50"
+            style={{ animationDelay: `${index * 100 + 500}ms` }}
           >
             <div className="inline-flex rounded-lg bg-primary/10 p-3 text-primary">
               <Icon className="size-6" />
