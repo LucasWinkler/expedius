@@ -14,6 +14,8 @@ const inter = Inter({
 
 export const metadata = createMetadata({});
 
+export const experimental_ppr = true;
+
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html lang="en">
