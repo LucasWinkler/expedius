@@ -10,7 +10,7 @@ import {
   FormItem,
   FormMessage,
 } from "../ui/form";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { minQueryLength } from "@/constants";
 import { SearchInput } from "../ui/search-input";
 import { useSearch } from "@/hooks/useSearch";
@@ -18,13 +18,16 @@ import { Slider } from "../ui/slider";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { PLACE_FILTERS, FILTER_LABELS } from "@/constants";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, X, Clock } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 const searchSchema = z.object({
   query: z
@@ -47,9 +50,22 @@ export const SearchBar = ({
   className,
   variant = "simple",
 }: SearchBarProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
   const { query: initialQuery, updateSearchParams } = useSearch();
   const [isFiltersOpen, setIsFiltersOpen] = useState(true);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useClickOutside(formRef, () => {
+    setIsPopupOpen(false);
+  });
+
+  useEffect(() => {
+    const savedHistory = localStorage.getItem("searchHistory");
+    if (savedHistory) {
+      setSearchHistory(JSON.parse(savedHistory));
+    }
+  }, []);
 
   const form = useForm<SearchFormValues>({
     resolver: zodResolver(searchSchema),
@@ -70,16 +86,46 @@ export const SearchBar = ({
         openNow: data.openNow,
       },
     });
+
+    if (!searchHistory.includes(data.query)) {
+      const newHistory = [data.query, ...searchHistory.slice(0, 14)];
+      localStorage.setItem("searchHistory", JSON.stringify(newHistory));
+      setSearchHistory(newHistory);
+    }
+
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    setIsPopupOpen(false);
   }
 
+  const handleHistoryItemClick = (query: string) => {
+    form.setValue("query", query);
+    form.handleSubmit(onSubmit)();
+    setIsPopupOpen(false);
+  };
+
+  const handleRemoveHistoryItem =
+    (query: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const newHistory = searchHistory.filter((item) => item !== query);
+      localStorage.setItem("searchHistory", JSON.stringify(newHistory));
+      setSearchHistory(newHistory);
+    };
+
   const handleClear = () => {
+    form.setFocus("query");
     form.reset({ query: "" });
-    inputRef.current?.focus();
   };
 
   return (
     <Form {...form}>
-      <form className={className} onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        ref={formRef}
+        className={cn("relative", className)}
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
         <FormField
           control={form.control}
           name="query"
@@ -89,13 +135,48 @@ export const SearchBar = ({
                 <SearchInput
                   placeholder="Search for places..."
                   onClear={handleClear}
+                  onFocus={() => setIsPopupOpen(true)}
+                  onClick={() => setIsPopupOpen(true)}
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="2xl:text-lg" />
+              <FormMessage />
             </FormItem>
           )}
         />
+
+        {isPopupOpen && searchHistory.length > 0 && (
+          <div className="absolute left-0 right-0 z-50 mt-2 rounded-lg border border-gray-200 bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b p-4">
+              <span className="text-sm font-medium">Recent Searches</span>
+            </div>
+            <ScrollArea className="flex h-[var(--radix-popover-content-available-height)] max-h-60 flex-col overflow-y-auto">
+              {searchHistory.map((item, index) => (
+                <div
+                  key={index}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleHistoryItemClick(item)}
+                  className="flex select-none items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                >
+                  <div className="flex flex-auto items-center gap-4">
+                    <Clock className="size-4 shrink-0 text-muted-foreground" />
+                    <span className="[word-break:break-word]">{item}</span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="self-center rounded-full border-none p-2 hover:bg-gray-300"
+                    onClick={(e) => handleRemoveHistoryItem(item)(e)}
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+              ))}
+              <ScrollBar orientation="vertical" />
+            </ScrollArea>
+          </div>
+        )}
 
         {variant === "advanced" && (
           <Collapsible
