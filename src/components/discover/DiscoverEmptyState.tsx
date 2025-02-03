@@ -21,7 +21,7 @@ const POPULAR_CATEGORIES = [
 export const DiscoverEmptyState = () => {
   const router = useRouter();
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
-  const [isTipsOpen, setIsTipsOpen] = useState(true);
+  const [isTipsOpen, setIsTipsOpen] = useState(false);
 
   const handleCategoryClick = (query: string) => {
     router.push(`/discover?q=${encodeURIComponent(query)}`, {
