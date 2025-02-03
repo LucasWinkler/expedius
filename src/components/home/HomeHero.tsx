@@ -3,7 +3,7 @@ import SearchBar from "../search/SearchBar";
 
 const HomeHero = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted pb-20 pt-12 sm:pb-32 sm:pt-24 2xl:pb-40 2xl:pt-32">
+    <section className="relative bg-gradient-to-b from-background to-muted pb-20 pt-12 sm:pb-32 sm:pt-24 2xl:pb-40 2xl:pt-32">
       <div className="container relative z-10 mx-auto px-4">
         <header className="mx-auto max-w-4xl text-center 2xl:max-w-5xl">
           <h1 className="animate-fade-up mx-auto bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl lg:text-7xl 2xl:text-8xl">
@@ -24,7 +24,7 @@ const HomeHero = () => {
           className="animate-fade-up mt-6 opacity-0 sm:mt-8 2xl:mt-10"
           style={{ animationDelay: "200ms" }}
         >
-          <div className="relative mx-auto max-w-2xl 2xl:max-w-3xl">
+          <div className="mx-auto max-w-2xl 2xl:max-w-3xl">
             <SearchBar />
           </div>
           <SearchSuggestions />
