@@ -44,6 +44,7 @@ export const PlaceCard = ({
                 src={placeImageFallback}
                 placeholder="blur"
                 alt=""
+                unoptimized
                 priority={priority}
               />
             )}
