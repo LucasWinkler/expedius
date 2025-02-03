@@ -9,7 +9,7 @@ export const metadata = createMetadata({
     "Create a PoiToGo account to start saving your favorite places and creating custom lists.",
 });
 
-const SignUpPage = () => {
+const SignUpPage = async () => {
   return (
     <Suspense fallback={<AuthLoading />}>
       <SignUpForm />

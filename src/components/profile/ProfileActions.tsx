@@ -8,7 +8,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { cn, shouldBeLight } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { shouldBeLight } from "@/lib/colour";
 import type { DbUser } from "@/server/types/db";
 
 interface ProfileActionsProps {

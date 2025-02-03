@@ -20,5 +20,5 @@ export const signOut = async () => {
 
 export const { signUp, signIn, useSession } = authClient;
 
-export type Session = typeof authClient.$Infer.Session;
-export type User = typeof authClient.$Infer.Session.user;
+export type ClientSession = typeof authClient.$Infer.Session;
+export type ClientUser = typeof authClient.$Infer.Session.user;

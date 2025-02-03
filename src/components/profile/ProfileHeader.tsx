@@ -5,11 +5,13 @@ import type { DbUser } from "@/server/types/db";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ProfileStats } from "./ProfileStats";
-import { ProfileActions } from "./ProfileActions";
-import { ProfileAvatar } from "./ProfileAvatar";
-import { ProfileInfo } from "./ProfileInfo";
-import { ProfileEditDialog } from "./ProfileEditDialog";
+import {
+  ProfileStats,
+  ProfileActions,
+  ProfileAvatar,
+  ProfileInfo,
+  ProfileEditDialog,
+} from "@/components/profile";
 
 interface ProfileHeaderProps {
   user: DbUser;

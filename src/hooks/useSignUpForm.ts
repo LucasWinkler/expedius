@@ -15,7 +15,7 @@ export const useSignUpForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { startUpload, isUploading } = useUploadThing("signUpImage");
   const searchParams = useSearchParams();
-  const callbackURL = searchParams.get("callbackUrl") ?? undefined;
+  const callbackURL = searchParams.get("callbackUrl") || "/";
   const altActionLink = `/auth/sign-in${callbackURL ? `?callbackUrl=${callbackURL}` : ""}`;
 
   const form = useForm<SignUpInput>({

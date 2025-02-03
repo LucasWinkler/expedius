@@ -1,11 +1,13 @@
 "use client";
 
-import { PlaceCard } from "../places/PlaceCard";
-import { NoPlaceResults } from "../places/NoPlaceResults";
-import { SaveToListButton } from "../places/SaveToListButton";
-import { LikeButton } from "../places/LikeButton";
+import {
+  PlaceCard,
+  NoPlaceResults,
+  SaveToListButton,
+  LikeButton,
+} from "@/components/places";
 import { useSearch } from "@/hooks/useSearch";
-import SearchSkeleton from "./SearchSkeleton";
+import { SearchSkeleton } from "./SearchSkeleton";
 
 export const SearchResults = () => {
   const { data, isPending } = useSearch();

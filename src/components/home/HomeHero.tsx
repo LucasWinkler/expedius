@@ -1,7 +1,6 @@
-import SearchSuggestions from "@/components/search/SearchSuggestions";
-import SearchBar from "../search/SearchBar";
+import { SearchSuggestions, SearchBar } from "@/components/search";
 
-const HomeHero = () => {
+export const HomeHero = () => {
   return (
     <section className="relative bg-gradient-to-b from-background to-muted pb-20 pt-12 sm:pb-32 sm:pt-24 2xl:pb-40 2xl:pt-32">
       <div className="container relative z-10 mx-auto px-4">
@@ -38,4 +37,3 @@ const HomeHero = () => {
     </section>
   );
 };
-export default HomeHero;

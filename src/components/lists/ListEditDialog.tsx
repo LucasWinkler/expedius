@@ -31,7 +31,7 @@ import { listColourPresets } from "@/constants";
 import { FileInput } from "@/components/ui/file-input";
 import { UpdateListInput, updateListSchema } from "@/lib/validations/list";
 import { useUpdateList } from "@/hooks/useLists";
-import { ColorSwatch } from "./ColorSwatch";
+import { ColourSwatch } from "./ColourSwatch";
 import { AvailabilityInput } from "@/components/ui/availability-input";
 
 type ListEditDialogProps = {
@@ -184,7 +184,7 @@ export const ListEditDialog = ({
                               aria-label="List card color selection"
                             >
                               {listColourPresets.map((color) => (
-                                <ColorSwatch
+                                <ColourSwatch
                                   key={color}
                                   color={color}
                                   selected={field.value === color}
@@ -192,7 +192,7 @@ export const ListEditDialog = ({
                                   disabled={isPending}
                                 />
                               ))}
-                              <ColorSwatch
+                              <ColourSwatch
                                 color={customColor}
                                 selected={field.value === customColor}
                                 onCustomColorChange={(color) => {

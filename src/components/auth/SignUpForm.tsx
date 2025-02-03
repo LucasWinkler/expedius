@@ -5,11 +5,13 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 import { useSignUpForm } from "@/hooks/useSignUpForm";
-import { CredentialsStep } from "./SignUpSteps/CredentialsStep";
-import { ProfileStep } from "./SignUpSteps/ProfileStep";
-import { FinalStep } from "./SignUpSteps/FinalStep";
-import { StepIndicator } from "./SignUpSteps/StepIndicator";
-import AuthCard from "./AuthCard";
+import {
+  CredentialsStep,
+  ProfileStep,
+  FinalStep,
+  StepIndicator,
+  AuthCard,
+} from "./";
 
 export const SignUpForm = () => {
   const {

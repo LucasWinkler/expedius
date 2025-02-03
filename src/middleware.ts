@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "./server/auth/auth";
+import { auth } from "@/server/auth/auth";
 import { betterFetch } from "@better-fetch/fetch";
+import {
+  PUBLIC_PATHS,
+  AUTH_PATHS,
+  AUTH_API_PREFIX,
+  UT_API_PREFIX,
+} from "@/constants/routes";
 
-type Session = typeof auth.$Infer.Session;
-
-const PUBLIC_PATHS = ["/", "/discover", "/u/"] as const;
-const AUTH_PATHS = ["/auth/sign-in", "/auth/sign-up"] as const;
-const AUTH_API_PREFIX = "/api/auth";
-const UT_API_PREFIX = "/api/uploadthing";
+export type Session = typeof auth.$Infer.Session;
 
 export const middleware = async (req: NextRequest) => {
   const { data: session } = await betterFetch<Session>(

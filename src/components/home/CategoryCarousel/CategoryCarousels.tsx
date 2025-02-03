@@ -1,8 +1,8 @@
 "use client";
 
 import { HOME_CATEGORIES } from "@/constants";
-import { CategoryCarousel } from "./CategoryCarousel";
-import { LocationProvider } from "@/contexts/LocationContext";
+import { LocationProvider } from "@/contexts";
+import { CategoryCarousel } from "./";
 
 export const CategoryCarousels = () => {
   return (
