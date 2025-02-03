@@ -7,6 +7,7 @@ import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { getPriceLevelDisplay } from "@/lib/utils";
 import placeImageFallback from "../../../public/place-image-fallback.webp";
+
 interface PlaceCardProps {
   place: Place;
   priority?: boolean;
