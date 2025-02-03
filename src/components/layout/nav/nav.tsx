@@ -1,9 +1,14 @@
 "use client";
 
 import { useSession } from "@/lib/auth-client";
-import { MobileNav } from "./mobile-nav";
 import { DesktopNav } from "./desktop-nav";
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+
+const MobileNav = dynamic(() => import("./mobile-nav"), {
+  ssr: true,
+  loading: () => null,
+});
 
 export const Nav = () => {
   const { data, isPending } = useSession();
@@ -36,5 +41,3 @@ export const Nav = () => {
     </header>
   );
 };
-
-export default Nav;
