@@ -33,6 +33,8 @@ export const SaveToListDropdown = ({
   const { data: userData, places } = usePlaceInteractions();
   const { save: savePlaces, isPending } = places;
 
+  const isTouchDevice = "ontouchstart" in window;
+
   const lists = useMemo(() => userData?.lists ?? [], [userData?.lists]);
   const selectedListIds = useMemo(
     () =>
@@ -111,7 +113,17 @@ export const SaveToListDropdown = ({
 
   return (
     <DropdownMenu modal={false} open={open} onOpenChange={handleOpenChange}>
-      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        asChild
+        {...(isTouchDevice
+          ? {
+              onPointerDown: (e) => e.preventDefault(),
+              onClick: () => handleOpenChange(!open),
+            }
+          : undefined)}
+      >
+        {children}
+      </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72">
         <div className="flex items-center justify-between p-2">
           <p className="text-base font-medium">Save Place</p>
