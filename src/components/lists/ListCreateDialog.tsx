@@ -24,14 +24,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
-import { ColorSwatch } from "@/components/lists/ColorSwatch";
+import { ColourSwatch } from "@/components/lists/ColourSwatch";
 import { listColourPresets } from "@/constants";
 import { useUploadThing } from "@/lib/uploadthing";
 import { FileInput } from "@/components/ui/file-input";
-
 import { createListSchema, type CreateListInput } from "@/lib/validations/list";
 import { useCreateList } from "@/hooks/useLists";
-import { AvailabilityInput } from "../ui/availability-input";
+import { AvailabilityInput } from "@/components/ui/availability-input";
 
 type ListCreateDialogProps = {
   open: boolean;
@@ -191,7 +190,7 @@ export const ListCreateDialog = ({
                           aria-label="List card color selection"
                         >
                           {listColourPresets.map((color) => (
-                            <ColorSwatch
+                            <ColourSwatch
                               key={color}
                               color={color}
                               selected={field.value === color}
@@ -199,7 +198,7 @@ export const ListCreateDialog = ({
                               disabled={isPending || isUploading}
                             />
                           ))}
-                          <ColorSwatch
+                          <ColourSwatch
                             color={customColor}
                             selected={field.value === customColor}
                             onCustomColorChange={(color) => {

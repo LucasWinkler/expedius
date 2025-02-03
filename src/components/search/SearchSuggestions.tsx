@@ -18,5 +18,3 @@ export const SearchSuggestions = () => (
     ))}
   </div>
 );
-
-export default SearchSuggestions;

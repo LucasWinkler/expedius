@@ -1,7 +1,4 @@
-"use client";
-
-import Nav from "@/components/layout/nav";
-import Footer from "@/components/layout/footer";
+import { Nav, Footer } from "@/components/layout";
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (

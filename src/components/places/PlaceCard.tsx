@@ -5,8 +5,8 @@ import Link from "next/link";
 import type { Place } from "@/types";
 import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { getPriceLevelDisplay } from "@/lib/utils";
-import placeImageFallback from "../../../public/place-image-fallback.webp";
+import { getPriceLevelDisplay } from "@/lib/place";
+import placeImageFallback from "@/../public/place-image-fallback.webp";
 
 interface PlaceCardProps {
   place: Place;

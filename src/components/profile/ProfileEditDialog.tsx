@@ -35,7 +35,7 @@ import {
 import { updateProfile } from "@/server/actions/user";
 import { checkUsernameAvailability } from "@/server/actions/user";
 import { listColourPresets } from "@/constants";
-import { ColorSwatch } from "../lists/ColorSwatch";
+import { ColourSwatch } from "../lists/ColourSwatch";
 import { AvailabilityInput } from "@/components/ui/availability-input";
 import { usernameSchema } from "@/lib/validations/user";
 interface ProfileEditDialogProps {
@@ -270,7 +270,7 @@ export const ProfileEditDialog = ({
                         aria-label="Profile header color selection"
                       >
                         {listColourPresets.map((color) => (
-                          <ColorSwatch
+                          <ColourSwatch
                             key={color}
                             color={color}
                             selected={field.value === color}
@@ -278,7 +278,7 @@ export const ProfileEditDialog = ({
                             disabled={isDisabled}
                           />
                         ))}
-                        <ColorSwatch
+                        <ColourSwatch
                           color={customColor}
                           selected={field.value === customColor}
                           onCustomColorChange={(color) => {
@@ -326,5 +326,3 @@ export const ProfileEditDialog = ({
     </Dialog>
   );
 };
-
-export default ProfileEditDialog;

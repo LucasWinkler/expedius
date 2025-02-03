@@ -3,9 +3,9 @@
 import { Check, Palette } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { oklchToHex, hexToOklch } from "@/lib/utils";
+import { oklchToHex, hexToOklch } from "@/lib/colour";
 
-type ColorSwatchProps = {
+type ColourSwatchProps = {
   color: string;
   selected: boolean;
   onClick?: () => void;
@@ -16,14 +16,14 @@ type ColorSwatchProps = {
 
 const iconClassNames = "mx-auto h-4 w-4 text-white";
 
-export const ColorSwatch = ({
+export const ColourSwatch = ({
   color,
   selected,
   onClick,
   onCustomColorChange,
   isCustom,
   disabled,
-}: ColorSwatchProps) => {
+}: ColourSwatchProps) => {
   const hexColor = color.startsWith("oklch") ? oklchToHex(color) : color;
 
   return isCustom ? (

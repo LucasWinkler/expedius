@@ -1,7 +1,5 @@
 import { Place } from "@/types";
-import { PlaceCard } from "../places/PlaceCard";
-import { LikeButton } from "../places/LikeButton";
-import { SaveToListButton } from "../places/SaveToListButton";
+import { PlaceCard, LikeButton, SaveToListButton } from "@/components/places";
 import { RemoveFromListButton } from "./RemoveFromListButton";
 
 interface ListPlaceCardProps {

@@ -2,7 +2,7 @@
 
 import { cache } from "react";
 import { env } from "@/env";
-import { getPlacePhotoUrl } from "@/lib/utils";
+import { getPlacePhotoUrl } from "@/lib/place";
 import { getPlaiceholder } from "plaiceholder";
 
 export const getEnhancedPlacePhoto = cache(async (photoRef: string) => {

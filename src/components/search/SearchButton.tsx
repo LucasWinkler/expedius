@@ -8,5 +8,3 @@ export const SearchButton = memo(() => (
 ));
 
 SearchButton.displayName = "SearchButton";
-
-export default SearchButton;

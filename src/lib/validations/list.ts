@@ -1,5 +1,4 @@
-import { listColourPresets, maxNameLength } from "@/constants";
-import { minNameLength } from "@/constants";
+import { listColourPresets, maxNameLength, minNameLength } from "@/constants";
 import { z } from "zod";
 
 export const listImageSchema = z

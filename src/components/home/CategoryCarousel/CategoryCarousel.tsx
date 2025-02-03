@@ -7,17 +7,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { PlaceCard } from "../../places/PlaceCard";
+import { PlaceCard, NoPlaceResults } from "@/components/places";
 import { useInView } from "react-intersection-observer";
-import { CategoryCarouselSkeleton } from "./CategoryCarouselSkeleton";
-import { NoPlaceResults } from "../../places/NoPlaceResults";
-import { CategoryHeader } from "./CategoryHeader";
-import { CarouselDots } from "./CarouselDots";
-import { useCarouselState } from "@/hooks/useCarouselState";
-import { useCategoryPlaces } from "@/hooks/categories";
-import { LikeButton } from "@/components/places/LikeButton";
-import { SaveToListButton } from "@/components/places/SaveToListButton";
-import { LucideIcon } from "lucide-react";
+import { CategoryCarouselSkeleton, CategoryHeader } from "./";
+import { CarouselDots } from "@/components/ui/carousel";
+import { useCarouselState, useCategoryPlaces } from "@/hooks";
+import { LikeButton, SaveToListButton } from "@/components/places";
+import type { LucideIcon } from "lucide-react";
 
 interface CategoryCarouselProps {
   title: string;

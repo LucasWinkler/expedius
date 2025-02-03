@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 import withPlaiceholder from "@plaiceholder/next";
 import { env } from "./src/env";
+import nextBundleAnalyzer from "@next/bundle-analyzer";
 
 const nextConfig: NextConfig = {
   images: {
@@ -15,4 +16,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPlaiceholder(nextConfig);
+const withBundleAnalyzer = nextBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
+
+export default withBundleAnalyzer(withPlaiceholder(nextConfig));

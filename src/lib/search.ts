@@ -1,5 +1,5 @@
 import type { Place, PlaceSearchResponse } from "@/types";
-import { getPlacePhotoUrl } from "./utils";
+import { getPlacePhotoUrl } from "@/lib/place";
 import { toast } from "sonner";
 import { SearchFilters } from "@/hooks/useSearch";
 import { LocationCoords } from "@/contexts/LocationContext";

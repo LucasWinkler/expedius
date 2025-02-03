@@ -9,5 +9,3 @@ export const SearchIcon = memo(() => (
 ));
 
 SearchIcon.displayName = "SearchIcon";
-
-export default SearchIcon;

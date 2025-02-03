@@ -17,14 +17,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useSearchParams } from "next/navigation";
-import AuthCard from "./AuthCard";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useSearchParams } from "next/navigation";
+import { AuthCard } from "./";
 
 export const SignInForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
-  const callbackURL = searchParams.get("callbackUrl") ?? undefined;
+  const callbackURL = searchParams.get("callbackUrl") || "/";
   const altActionLink = `/auth/sign-up${callbackURL ? `?callbackUrl=${callbackURL}` : ""}`;
 
   const form = useForm<SignInInput>({

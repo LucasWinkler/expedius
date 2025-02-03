@@ -15,5 +15,4 @@ export const CategoryCarouselWrapper = forwardRef<
     {children}
   </section>
 ));
-
 CategoryCarouselWrapper.displayName = "CategoryCarouselWrapper";

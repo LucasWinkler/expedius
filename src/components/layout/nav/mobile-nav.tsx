@@ -18,7 +18,7 @@ import {
   Grid2X2,
 } from "lucide-react";
 import { NavLink } from "./nav-link";
-import type { Session } from "@/lib/auth-client";
+import type { ClientSession } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import { signOut } from "@/lib/auth-client";
 import Link from "next/link";
@@ -26,7 +26,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { USER_NAV_ITEMS } from "@/constants";
 
 type MobileNavProps = {
-  session: Session | null;
+  session: ClientSession | null;
   isPending: boolean;
 };
 

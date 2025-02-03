@@ -284,5 +284,3 @@ export const SearchBar = ({
     </Form>
   );
 };
-
-export default SearchBar;

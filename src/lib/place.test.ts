@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPlacePhotoUrl } from "./utils";
+import { getPlacePhotoUrl } from "./place";
 
 describe("getPlacePhotoUrl", () => {
   it("should generate correct photo URL with default dimensions", () => {

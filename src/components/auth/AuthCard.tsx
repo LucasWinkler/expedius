@@ -49,5 +49,3 @@ export const AuthCard = ({
     </div>
   );
 };
-
-export default AuthCard;

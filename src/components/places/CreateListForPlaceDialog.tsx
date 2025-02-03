@@ -14,6 +14,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,12 +26,14 @@ import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { listColourPresets, maxNameLength, minNameLength } from "@/constants";
 import { useCreateListForPlace } from "@/hooks/useCreateListForPlace";
+import { Switch } from "../ui/switch";
 
 const createListForPlaceSchema = z.object({
   name: z
     .string()
     .min(minNameLength, `Name must be at least ${minNameLength} characters`)
     .max(maxNameLength, `Name must be less than ${maxNameLength} characters`),
+  isPublic: z.boolean().optional(),
 });
 
 type CreateListForPlaceInput = z.infer<typeof createListForPlaceSchema>;
@@ -52,6 +55,7 @@ export const CreateListForPlaceDialog = ({
     resolver: zodResolver(createListForPlaceSchema),
     defaultValues: {
       name: "",
+      isPublic: false,
     },
   });
 
@@ -110,6 +114,29 @@ export const CreateListForPlaceDialog = ({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="isPublic"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>List Visibility</FormLabel>
+                  <div className="flex items-center justify-between gap-2 rounded-lg border p-4">
+                    <FormDescription>
+                      Allow others to view this list
+                    </FormDescription>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isPending}
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
+
             <div className="flex justify-end space-x-2">
               <DialogTrigger asChild>
                 <Button type="button" variant="ghost" disabled={isPending}>

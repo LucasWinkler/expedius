@@ -1,8 +1,10 @@
-import HomeHero from "@/components/home/HomeHero";
-import { CategoryCarousels } from "@/components/home/CategoryCarousel";
 import { createMetadata } from "@/lib/metadata";
-import { HomeCta } from "@/components/home/HomeCta";
-import { HomeFeatures } from "@/components/home/HomeFeatures";
+import {
+  HomeHero,
+  HomeCta,
+  HomeFeatures,
+  CategoryCarousels,
+} from "@/components/home";
 
 export const metadata = createMetadata({
   title: "Discover your next adventure",

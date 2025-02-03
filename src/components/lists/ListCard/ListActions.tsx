@@ -1,3 +1,5 @@
+"use client";
+
 import { Edit, ExternalLink, Trash } from "lucide-react";
 
 import {

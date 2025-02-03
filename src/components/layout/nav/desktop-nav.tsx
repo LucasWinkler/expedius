@@ -1,4 +1,4 @@
-import type { Session } from "@/lib/auth-client";
+import type { ClientSession } from "@/lib/auth-client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth-client";
@@ -15,7 +15,7 @@ import Link from "next/link";
 import { Settings, LogOut } from "lucide-react";
 
 type DesktopNavProps = {
-  session: Session | null;
+  session: ClientSession | null;
   isPending: boolean;
 };
 

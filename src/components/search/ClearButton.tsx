@@ -20,5 +20,3 @@ export const ClearButton = memo(({ onClick }: ClearButtonProps) => (
 ));
 
 ClearButton.displayName = "ClearButton";
-
-export default ClearButton;
