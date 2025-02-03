@@ -1,11 +1,11 @@
 import { Loader2 } from "lucide-react";
 
-const Loading = () => {
+const AuthLoading = () => {
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="flex h-full items-center justify-center">
       <Loader2 className="size-8 animate-spin text-muted-foreground" />
     </div>
   );
 };
 
-export default Loading;
+export default AuthLoading;
