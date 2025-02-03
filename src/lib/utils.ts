@@ -1,14 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import {
-  hex2rgb,
-  rgb2oklch,
-  hex2oklch,
-  luminance,
-  textColor,
-  convert,
-} from "colorizr";
-import { FastAverageColor } from "fast-average-color";
+import { hex2oklch, luminance, convert } from "colorizr";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -32,17 +24,6 @@ export const convertImageToBase64 = (file: File): Promise<string> => {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
-};
-
-export const hexToRgb = (hex: string): [number, number, number] => {
-  const rgb = hex2rgb(hex);
-  return [rgb.r / 255, rgb.g / 255, rgb.b / 255];
-};
-
-export const rgbToOklch = (r: number, g: number, b: number): string => {
-  const rgb = { r: r * 255, g: g * 255, b: b * 255 };
-  const oklch = rgb2oklch(rgb);
-  return `oklch(${oklch.l} ${oklch.c} ${oklch.h})`;
 };
 
 export const oklchToHex = (oklch: string): string => {
@@ -72,27 +53,4 @@ export const getPriceLevelDisplay = (level?: string): string | null => {
   };
 
   return level ? priceLevelMap[level] : null;
-};
-
-export const getImageAverageColor = async (
-  imageUrl: string,
-): Promise<{ color: string; isDark: boolean }> => {
-  const fac = new FastAverageColor();
-
-  try {
-    const result = await fac.getColorAsync(imageUrl);
-    const hex = result.hex;
-    const isDark = textColor(hex) === "#ffffff";
-
-    return {
-      color: hex,
-      isDark,
-    };
-  } catch (error) {
-    console.error("Error getting average color:", error);
-    return {
-      color: "#000000",
-      isDark: true,
-    };
-  }
 };

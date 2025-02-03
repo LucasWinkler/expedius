@@ -11,7 +11,11 @@
     "validate": "npm run lint && npm run type-check",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test": "vitest",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.12",
@@ -41,6 +45,7 @@
     "@upstash/redis": "^1.34.3",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
+    "@vitejs/plugin-react": "^4.3.4",
     "better-auth": "^1.1.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -49,7 +54,6 @@
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.3",
     "embla-carousel-react": "^8.5.2",
-    "fast-average-color": "^9.4.0",
     "lucide-react": "^0.471.0",
     "next": "^15.1.6",
     "next-themes": "^0.4.4",
@@ -69,16 +73,23 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitest/ui": "^3.0.4",
     "drizzle-kit": "^0.30.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.4",
+    "jsdom": "^26.0.0",
     "postcss": "^8",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.10",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.0.4"
   }
 }
