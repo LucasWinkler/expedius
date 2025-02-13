@@ -12,9 +12,18 @@ const nextConfig: NextConfig = {
         hostname: "utfs.io",
         pathname: `/a/${env.UPLOADTHING_APP_ID}/*`,
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "places.googleapis.com",
+        pathname: "/v1/places/**",
+      },
     ],
   },
-  
 };
 
 const withBundleAnalyzer = nextBundleAnalyzer({

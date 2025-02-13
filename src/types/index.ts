@@ -30,6 +30,68 @@ export type Place = {
   };
 };
 
+export type PlaceDetails = Place & {
+  currentOpeningHours?: {
+    openNow: boolean;
+    periods: {
+      open: {
+        day: number;
+        hour: number;
+        minute: number;
+      };
+      close: {
+        day: number;
+        hour: number;
+        minute: number;
+      };
+    }[];
+    weekdayDescriptions: string[];
+  };
+  websiteUri?: string;
+  internationalPhoneNumber?: string;
+  nationalPhoneNumber?: string;
+  priceRange?: string;
+  editorialSummary?: {
+    text: string;
+    languageCode: string;
+  };
+  reviews?: {
+    name: string;
+    relativePublishTimeDescription: string;
+    rating: number;
+    text: {
+      text: string;
+      languageCode: string;
+    };
+    authorAttribution: {
+      displayName: string;
+      photoUri?: string;
+    };
+  }[];
+  paymentOptions?: {
+    acceptsCreditCards?: boolean;
+    acceptsDebitCards?: boolean;
+    acceptsCashOnly?: boolean;
+  };
+  parkingOptions?: {
+    freeParking?: boolean;
+    paidParking?: boolean;
+    streetParking?: boolean;
+    valetParking?: boolean;
+  };
+  dineIn?: boolean;
+  takeout?: boolean;
+  delivery?: boolean;
+  curbsidePickup?: boolean;
+  reservable?: boolean;
+  servesBreakfast?: boolean;
+  servesLunch?: boolean;
+  servesDinner?: boolean;
+  servesBrunch?: boolean;
+  servesCoffee?: boolean;
+  outdoorSeating?: boolean;
+};
+
 // Business/Domain types
 export interface List {
   id: string;
