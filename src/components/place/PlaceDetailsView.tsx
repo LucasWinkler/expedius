@@ -15,16 +15,8 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { ProxiedImage } from "../ui/ProxiedImage";
 import { LikeButton } from "../places/LikeButton";
 import { PlaceImageCarousel } from "./PlaceImageCarousel";
@@ -89,64 +81,77 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
   };
 
   return (
-    <div className="relative space-y-8">
-      <div className="sticky top-16 z-20 -mx-4 flex items-start justify-between gap-4 bg-background/95 px-4 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold">{place.displayName.text}</h1>
-          <p className="text-muted-foreground">{place.formattedAddress}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="shrink-0"
-            onClick={handleShare}
-          >
-            <Share2 className="h-5 w-5" />
-          </Button>
-          <SaveToListButton placeId={place.id} />
-          <LikeButton placeId={place.id} />
+    <div className="relative space-y-12">
+      <div className="sticky top-16 z-20 -mx-4 bg-background/95 px-4 py-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="mx-auto flex max-w-6xl items-start justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold tracking-tight">
+              {place.displayName.text}
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              {place.formattedAddress}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              onClick={handleShare}
+            >
+              <Share2 className="h-5 w-5" />
+            </Button>
+            <SaveToListButton placeId={place.id} />
+            <LikeButton placeId={place.id} />
+          </div>
         </div>
       </div>
 
       {place.photos?.length && (
-        <PlaceImageCarousel
-          photos={place.photos}
-          placeName={place.displayName.text}
-        />
+        <div className="mx-auto max-w-6xl">
+          <PlaceImageCarousel
+            photos={place.photos}
+            placeName={place.displayName.text}
+          />
+        </div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-[2fr_1fr] [&>*:nth-child(2)]:-order-1 md:[&>*:nth-child(2)]:order-none">
-        <div className="space-y-6">
+      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[2fr_1fr] [&>*:nth-child(2)]:-order-1 lg:[&>*:nth-child(2)]:order-none">
+        <div className="space-y-12">
           {place.editorialSummary && (
-            <Card>
-              <CardHeader>
-                <CardTitle>About</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>{place.editorialSummary.text}</p>
-              </CardContent>
-            </Card>
+            <section className="space-y-4">
+              <h2 className="text-2xl font-semibold tracking-tight">
+                About this place
+              </h2>
+              <p className="text-lg leading-relaxed text-muted-foreground">
+                {place.editorialSummary.text}
+              </p>
+            </section>
           )}
 
           {place.reviews && place.reviews.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Reviews</CardTitle>
-                <CardDescription>
-                  What people are saying about {place.displayName.text}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <section className="space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  Guest reviews
+                </h2>
+                <p className="text-muted-foreground">
+                  See what visitors have experienced at {place.displayName.text}
+                </p>
+              </div>
+              <div className="divide-y divide-border">
                 {place.reviews.map((review) => (
-                  <div key={review.name} className="space-y-2">
-                    <div className="flex items-center gap-2">
+                  <div
+                    key={review.name}
+                    className="space-y-4 py-6 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex items-center gap-3">
                       {review.authorAttribution.photoUri && (
                         <ProxiedImage
                           src={review.authorAttribution.photoUri}
                           alt={review.authorAttribution.displayName}
-                          width={32}
-                          height={32}
+                          width={40}
+                          height={40}
                           className="rounded-full"
                         />
                       )}
@@ -172,25 +177,34 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
                         />
                       ))}
                     </div>
-                    {review.text && <p>{review.text.text}</p>}
-                    <Separator />
+                    {review.text && (
+                      <p className="text-muted-foreground">
+                        {review.text.text}
+                      </p>
+                    )}
                   </div>
                 ))}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
         </div>
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        <div className="space-y-8">
+          <section className="space-y-6 rounded-xl bg-muted p-6">
+            <h2 className="text-xl font-semibold tracking-tight">
+              Essential information
+            </h2>
+            <div className="space-y-4">
               {place.websiteUri && (
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  <Button variant="link" className="h-auto p-0" asChild>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted-foreground/10">
+                    <Globe className="h-4 w-4 text-foreground" />
+                  </div>
+                  <Button
+                    variant="link"
+                    className="h-auto p-0 text-base font-medium text-primary decoration-primary/30 underline-offset-4 hover:text-primary hover:underline"
+                    asChild
+                  >
                     <a
                       href={place.websiteUri}
                       target="_blank"
@@ -202,9 +216,15 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
                 </div>
               )}
               {place.internationalPhoneNumber && (
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  <Button variant="link" className="h-auto p-0" asChild>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted-foreground/10">
+                    <Phone className="h-4 w-4 text-foreground" />
+                  </div>
+                  <Button
+                    variant="link"
+                    className="h-auto p-0 text-base font-medium text-primary decoration-primary/30 underline-offset-4 hover:text-primary hover:underline"
+                    asChild
+                  >
                     <a
                       href={`tel:${place.internationalPhoneNumber.replace(/\s+/g, "")}`}
                     >
@@ -215,9 +235,15 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
               )}
 
               {place.formattedAddress && (
-                <div className="flex items-center gap-2">
-                  <Navigation className="h-4 w-4" />
-                  <Button variant="link" className="h-auto p-0" asChild>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted-foreground/10">
+                    <Navigation className="h-4 w-4 text-foreground" />
+                  </div>
+                  <Button
+                    variant="link"
+                    className="h-auto p-0 text-base font-medium text-primary decoration-primary/30 underline-offset-4 hover:text-primary hover:underline"
+                    asChild
+                  >
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                         `${place.displayName.text} ${place.formattedAddress}`,
@@ -232,13 +258,24 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
               )}
 
               {place.currentOpeningHours && (
-                <div className="flex items-start gap-2">
-                  <Clock className="mt-1 h-4 w-4" />
+                <div className="flex items-start gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted-foreground/10">
+                    <Clock className="h-4 w-4 text-foreground" />
+                  </div>
                   <div>
-                    <div className="font-medium">
-                      {place.currentOpeningHours.openNow ? "Open" : "Closed"}
+                    <div
+                      className={cn(
+                        "inline-flex rounded-full px-2.5 py-1 text-sm font-medium",
+                        place.currentOpeningHours.openNow
+                          ? "bg-green-500/20 text-green-600"
+                          : "bg-red-500/20 text-red-600",
+                      )}
+                    >
+                      {place.currentOpeningHours.openNow
+                        ? "Open now"
+                        : "Closed"}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="mt-2.5 space-y-1.5 text-sm text-muted-foreground">
                       {place.currentOpeningHours.weekdayDescriptions.map(
                         (day, index) => (
                           <div key={index}>{day}</div>
@@ -250,36 +287,37 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
               )}
 
               {place.priceRange && (
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4" />
-                  <span>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted-foreground/10">
+                    <DollarSign className="h-4 w-4 text-foreground" />
+                  </div>
+                  <span className="text-base font-medium">
                     {place.priceRange.startPrice.units} -{" "}
                     {place.priceRange.endPrice.units}{" "}
                     {place.priceRange.startPrice.currencyCode}
                   </span>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
           {availableFeatures.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Features</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {availableFeatures.map((feature) => (
-                    <Badge
-                      key={feature.key}
-                      className="transition-colors hover:bg-primary"
-                    >
-                      {feature.label}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <section className="space-y-6 rounded-xl bg-muted p-6">
+              <h2 className="text-xl font-semibold tracking-tight">
+                Available amenities
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {availableFeatures.map((feature) => (
+                  <Badge
+                    key={feature.key}
+                    variant="secondary"
+                    className="rounded-lg bg-muted-foreground/10 px-3.5 py-1.5 text-sm font-medium text-foreground hover:bg-muted-foreground/20"
+                  >
+                    {feature.label}
+                  </Badge>
+                ))}
+              </div>
+            </section>
           )}
         </div>
       </div>
