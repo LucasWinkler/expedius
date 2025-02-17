@@ -50,7 +50,16 @@ export type PlaceDetails = Place & {
   websiteUri?: string;
   internationalPhoneNumber?: string;
   nationalPhoneNumber?: string;
-  priceRange?: string;
+  priceRange?: {
+    startPrice: {
+      currencyCode: string;
+      units: string;
+    };
+    endPrice: {
+      currencyCode: string;
+      units: string;
+    };
+  };
   editorialSummary?: {
     text: string;
     languageCode: string;

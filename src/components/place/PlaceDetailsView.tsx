@@ -96,24 +96,22 @@ export function PlaceDetailsView({ place, image }: PlaceDetailsViewProps) {
 
   return (
     <div className="relative space-y-8">
-      <div className="sticky top-16 z-20 -mx-4 bg-background/95 px-4 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold">{place.displayName.text}</h1>
-            <p className="text-muted-foreground">{place.formattedAddress}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="shrink-0"
-              onClick={handleShare}
-            >
-              <Share2 className="h-5 w-5" />
-            </Button>
-            <SaveToListButton placeId={place.id} />
-            <LikeButton placeId={place.id} />
-          </div>
+      <div className="sticky top-16 z-20 -mx-4 flex items-start justify-between gap-4 bg-background/95 px-4 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold">{place.displayName.text}</h1>
+          <p className="text-muted-foreground">{place.formattedAddress}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0"
+            onClick={handleShare}
+          >
+            <Share2 className="h-5 w-5" />
+          </Button>
+          <SaveToListButton placeId={place.id} />
+          <LikeButton placeId={place.id} />
         </div>
       </div>
 
@@ -216,7 +214,6 @@ export function PlaceDetailsView({ place, image }: PlaceDetailsViewProps) {
                   </Button>
                 </div>
               )}
-
               {place.internationalPhoneNumber && (
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
@@ -265,10 +262,14 @@ export function PlaceDetailsView({ place, image }: PlaceDetailsViewProps) {
                 </div>
               )}
 
-              {place.priceLevel && (
+              {place.priceRange && (
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
-                  <span>{place.priceLevel}</span>
+                  <span>
+                    {place.priceRange.startPrice.units} -{" "}
+                    {place.priceRange.endPrice.units}{" "}
+                    {place.priceRange.startPrice.currencyCode}
+                  </span>
                 </div>
               )}
             </CardContent>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { Place } from "@/types";
 import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { getPriceLevelDisplay } from "@/lib/place";
+import { getPriceLevelDisplayShort } from "@/lib/place";
 import placeImageFallback from "@/../public/place-image-fallback.webp";
 
 interface PlaceCardProps {
@@ -37,6 +37,7 @@ export const PlaceCard = ({
                 blurDataURL={place.image.blurDataURL ?? undefined}
                 alt={place.displayName.text}
                 priority={priority}
+                unoptimized
               />
             ) : (
               <Image
@@ -55,7 +56,7 @@ export const PlaceCard = ({
                 {place.displayName.text}
               </CardTitle>
               <span className="text-sm font-medium text-muted-foreground">
-                {getPriceLevelDisplay(place.priceLevel)}
+                {getPriceLevelDisplayShort(place.priceLevel)}
               </span>
             </div>
             {place.rating && (
