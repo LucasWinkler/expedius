@@ -29,7 +29,7 @@ export const Nav = () => {
 
   return (
     <header
-      className={`sticky top-0 z-50 h-16 w-full bg-background/95 backdrop-blur transition-[border-color,background-color] duration-200 supports-[backdrop-filter]:bg-background/60 ${
+      className={`sticky top-0 z-50 h-16 w-full bg-background transition-[border-color,background-color] duration-200 ${
         hasScrolled ? "border-b" : "border-b border-transparent"
       }`}
       role="banner"
