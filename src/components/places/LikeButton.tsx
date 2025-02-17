@@ -9,9 +9,10 @@ import { usePlaceInteractions } from "@/hooks/usePlaceInteractions";
 
 interface LikeButtonProps {
   placeId: string;
+  className?: string;
 }
 
-export const LikeButton = ({ placeId }: LikeButtonProps) => {
+export const LikeButton = ({ placeId, className }: LikeButtonProps) => {
   const { data: session } = useSession();
   const { data: userData, like } = usePlaceInteractions();
   const { toggle: toggleLike, isPending } = like;
@@ -42,6 +43,7 @@ export const LikeButton = ({ placeId }: LikeButtonProps) => {
       className={cn(
         "size-8 bg-background/80 backdrop-blur hover:bg-background/90",
         isLiked && "text-red-500 hover:text-red-600",
+        className,
       )}
       onClick={handleClick}
       disabled={isPending}

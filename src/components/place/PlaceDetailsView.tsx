@@ -92,17 +92,20 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
               {place.formattedAddress}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <Button
-              variant="ghost"
+              variant="secondary"
               size="icon"
-              className="shrink-0"
+              className={
+                "size-9 shrink-0 bg-background/80 backdrop-blur hover:bg-background/90"
+              }
               onClick={handleShare}
+              title="Share"
             >
-              <Share2 className="h-5 w-5" />
+              <Share2 aria-hidden="true" />
             </Button>
-            <SaveToListButton placeId={place.id} />
-            <LikeButton placeId={place.id} />
+            <SaveToListButton className="size-9 shrink-0" placeId={place.id} />
+            <LikeButton className="size-9 shrink-0" placeId={place.id} />
           </div>
         </div>
       </div>
