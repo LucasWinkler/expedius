@@ -82,7 +82,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
 
   return (
     <div className="relative space-y-12">
-      <div className="sticky top-16 z-20 -mx-4 bg-background/95 px-4 py-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="sticky top-16 z-20 bg-background/95 px-4 py-6 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-start justify-between gap-4">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold tracking-tight">
