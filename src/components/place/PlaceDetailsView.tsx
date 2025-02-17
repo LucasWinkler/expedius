@@ -25,9 +25,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import fallbackImage from "@/../public/place-image-fallback.webp";
 import { ProxiedImage } from "../ui/ProxiedImage";
 import { LikeButton } from "../places/LikeButton";
+import { PlaceImageCarousel } from "./PlaceImageCarousel";
 
 const SaveToListButton = dynamic(
   () =>
@@ -51,15 +51,9 @@ const FEATURES = [
 
 interface PlaceDetailsViewProps {
   place: PlaceDetails;
-  image?: {
-    url: string;
-    base64: string;
-    width: number;
-    height: number;
-  };
 }
 
-export function PlaceDetailsView({ place, image }: PlaceDetailsViewProps) {
+export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
   const [canShare, setCanShare] = useState(false);
 
   useEffect(() => {
@@ -115,19 +109,12 @@ export function PlaceDetailsView({ place, image }: PlaceDetailsViewProps) {
         </div>
       </div>
 
-      <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-        <ProxiedImage
-          src={image?.url ?? fallbackImage}
-          alt={place.displayName.text}
-          className="object-cover transition-opacity duration-300"
-          priority
-          placeholder="blur"
-          blurDataURL={image?.base64}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          width={image?.width}
-          height={image?.height}
+      {place.photos?.length && (
+        <PlaceImageCarousel
+          photos={place.photos}
+          placeName={place.displayName.text}
         />
-      </div>
+      )}
 
       <div className="grid gap-6 md:grid-cols-[2fr_1fr] [&>*:nth-child(2)]:-order-1 md:[&>*:nth-child(2)]:order-none">
         <div className="space-y-6">

@@ -3,10 +3,8 @@ import { notFound } from "next/navigation";
 import { getPlaceDetails } from "@/lib/api/places";
 import { PlaceDetailsView } from "@/components/place/PlaceDetailsView";
 import { PlaceDetailsSkeleton } from "@/components/place/PlaceDetailsSkeleton";
-import { getImage } from "@/lib/plaiceholder";
-import { env } from "@/env";
-import { Metadata } from "next";
 import { createMetadata } from "@/lib/metadata";
+import { Metadata } from "next";
 
 interface PlaceDetailsPageProps {
   params: Promise<{ placeId: string }>;
@@ -40,25 +38,10 @@ export default async function PlaceDetailsPage({
     const { placeId } = await params;
     const placeDetails = await getPlaceDetails(placeId);
 
-    let image;
-    const imageUrl = placeDetails.photos?.[0]
-      ? `${env.GOOGLE_PLACES_API_BASE_URL}/${placeDetails.photos[0].name}/media?maxHeightPx=800&maxWidthPx=1200&key=${env.GOOGLE_PLACES_API_KEY}`
-      : undefined;
-
-    if (imageUrl) {
-      const imageData = await getImage(imageUrl);
-      image = {
-        url: imageUrl,
-        ...imageData,
-        width: 1200,
-        height: 800,
-      };
-    }
-
     return (
       <main className="container mx-auto px-4 py-8">
         <Suspense fallback={<PlaceDetailsSkeleton />}>
-          <PlaceDetailsView place={placeDetails} image={image} />
+          <PlaceDetailsView place={placeDetails} />
         </Suspense>
       </main>
     );

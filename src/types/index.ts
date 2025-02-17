@@ -9,6 +9,13 @@ export type PlacePhoto = {
   name: string;
   widthPx: number;
   heightPx: number;
+  googleMapsUri: string;
+  flagContentUri: string;
+  authorAttributions: Array<{
+    displayName: string;
+    photoUri?: string;
+    uri: string;
+  }>;
 };
 
 export type Place = {

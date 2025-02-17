@@ -29,7 +29,6 @@ export function ProxiedImage({
       height={height}
       className={className}
       priority={priority}
-      unoptimized
       {...props}
     />
   );
