@@ -4,6 +4,15 @@ export const placePhotoSchema = z.object({
   name: z.string(),
   widthPx: z.number(),
   heightPx: z.number(),
+  googleMapsUri: z.string(),
+  flagContentUri: z.string(),
+  authorAttributions: z.array(
+    z.object({
+      displayName: z.string(),
+      photoUri: z.string().optional(),
+      uri: z.string(),
+    }),
+  ),
 });
 
 export const placeSchema = z.object({

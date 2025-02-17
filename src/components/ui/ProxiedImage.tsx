@@ -1,9 +1,9 @@
 "use client";
 
-import Image, { ImageProps } from "next/image";
+import Image, { type ImageProps, type StaticImageData } from "next/image";
 
 interface ProxiedImageProps extends Omit<ImageProps, "src"> {
-  src: string;
+  src: string | StaticImageData;
   priority?: boolean;
 }
 
@@ -16,7 +16,10 @@ export function ProxiedImage({
   className,
   ...props
 }: ProxiedImageProps) {
-  const proxiedSrc = `/api/image-proxy?url=${encodeURIComponent(src)}`;
+  const proxiedSrc =
+    typeof src !== "string"
+      ? src
+      : `/api/image-proxy?url=${encodeURIComponent(src)}`;
 
   return (
     <Image

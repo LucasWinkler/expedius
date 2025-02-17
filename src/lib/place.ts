@@ -10,6 +10,18 @@ export const getPlacePhotoUrl = (
 export const getPriceLevelDisplay = (level?: string): string | null => {
   const priceLevelMap: Record<string, string> = {
     PRICE_LEVEL_FREE: "Free",
+    PRICE_LEVEL_INEXPENSIVE: "Inexpensive",
+    PRICE_LEVEL_MODERATE: "Moderate",
+    PRICE_LEVEL_EXPENSIVE: "Expensive",
+    PRICE_LEVEL_VERY_EXPENSIVE: "Very Expensive",
+  };
+
+  return level ? priceLevelMap[level] : null;
+};
+
+export const getPriceLevelDisplayShort = (level?: string): string | null => {
+  const priceLevelMap: Record<string, string> = {
+    PRICE_LEVEL_FREE: "Free",
     PRICE_LEVEL_INEXPENSIVE: "$",
     PRICE_LEVEL_MODERATE: "$$",
     PRICE_LEVEL_EXPENSIVE: "$$$",

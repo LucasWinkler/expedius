@@ -131,7 +131,8 @@
 
 ## Roadmap
 
-- [ ] Place details page
+- [x] Place details page
+  - [ ] Add map
 - [ ] Count of likes each place has
 - [ ] Filtering, sorting, and searching for lists
 - [ ] Searching for places in a list

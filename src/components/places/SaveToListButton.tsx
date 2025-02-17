@@ -6,12 +6,17 @@ import { Button } from "@/components/ui/button";
 import { SaveToListDropdown } from "./SaveToListDropdown";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 interface SaveToListButtonProps {
   placeId: string;
+  className?: string;
 }
 
-export const SaveToListButton = ({ placeId }: SaveToListButtonProps) => {
+export const SaveToListButton = ({
+  placeId,
+  className,
+}: SaveToListButtonProps) => {
   const { data: session } = useSession();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -32,7 +37,10 @@ export const SaveToListButton = ({ placeId }: SaveToListButtonProps) => {
       <Button
         variant="secondary"
         size="icon"
-        className="size-8 bg-background/80 backdrop-blur hover:bg-background/90"
+        className={cn(
+          "size-8 bg-background/80 backdrop-blur hover:bg-background/90",
+          className,
+        )}
         onClick={(e) => e.preventDefault()}
       >
         <Bookmark aria-hidden="true" />
