@@ -63,19 +63,19 @@ export function PlaceImageCarousel({
             <Button
               variant="ghost"
               size="icon"
-              className="absolute left-4 top-1/2 z-10 h-8 w-8 -translate-y-1/2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
+              className="absolute left-2 top-1/2 z-10 size-10 -translate-y-1/2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background sm:left-4 sm:size-12"
               onClick={() => api?.scrollPrev()}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="size-5 sm:size-6" />
               <span className="sr-only">Previous slide</span>
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-4 top-1/2 z-10 h-8 w-8 -translate-y-1/2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
+              className="absolute right-2 top-1/2 z-10 size-10 -translate-y-1/2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background sm:right-4 sm:size-12"
               onClick={() => api?.scrollNext()}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="size-5 sm:size-6" />
               <span className="sr-only">Next slide</span>
             </Button>
           </>
