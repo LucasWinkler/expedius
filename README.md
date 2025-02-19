@@ -131,16 +131,10 @@
 
 ## Roadmap
 
-- [x] Place details page
-  - [ ] Add map
-- [ ] Count of likes each place has
 - [ ] Filtering, sorting, and searching for lists
-- [ ] Searching for places in a list
-- [x] Save search queries
-- [ ] Full authentication system
-  - [ ] Password reset
-  - [ ] Email verification
-  - [ ] Settings page
+- [ ] Password reset
+- [ ] Email verification
+- [ ] Settings page for changing password, email, etc.
 - [ ] Social features
   - [ ] Followers
   - [ ] Following
