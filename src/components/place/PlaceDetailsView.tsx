@@ -82,31 +82,29 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
 
   return (
     <div className="relative space-y-12">
-      <div className="sticky top-16 z-20 bg-background/95 px-4 py-6 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-start justify-between gap-4">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold tracking-tight">
-              {place.displayName.text}
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              {place.formattedAddress}
-            </p>
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="secondary"
-              size="icon"
-              className={
-                "size-9 shrink-0 bg-background/80 backdrop-blur hover:bg-background/90"
-              }
-              onClick={handleShare}
-              title="Share"
-            >
-              <Share2 aria-hidden="true" />
-            </Button>
-            <SaveToListButton className="size-9 shrink-0" placeId={place.id} />
-            <LikeButton className="size-9 shrink-0" placeId={place.id} />
-          </div>
+      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            {place.displayName.text}
+          </h1>
+          <p className="text-base text-muted-foreground sm:text-lg">
+            {place.formattedAddress}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-start">
+          <Button
+            variant="secondary"
+            size="icon"
+            className={
+              "size-9 shrink-0 bg-background/80 backdrop-blur hover:bg-background/90"
+            }
+            onClick={handleShare}
+            title="Share"
+          >
+            <Share2 aria-hidden="true" />
+          </Button>
+          <SaveToListButton className="size-9 shrink-0" placeId={place.id} />
+          <LikeButton className="size-9 shrink-0" placeId={place.id} />
         </div>
       </div>
 
@@ -136,10 +134,11 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
             <section className="space-y-6">
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold tracking-tight">
-                  Guest reviews
+                  Popular reviews
                 </h2>
                 <p className="text-muted-foreground">
-                  See what visitors have experienced at {place.displayName.text}
+                  Recent and helpful reviews from Google at{" "}
+                  {place.displayName.text}
                 </p>
               </div>
               <div className="divide-y divide-border">
