@@ -6,16 +6,25 @@ import { cn } from "@/lib/utils";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { usePlaceInteractions } from "@/hooks/usePlaceInteractions";
+import { useLikesInfinite } from "@/hooks/useLikes";
 
 interface LikeButtonProps {
   placeId: string;
   className?: string;
+  username?: string;
 }
 
-export const LikeButton = ({ placeId, className }: LikeButtonProps) => {
+export const LikeButton = ({
+  placeId,
+  className,
+  username,
+}: LikeButtonProps) => {
   const { data: session } = useSession();
   const { data: userData, like } = usePlaceInteractions();
   const { toggle: toggleLike, isPending } = like;
+  const likesQuery = useLikesInfinite(username ?? "");
+  const isInLikesTab = !!username;
+  const isOwnProfile = session?.user.username === username;
 
   const isLiked = userData?.likes.some((like) => like.placeId === placeId);
 
@@ -28,11 +37,19 @@ export const LikeButton = ({ placeId, className }: LikeButtonProps) => {
       return;
     }
 
+    if (isInLikesTab && isOwnProfile && isLiked) {
+      likesQuery.removeLike(placeId);
+    }
+
     toggleLike(placeId, {
-      onError: (error) =>
+      onError: (error) => {
         toast.error("Failed to update like", {
           description: error.message,
-        }),
+        });
+        if (isInLikesTab && isOwnProfile && isLiked) {
+          likesQuery.refetch();
+        }
+      },
     });
   };
 

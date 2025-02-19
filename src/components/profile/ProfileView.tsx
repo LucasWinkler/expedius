@@ -11,15 +11,38 @@ import { ListDeleteDialog } from "../lists/ListDeleteDialog";
 import { Button } from "../ui/button";
 import ListCreateDialog from "../lists/ListCreateDialog";
 import ListEditDialog from "../lists/ListEditDialog";
+import { useLikesInfinite } from "@/hooks/useLikes";
+import { PlaceCard } from "../places/PlaceCard";
+import { LikeButton } from "../places/LikeButton";
+import type { Place } from "@/types";
+import { useSession } from "@/lib/auth-client";
+import { SaveToListButton } from "../places/SaveToListButton";
 
 interface ProfileViewProps {
   username: string;
   isOwnProfile: boolean;
 }
 
+interface LikeItem {
+  placeId: string;
+  place: Place;
+}
+
 export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useListsInfinite(username);
+  const {
+    data: listsData,
+    fetchNextPage: fetchNextLists,
+    hasNextPage: hasNextLists,
+    isFetchingNextPage: isFetchingNextLists,
+    status: listsStatus,
+  } = useListsInfinite(username);
+  const {
+    data: likesData,
+    fetchNextPage: fetchNextLikes,
+    hasNextPage: hasNextLikes,
+    isFetchingNextPage: isFetchingNextLikes,
+    status: likesStatus,
+  } = useLikesInfinite(username);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingList, setEditingList] = useState<DbListWithPlacesCount | null>(
     null,
@@ -27,22 +50,41 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
   const [deletingList, setDeletingList] =
     useState<DbListWithPlacesCount | null>(null);
   const [activeTab, setActiveTab] = useState<"lists" | "likes">("lists");
+  const { data: session } = useSession();
 
-  const { ref } = useInView({
+  const { ref: listsRef } = useInView({
     threshold: 0,
     rootMargin: "200px 0px",
     onChange: (inView) => {
-      if (inView && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
+      if (inView && hasNextLists && !isFetchingNextLists) {
+        fetchNextLists();
+      }
+    },
+  });
+
+  const { ref: likesRef } = useInView({
+    threshold: 0,
+    rootMargin: "200px 0px",
+    onChange: (inView) => {
+      if (inView && hasNextLikes && !isFetchingNextLikes) {
+        fetchNextLikes();
       }
     },
   });
 
   const allLists =
-    data?.pages.flatMap((page, pageIndex) =>
+    listsData?.pages.flatMap((page, pageIndex) =>
       page.items.map((item) => ({
         ...item,
         key: `${item.id}-${pageIndex}`,
+      })),
+    ) ?? [];
+
+  const allLikes =
+    likesData?.pages.flatMap((page, pageIndex) =>
+      page.items.map((item: LikeItem) => ({
+        ...item,
+        key: `${item.placeId}-${pageIndex}`,
       })),
     ) ?? [];
 
@@ -75,16 +117,16 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
           )}
         </div>
         <TabsContent value="lists">
-          {status === "pending" ? (
+          {listsStatus === "pending" ? (
             <div className="flex justify-center py-8">
               <Loader2 className="size-6 animate-spin text-muted-foreground" />
             </div>
-          ) : status === "error" ? (
+          ) : listsStatus === "error" ? (
             <div className="py-8 text-center text-muted-foreground">
               Error loading lists
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-8">
               {allLists.map((list) => (
                 <ListCard
                   key={list.key}
@@ -97,9 +139,9 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
                 />
               ))}
 
-              <div ref={ref} className="h-8 w-full">
-                {hasNextPage ? (
-                  isFetchingNextPage ? (
+              <div ref={listsRef} className="h-8 w-full">
+                {hasNextLists ? (
+                  isFetchingNextLists ? (
                     <div className="flex justify-center py-4">
                       <Loader2 className="size-6 animate-spin text-muted-foreground" />
                     </div>
@@ -122,7 +164,62 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
           )}
         </TabsContent>
 
-        <TabsContent value="likes">Coming soon</TabsContent>
+        <TabsContent value="likes">
+          {likesStatus === "pending" ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : likesStatus === "error" ? (
+            <div className="py-8 text-center text-muted-foreground">
+              Error loading likes
+            </div>
+          ) : (
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {allLikes.map((like) => (
+                  <PlaceCard
+                    key={like.key}
+                    place={like.place}
+                    isListItem
+                    actions={
+                      session ? (
+                        <div className="flex flex-col gap-2">
+                          <LikeButton
+                            placeId={like.placeId}
+                            username={username}
+                          />
+                          <SaveToListButton placeId={like.placeId} />
+                        </div>
+                      ) : undefined
+                    }
+                  />
+                ))}
+              </div>
+
+              <div ref={likesRef} className="h-8 w-full">
+                {hasNextLikes ? (
+                  isFetchingNextLikes ? (
+                    <div className="flex justify-center py-4">
+                      <Loader2 className="size-6 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : (
+                    <div className="flex justify-center py-4">
+                      <span className="text-sm text-muted-foreground">
+                        Scroll for more likes
+                      </span>
+                    </div>
+                  )
+                ) : allLikes.length > 0 ? (
+                  <div className="flex justify-center py-4">
+                    <span className="text-sm text-muted-foreground">
+                      No more likes to load
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          )}
+        </TabsContent>
       </Tabs>
 
       {isOwnProfile && activeTab === "lists" && (

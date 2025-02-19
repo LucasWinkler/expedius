@@ -22,6 +22,7 @@ export const PlaceCard = ({
   isListItem,
 }: PlaceCardProps) => {
   const Comp = isListItem ? "li" : "div";
+
   return (
     <Comp className="group list-none">
       <Card className="relative overflow-hidden bg-muted shadow-none transition-all hover:shadow-md">
