@@ -122,7 +122,7 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
           )}
         </TabsContent>
 
-        <TabsContent value="likes">Likes... eventually</TabsContent>
+        <TabsContent value="likes">Coming soon</TabsContent>
       </Tabs>
 
       {isOwnProfile && activeTab === "lists" && (
