@@ -114,13 +114,13 @@ export const ListsView = ({
       </header>
 
       <section>
-        <div className="mb-6 flex items-center justify-between">
-          <div className="rounded-md border p-3">
-            Search and filtering here later
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
+          <div className="rounded-md border p-2">
+            Search/filtering coming soon
           </div>
           {isOwnProfile && (
             <Button onClick={() => setIsCreateDialogOpen(true)}>
-              <Plus className="mr-2 size-4" />
+              <Plus aria-hidden="true" className="mr-2 size-4" />
               New List
             </Button>
           )}
@@ -151,33 +151,31 @@ export const ListsView = ({
           )}
         </ul>
 
-        {totalPages > 1 && (
-          <nav aria-label="Pagination">
-            <Pagination>
-              <PaginationContent>
-                <PaginationPrevious
-                  href={createPageLink(currentPage - 1)}
-                  aria-disabled={currentPage <= 1}
-                  tabIndex={currentPage <= 1 ? -1 : 0}
-                  className={
-                    currentPage <= 1 ? "pointer-events-none opacity-50" : ""
-                  }
-                />
-                {renderPaginationItems()}
-                <PaginationNext
-                  href={createPageLink(currentPage + 1)}
-                  aria-disabled={currentPage >= totalPages}
-                  tabIndex={currentPage >= totalPages ? -1 : 0}
-                  className={
-                    currentPage >= totalPages
-                      ? "pointer-events-none opacity-50"
-                      : ""
-                  }
-                />
-              </PaginationContent>
-            </Pagination>
-          </nav>
-        )}
+        <nav aria-label="Pagination">
+          <Pagination>
+            <PaginationContent>
+              <PaginationPrevious
+                href={createPageLink(currentPage - 1)}
+                aria-disabled={currentPage <= 1}
+                tabIndex={currentPage <= 1 ? -1 : 0}
+                className={
+                  currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                }
+              />
+              {renderPaginationItems()}
+              <PaginationNext
+                href={createPageLink(currentPage + 1)}
+                aria-disabled={currentPage >= totalPages}
+                tabIndex={currentPage >= totalPages ? -1 : 0}
+                className={
+                  currentPage >= totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
+              />
+            </PaginationContent>
+          </Pagination>
+        </nav>
       </section>
 
       <ListCreateDialog
