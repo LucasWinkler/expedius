@@ -2,6 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Folders } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 export const ListsViewSkeleton = () => {
   return (
@@ -31,23 +32,30 @@ export const ListsViewSkeleton = () => {
 
         <ul className="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
           {Array.from({ length: 6 }).map((_, i) => (
-            <li
+            <Card
               key={i}
-              className="group relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"
+              className="relative overflow-hidden border-0 bg-muted/50"
             >
-              <div className="relative">
-                <Skeleton className="aspect-[2/1] w-full" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              </div>
-              <div className="relative space-y-2.5 p-6">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-4 w-48" />
-                <div className="flex items-center gap-4">
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-16" />
+              <article className="relative flex flex-col xs:flex-row">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-xl p-5 xs:w-48 sm:w-60 md:w-72">
+                  <Skeleton className="h-full w-full rounded-lg" />
                 </div>
-              </div>
-            </li>
+
+                <div className="relative flex flex-1 flex-col justify-between p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="space-y-2">
+                      <Skeleton className="h-6 w-32" />
+                    </div>
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between gap-4">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                </div>
+              </article>
+            </Card>
           ))}
         </ul>
 

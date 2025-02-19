@@ -1,7 +1,8 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin } from "lucide-react";
+import { Folders } from "lucide-react";
+import { PlaceCardSkeleton } from "./PlaceCardSkeleton";
 
 export const ListViewSkeleton = () => {
   return (
@@ -12,45 +13,21 @@ export const ListViewSkeleton = () => {
           <span>/</span>
           <Skeleton className="h-4 w-16" />
           <span>/</span>
-          <span className="text-foreground">
-            <Skeleton className="h-4 w-32" />
-          </span>
+          <Skeleton className="h-4 w-32" />
         </div>
         <Skeleton className="h-9 w-48" />
-        <Skeleton className="h-4 w-96" />
         <div className="flex items-center gap-4">
           <div className="inline-flex items-center text-sm text-muted-foreground">
-            <MapPin className="mr-1.5 size-3.5" />
+            <Folders className="mr-1.5 size-3.5" />
             <Skeleton className="h-4 w-16" />
           </div>
-          <Skeleton className="h-4 w-16" />
         </div>
       </header>
 
       <section>
         <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="group relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"
-            >
-              <div className="relative">
-                <Skeleton className="aspect-[3/2] w-full" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              </div>
-              <div className="relative space-y-2.5 p-4">
-                <Skeleton className="h-5 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <div className="flex items-center gap-4">
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-16" />
-                </div>
-              </div>
-              <div className="absolute right-4 top-4 flex flex-col gap-2">
-                <Skeleton className="h-8 w-8" />
-                <Skeleton className="h-8 w-8" />
-              </div>
-            </div>
+            <PlaceCardSkeleton key={i} showActions />
           ))}
         </div>
 
