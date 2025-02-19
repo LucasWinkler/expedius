@@ -12,6 +12,36 @@ import type {
 import { profileParamsSchema } from "@/lib/validations/profile";
 import { ProfileParams } from "@/lib/validations/profile";
 import { lists } from "@/server/data/lists";
+import { likes } from "@/server/data/likes";
+import { env } from "@/env";
+import { getEnhancedPlacePhoto } from "@/server/services/photos";
+import type { Place } from "@/types";
+
+const FIELD_MASK = [
+  "id",
+  "displayName",
+  "formattedAddress",
+  "photos",
+  "rating",
+  "userRatingCount",
+  "priceLevel",
+].join(",");
+
+const processPlacePhotos = async (place: Place): Promise<Place> => {
+  try {
+    if (!place.photos?.[0]) {
+      return place;
+    }
+
+    return {
+      ...place,
+      image: await getEnhancedPlacePhoto(place.photos[0].name),
+    };
+  } catch (error) {
+    console.warn(`Failed to process photo for place ${place.id}:`, error);
+    return place;
+  }
+};
 
 export const users = {
   queries: {
@@ -79,8 +109,12 @@ export const users = {
         };
       }
 
-      const [userLists, likesCount] = await Promise.all([
+      const [userLists, userLikes, likesCount] = await Promise.all([
         lists.queries.getAllByUserId(foundUser.id, isOwnProfile, {
+          page,
+          limit,
+        }),
+        likes.queries.getAllByUserId(foundUser.id, {
           page,
           limit,
         }),
@@ -91,10 +125,53 @@ export const users = {
           .then((result) => Number(result[0].count)),
       ]);
 
+      // Fetch place details for each like
+      const likesWithPlaceDetails = await Promise.all(
+        userLikes.items.map(async (like) => {
+          const res = await fetch(
+            `${env.GOOGLE_PLACES_API_BASE_URL}/places/${like.placeId}`,
+            {
+              headers: {
+                "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
+                "X-Goog-FieldMask": FIELD_MASK,
+              },
+              next: {
+                revalidate: 3600, // Cache for 1 hour
+              },
+            },
+          );
+
+          if (!res.ok) {
+            console.error(
+              `Failed to fetch place details for ${like.placeId}:`,
+              await res.text(),
+            );
+            return null;
+          }
+
+          const placeDetails = await res.json();
+          const processedPlace = await processPlacePhotos(placeDetails);
+
+          return {
+            placeId: like.placeId,
+            place: processedPlace,
+          };
+        }),
+      );
+
+      // Filter out any failed requests
+      const validLikes = likesWithPlaceDetails.filter(
+        (like): like is NonNullable<typeof like> => like !== null,
+      );
+
       return {
         user: { ...foundUser, type: "public" as const },
         isOwnProfile,
         lists: userLists,
+        likes: {
+          items: validLikes,
+          metadata: userLikes.metadata,
+        },
         totalLikes: likesCount,
       };
     },
