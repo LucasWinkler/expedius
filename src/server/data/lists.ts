@@ -83,7 +83,7 @@ export const lists = {
             },
           };
         },
-        [`user-${userId}-lists-page-${page}`],
+        [`user-${userId}-lists-page-${page}-auth-${isOwnProfile}`],
         {
           tags: [`user-${userId}-lists`, `user-lists`],
           revalidate: 60,
@@ -106,7 +106,7 @@ export const lists = {
             limit,
           });
         },
-        [`user-${username}-lists-page-${page}-${isOwnProfile}`],
+        [`user-${username}-lists-page-${page}-auth-${isOwnProfile}`],
         {
           tags: [`user-${username}-lists`, `user-lists`],
           revalidate: 60,

@@ -13,6 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Heart } from "lucide-react";
 
 const LikeButton = dynamic(
   () => import("@/components/places/LikeButton").then((mod) => mod.LikeButton),
@@ -51,7 +52,6 @@ interface LikesViewProps {
     place: Place;
   }>;
   username: string;
-  isOwnProfile: boolean;
   totalPages: number;
   currentPage: number;
   totalLikes: number;
@@ -60,7 +60,6 @@ interface LikesViewProps {
 export const LikesView = ({
   likes,
   username,
-  isOwnProfile,
   totalPages,
   currentPage,
   totalLikes,
@@ -126,26 +125,26 @@ export const LikesView = ({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <header className="mb-8 space-y-2">
-        <h1 className="text-3xl font-bold">
-          {isOwnProfile ? (
-            "My Likes"
-          ) : (
-            <>
-              <Link
-                href={`/u/${username}`}
-                className="text-primary hover:underline"
-              >
-                {username}
-                &apos;s
-              </Link>{" "}
-              Likes
-            </>
-          )}
-        </h1>
-        <p className="mt-1 text-muted-foreground">
-          {totalLikes} Like{totalLikes === 1 ? "" : "s"}
-        </p>
+      <header className="mb-8 space-y-4">
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Link
+            href={`/u/${username}`}
+            className="transition-colors hover:text-foreground"
+          >
+            {username}
+          </Link>
+          <span>/</span>
+          <span className="text-foreground">Likes</span>
+        </div>
+        <h1 className="text-3xl font-bold">Likes</h1>
+        <div className="flex items-center gap-4">
+          <div className="inline-flex items-center text-sm text-muted-foreground">
+            <Heart className="mr-1.5 size-3.5" />
+            <span>
+              {totalLikes} {totalLikes === 1 ? "like" : "likes"}
+            </span>
+          </div>
+        </div>
       </header>
 
       <section>

@@ -1,22 +1,23 @@
 import { notFound } from "next/navigation";
 import { users } from "@/server/data/users";
+import { lists } from "@/server/data/lists";
 import { profileParamsSchema } from "@/lib/validations/profile";
-import type { PublicProfileData } from "@/server/types/profile";
-import { LikesView } from "@/components/likes/LikesView";
 import { ProfilePrivateView } from "@/components/profile/ProfilePrivateView";
+import { ListView } from "@/components/lists/ListView";
+import type { PublicProfileData } from "@/server/types/profile";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
-interface LikesPageProps {
-  params: Promise<{ username: string }>;
+interface ListPageProps {
+  params: Promise<{ username: string; slug: string }>;
   searchParams: Promise<{ page?: string }>;
 }
 
-export default async function LikesPage({
+export default async function ListPage({
   params,
   searchParams,
-}: LikesPageProps) {
+}: ListPageProps) {
   const validated = profileParamsSchema.safeParse({
     username: (await params).username,
     page: (await searchParams).page,
@@ -39,13 +40,25 @@ export default async function LikesPage({
 
   const publicProfile = profile as PublicProfileData;
 
+  const list = await lists.queries.getBySlug(
+    (await params).slug,
+    publicProfile.user.id,
+  );
+
+  if (!list) {
+    notFound();
+  }
+
+  if (!list.isPublic && !publicProfile.isOwnProfile) {
+    notFound();
+  }
+
   return (
-    <LikesView
-      likes={publicProfile.likes.items}
+    <ListView
+      list={list}
       username={validated.data.username}
-      totalPages={publicProfile.likes.metadata.totalPages}
+      isOwnProfile={publicProfile.isOwnProfile}
       currentPage={validated.data.page}
-      totalLikes={publicProfile.likes.metadata.totalItems}
     />
   );
 }

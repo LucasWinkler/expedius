@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Folders } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -105,26 +105,26 @@ export const ListsView = ({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <header className="mb-8 space-y-2">
-        <h1 className="text-3xl font-bold">
-          {isOwnProfile ? (
-            "My Lists"
-          ) : (
-            <>
-              <Link
-                href={`/u/${username}`}
-                className="text-primary transition-colors hover:text-primary/80 hover:underline"
-              >
-                {username}
-                &apos;s
-              </Link>{" "}
-              Lists
-            </>
-          )}
-        </h1>
-        <p className="mt-1 text-muted-foreground">
-          {totalLists} List{totalLists === 1 ? "" : "s"}
-        </p>
+      <header className="mb-8 space-y-4">
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Link
+            href={`/u/${username}`}
+            className="transition-colors hover:text-foreground"
+          >
+            {username}
+          </Link>
+          <span>/</span>
+          <span className="text-foreground">Lists</span>
+        </div>
+        <h1 className="text-3xl font-bold">Lists</h1>
+        <div className="flex items-center gap-4">
+          <div className="inline-flex items-center text-sm text-muted-foreground">
+            <Folders className="mr-1.5 size-3.5" />
+            <span>
+              {totalLists} {totalLists === 1 ? "list" : "lists"}
+            </span>
+          </div>
+        </div>
       </header>
 
       <section>
