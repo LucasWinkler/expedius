@@ -22,9 +22,10 @@ export const LikeButton = ({
   const { data: session } = useSession();
   const { data: userData, like } = usePlaceInteractions();
   const { toggle: toggleLike, isPending } = like;
-  const likesQuery = useLikesInfinite(username ?? "");
   const isInLikesTab = !!username;
   const isOwnProfile = session?.user.username === username;
+  const shouldUpdateLikesQuery = isInLikesTab && isOwnProfile;
+  const likesQuery = useLikesInfinite(username ?? "", shouldUpdateLikesQuery);
 
   const isLiked = userData?.likes.some((like) => like.placeId === placeId);
 
@@ -37,7 +38,7 @@ export const LikeButton = ({
       return;
     }
 
-    if (isInLikesTab && isOwnProfile && isLiked) {
+    if (shouldUpdateLikesQuery && isLiked) {
       likesQuery.removeLike(placeId);
     }
 
@@ -46,7 +47,7 @@ export const LikeButton = ({
         toast.error("Failed to update like", {
           description: error.message,
         });
-        if (isInLikesTab && isOwnProfile && isLiked) {
+        if (shouldUpdateLikesQuery && isLiked) {
           likesQuery.refetch();
         }
       },

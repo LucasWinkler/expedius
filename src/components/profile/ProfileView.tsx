@@ -42,7 +42,7 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
     hasNextPage: hasNextLikes,
     isFetchingNextPage: isFetchingNextLikes,
     status: likesStatus,
-  } = useLikesInfinite(username);
+  } = useLikesInfinite(username, true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingList, setEditingList] = useState<DbListWithPlacesCount | null>(
     null,

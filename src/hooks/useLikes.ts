@@ -24,7 +24,10 @@ interface InfiniteLikesData {
   pageParams: number[];
 }
 
-export const useLikesInfinite = (username: DbUser["username"]) => {
+export const useLikesInfinite = (
+  username: DbUser["username"],
+  enabled = false,
+) => {
   const queryClient = useQueryClient();
   const ITEMS_PER_PAGE = 6;
   const queryKey = [QUERY_KEYS.LIKES, "infinite", username];
@@ -41,6 +44,7 @@ export const useLikesInfinite = (username: DbUser["username"]) => {
         ? lastPage.metadata.currentPage + 1
         : undefined,
     initialPageParam: 1,
+    enabled: enabled && !!username,
   });
 
   const removeLike = (placeId: string) => {
