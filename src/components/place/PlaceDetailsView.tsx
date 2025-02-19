@@ -81,8 +81,8 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
   };
 
   return (
-    <div className="relative space-y-12">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 sm:flex-row sm:items-start sm:justify-between">
+    <div className="relative space-y-8 sm:space-y-12">
+      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 sm:flex-row sm:items-start sm:justify-between sm:py-6">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
             {place.displayName.text}
@@ -294,7 +294,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
                     <DollarSign className="h-4 w-4 text-foreground" />
                   </div>
                   <span className="text-base font-medium">
-                    {place.priceRange.startPrice.units} -{" "}
+                    Average {place.priceRange.startPrice.units} -{" "}
                     {place.priceRange.endPrice.units}{" "}
                     {place.priceRange.startPrice.currencyCode}
                   </span>
