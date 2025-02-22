@@ -52,7 +52,7 @@ export type PlaceDetails = Place & {
         minute: number;
       };
     }[];
-    weekdayDescriptions: string[];
+    weekdayDescriptions?: string[];
   };
   websiteUri?: string;
   internationalPhoneNumber?: string;

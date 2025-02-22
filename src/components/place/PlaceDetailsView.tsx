@@ -277,13 +277,13 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
                         ? "Open now"
                         : "Closed"}
                     </div>
-                    <div className="mt-2.5 space-y-1.5 text-sm text-muted-foreground">
-                      {place.currentOpeningHours.weekdayDescriptions.map(
-                        (day, index) => (
-                          <div key={index}>{day}</div>
-                        ),
-                      )}
-                    </div>
+                    {place.currentOpeningHours.weekdayDescriptions && (
+                      <div className="mt-2.5 space-y-1.5 text-sm text-muted-foreground">
+                        {place.currentOpeningHours.weekdayDescriptions?.map(
+                          (day, index) => <div key={index}>{day}</div>,
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
