@@ -12,15 +12,26 @@ export const useCategoryPlaces = ({
   query,
   enabled = true,
 }: UseCategoryPlacesOptions) => {
-  const { coords, isLoading: isLoadingLocation } = useLocation();
+  const {
+    coords,
+    isLoading: isLoadingLocation,
+    permissionState,
+  } = useLocation();
+
+  const useLocationBias =
+    !isLoadingLocation &&
+    permissionState === "granted" &&
+    coords.latitude !== null &&
+    coords.longitude !== null;
 
   return useQuery({
-    queryKey: [QUERY_KEYS.CATEGORIES, query, coords],
-    queryFn: () => searchPlacesClient(query, 6, coords),
-    enabled:
-      enabled &&
-      !isLoadingLocation &&
-      coords.latitude !== null &&
-      coords.longitude !== null,
+    queryKey: [QUERY_KEYS.CATEGORIES, query, useLocationBias ? coords : null],
+    queryFn: () =>
+      searchPlacesClient(
+        query,
+        6,
+        useLocationBias ? coords : { latitude: null, longitude: null },
+      ),
+    enabled: enabled && (!isLoadingLocation || permissionState !== "prompt"),
   });
 };

@@ -8,10 +8,19 @@ import {
   type ReactNode,
 } from "react";
 
+// Define possible location permission states
+export type LocationPermissionState =
+  | "prompt" // Initial state, permission not yet requested
+  | "granted" // User granted permission
+  | "denied" // User denied permission
+  | "unavailable" // Geolocation API not available
+  | "timeout"; // Geolocation request timed out
+
 interface LocationContextType {
   coords: LocationCoords;
   isLoading: boolean;
   error: string | null;
+  permissionState: LocationPermissionState;
 }
 
 export type LocationCoords = {
@@ -26,6 +35,7 @@ const LocationContext = createContext<LocationContextType>({
   },
   isLoading: true,
   error: null,
+  permissionState: "prompt",
 });
 
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
@@ -37,9 +47,13 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
     longitude: null,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [permissionState, setPermissionState] =
+    useState<LocationPermissionState>("prompt");
 
   useEffect(() => {
     if (!navigator.geolocation) {
+      setPermissionState("unavailable");
       setIsLoading(false);
       return;
     }
@@ -49,11 +63,22 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
       });
+      setPermissionState("granted");
       setIsLoading(false);
     };
 
-    const handleError = () => {
+    const handleError = (err: GeolocationPositionError) => {
       setCoords({ latitude: null, longitude: null });
+
+      if (err.code === 1) {
+        setPermissionState("denied");
+      } else if (err.code === 3) {
+        setPermissionState("timeout");
+        setError("Location request timed out");
+      } else {
+        setError(err.message || "Failed to get location");
+      }
+
       setIsLoading(false);
     };
 
@@ -78,15 +103,21 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
         });
 
         if (permission.state === "granted") {
+          setPermissionState("granted");
           requestLocation();
+        } else if (permission.state === "denied") {
+          setPermissionState("denied");
+          setIsLoading(false);
         } else {
           requestLocation();
         }
 
         permission.addEventListener("change", () => {
           if (permission.state === "granted") {
+            setPermissionState("granted");
             requestLocation();
-          } else {
+          } else if (permission.state === "denied") {
+            setPermissionState("denied");
             setCoords({ latitude: null, longitude: null });
             setIsLoading(false);
           }
@@ -103,7 +134,8 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const value = {
     coords,
     isLoading,
-    error: null,
+    error,
+    permissionState,
   };
 
   return (

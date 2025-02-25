@@ -13,16 +13,28 @@ interface UseCategoryListResponse {
 }
 
 export const useCategoryList = (): UseCategoryListResponse[] => {
-  const { coords, isLoading: isLoadingLocation } = useLocation();
+  const {
+    coords,
+    isLoading: isLoadingLocation,
+    permissionState,
+  } = useLocation();
+
+  const useLocationBias =
+    !isLoadingLocation &&
+    permissionState === "granted" &&
+    coords.latitude !== null &&
+    coords.longitude !== null;
 
   const queries = useQueries({
     queries: HOME_CATEGORIES.map(({ query }) => ({
-      queryKey: [QUERY_KEYS.CATEGORIES, query, coords],
-      queryFn: () => searchPlacesClient(query, 6, coords),
-      enabled:
-        !isLoadingLocation &&
-        coords.latitude !== null &&
-        coords.longitude !== null,
+      queryKey: [QUERY_KEYS.CATEGORIES, query, useLocationBias ? coords : null],
+      queryFn: () =>
+        searchPlacesClient(
+          query,
+          6,
+          useLocationBias ? coords : { latitude: null, longitude: null },
+        ),
+      enabled: !isLoadingLocation || permissionState !== "prompt",
     })),
   });
 

@@ -21,12 +21,21 @@ interface UpdateSearchParamsProps {
 const defaultSize = 9;
 
 export const useSearch = () => {
-  const { coords, isLoading: isLoadingLocation } = useLocation();
+  const {
+    coords,
+    isLoading: isLoadingLocation,
+    permissionState,
+  } = useLocation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  // Extract search parameters from URL
+  const useLocationBias =
+    !isLoadingLocation &&
+    permissionState === "granted" &&
+    coords.latitude !== null &&
+    coords.longitude !== null;
+
   const query = searchParams.get("q") ?? "";
   const minRating = searchParams.get("rating")
     ? Number(searchParams.get("rating"))
@@ -129,13 +138,19 @@ export const useSearch = () => {
     isPending,
     isError,
   } = useQuery({
-    queryKey: [QUERY_KEYS.SEARCH, query, filters, size, coords],
+    queryKey: [
+      QUERY_KEYS.SEARCH,
+      query,
+      filters,
+      size,
+      useLocationBias ? coords : null,
+    ],
     queryFn: async () => {
       try {
         const result = await searchPlacesClient(
           query,
           size,
-          coords,
+          useLocationBias ? coords : { latitude: null, longitude: null },
           filters,
           undefined,
         );
@@ -150,13 +165,21 @@ export const useSearch = () => {
         throw error;
       }
     },
-    enabled: !isLoadingLocation && query.length > 0,
+    enabled:
+      query.length > 0 && (!isLoadingLocation || permissionState !== "prompt"),
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
   });
 
   const { data: paginationData, isPending: isPaginationPending } = useQuery({
-    queryKey: [QUERY_KEYS.SEARCH_MORE, query, filters, size, coords, pageToken],
+    queryKey: [
+      QUERY_KEYS.SEARCH_MORE,
+      query,
+      filters,
+      size,
+      useLocationBias ? coords : null,
+      pageToken,
+    ],
     queryFn: async ({ queryKey }) => {
       const queryFromKey = queryKey[1] as string;
       const tokenFromKey = queryKey[5] as string | null;
@@ -181,7 +204,7 @@ export const useSearch = () => {
         const result = await searchPlacesClient(
           queryFromKey,
           size,
-          coords,
+          useLocationBias ? coords : { latitude: null, longitude: null },
           filters,
           tokenFromKey,
         );
