@@ -12,6 +12,7 @@ const FIELD_MASK = [
   "places.rating",
   "places.userRatingCount",
   "places.priceLevel",
+  "nextPageToken",
 ].join(",");
 
 const placesCache = new Map<
@@ -30,8 +31,9 @@ export const GET = withApiLimit(async (request: Request) => {
   const radius = searchParams.get("radius");
   const minRating = searchParams.get("minRating");
   const openNow = searchParams.get("openNow");
+  const pageToken = searchParams.get("pageToken");
 
-  if (!query) {
+  if (!query && !pageToken) {
     return new NextResponse("Missing query parameter", { status: 400 });
   }
 
@@ -50,59 +52,107 @@ export const GET = withApiLimit(async (request: Request) => {
     : undefined;
   const parsedOpenNow = openNow === "true" ? true : undefined;
 
-  const cacheKeyParams = [
-    `query:${query}`,
-    `size:${parsedSize}`,
-    lat && `lat:${lat}`,
-    lng && `lng:${lng}`,
-    `radius:${validatedRadius}`,
-    ...(parsedMinRating ? [`minRating:${parsedMinRating}`] : []),
-    ...(parsedOpenNow ? [`openNow:${parsedOpenNow}`] : []),
-  ].filter(Boolean);
-  const cacheKey = `search:${cacheKeyParams.join(":")}`;
-  const cachedPlaces = placesCache.get(cacheKey);
+  // Only use cache for initial queries, not for pagination
+  if (!pageToken) {
+    const cacheKeyParams = [
+      `query:${query}`,
+      `size:${parsedSize}`,
+      lat && `lat:${lat}`,
+      lng && `lng:${lng}`,
+      `radius:${validatedRadius}`,
+      ...(parsedMinRating ? [`minRating:${parsedMinRating}`] : []),
+      ...(parsedOpenNow ? [`openNow:${parsedOpenNow}`] : []),
+    ].filter(Boolean);
+    const cacheKey = `search:${cacheKeyParams.join(":")}`;
+    const cachedPlaces = placesCache.get(cacheKey);
 
-  if (cachedPlaces && Date.now() - cachedPlaces.timestamp < CACHE_DURATION) {
-    return NextResponse.json(cachedPlaces.data);
+    if (cachedPlaces && Date.now() - cachedPlaces.timestamp < CACHE_DURATION) {
+      console.log("Returning cached search results");
+      return NextResponse.json(cachedPlaces.data);
+    }
   }
 
   try {
-    const body = {
-      textQuery: query,
+    const apiUrl = `${env.GOOGLE_PLACES_API_BASE_URL}/places:searchText`;
+    const body: {
+      textQuery?: string;
+      languageCode?: string;
+      pageSize?: number;
+      minRating?: number;
+      openNow?: boolean;
+      locationBias?: {
+        circle: {
+          center: {
+            latitude: number;
+            longitude: number;
+          };
+          radius: number;
+        };
+      };
+      pageToken?: string;
+    } = {
+      textQuery: query || "",
       languageCode: "en",
       pageSize: parsedSize,
-      ...(parsedMinRating && { minRating: parsedMinRating }),
-      ...(parsedOpenNow !== undefined && { openNow: parsedOpenNow }),
-      ...(lat && lng
-        ? {
-            locationBias: {
-              circle: {
-                center: {
-                  latitude: Number(lat),
-                  longitude: Number(lng),
-                },
-                radius: validatedRadius,
-              },
-            },
-          }
-        : {}),
     };
 
-    const res = await fetch(
-      `${env.GOOGLE_PLACES_API_BASE_URL}/places:searchText`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
-          "X-Goog-FieldMask": FIELD_MASK,
+    if (pageToken) {
+      body.pageToken = pageToken;
+    }
+
+    if (parsedMinRating) {
+      body.minRating = parsedMinRating;
+    }
+
+    if (parsedOpenNow !== undefined) {
+      body.openNow = parsedOpenNow;
+    }
+
+    if (lat && lng) {
+      body.locationBias = {
+        circle: {
+          center: {
+            latitude: Number(lat),
+            longitude: Number(lng),
+          },
+          radius: validatedRadius,
         },
-        body: JSON.stringify(body),
+      };
+    }
+
+    const res = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
+        "X-Goog-FieldMask": FIELD_MASK,
       },
-    );
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      console.error(`Places API error: ${res.status} ${res.statusText}`);
+      return new NextResponse(`Google Places API error: ${res.statusText}`, {
+        status: res.status,
+      });
+    }
 
     const placesData = await res.json();
-    placesCache.set(cacheKey, { data: placesData, timestamp: Date.now() });
+
+    // Only cache initial queries
+    if (!pageToken) {
+      const cacheKeyParams = [
+        `query:${query}`,
+        `size:${parsedSize}`,
+        lat && `lat:${lat}`,
+        lng && `lng:${lng}`,
+        `radius:${validatedRadius}`,
+        ...(parsedMinRating ? [`minRating:${parsedMinRating}`] : []),
+        ...(parsedOpenNow ? [`openNow:${parsedOpenNow}`] : []),
+      ].filter(Boolean);
+      const cacheKey = `search:${cacheKeyParams.join(":")}`;
+      placesCache.set(cacheKey, { data: placesData, timestamp: Date.now() });
+    }
 
     return NextResponse.json(placesData);
   } catch (error) {

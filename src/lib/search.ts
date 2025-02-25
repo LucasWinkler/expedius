@@ -13,22 +13,50 @@ const processPlacePhotos = async (places: Place[]): Promise<Place[]> => {
             return place;
           }
 
-          const photoRes = await fetch(getPlacePhotoUrl(place.photos[0].name));
-          if (!photoRes.ok) {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+          try {
+            const photoRes = await fetch(
+              getPlacePhotoUrl(place.photos[0].name),
+              {
+                signal: controller.signal,
+              },
+            );
+            clearTimeout(timeoutId);
+
+            if (!photoRes.ok) {
+              console.warn(
+                `Failed to fetch photo for ${place.id}: ${photoRes.status} ${photoRes.statusText}`,
+              );
+              return place;
+            }
+
+            const { widthPx, heightPx } = place.photos[0];
+
+            return {
+              ...place,
+              image: {
+                url: getPlacePhotoUrl(place.photos[0].name),
+                blurDataURL: photoRes.headers.get("x-blur-data") || "",
+                width: widthPx,
+                height: heightPx,
+              },
+            };
+          } catch (fetchError) {
+            if (
+              fetchError instanceof DOMException &&
+              fetchError.name === "AbortError"
+            ) {
+              console.warn(`Fetch timeout for photo of place ${place.id}`);
+            } else {
+              console.warn(
+                `Fetch error for photo of place ${place.id}:`,
+                fetchError,
+              );
+            }
             return place;
           }
-
-          const { widthPx, heightPx } = place.photos[0];
-
-          return {
-            ...place,
-            image: {
-              url: getPlacePhotoUrl(place.photos[0].name),
-              blurDataURL: photoRes.headers.get("x-blur-data") || "",
-              width: widthPx,
-              height: heightPx,
-            },
-          };
         } catch (error) {
           console.warn(`Failed to process photo for place ${place.id}:`, error);
           return place;
@@ -48,6 +76,7 @@ export async function searchPlacesClient(
   size: number,
   coords: LocationCoords,
   filters?: SearchFilters,
+  pageToken?: string | null,
 ): Promise<PlaceSearchResponse | null> {
   try {
     const searchParams = new URLSearchParams({
@@ -60,13 +89,20 @@ export async function searchPlacesClient(
       lng: coords.longitude?.toString() || "",
     });
 
-    const res = await fetch(`/api/places/search?${searchParams.toString()}`);
+    if (pageToken) {
+      searchParams.set("pageToken", pageToken);
+    }
+
+    const url = `/api/places/search?${searchParams.toString()}`;
+
+    const res = await fetch(url);
     if (!res.ok) {
       if (res.status === 429) {
         toast.error("Please wait a moment before searching again");
         return null;
       }
-      throw new Error("Failed to fetch results");
+      console.error(`Search API error: ${res.status} ${res.statusText}`);
+      throw new Error(`Failed to fetch results: ${res.statusText}`);
     }
 
     const data = (await res.json()) as PlaceSearchResponse;
