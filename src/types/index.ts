@@ -148,6 +148,7 @@ export interface PlaceSearchResponse {
   places: Place[];
   likeStatuses: LikeStatuses;
   userLists: DbListWithPlacesCount[];
+  nextPageToken?: string;
 }
 
 export interface ListResponse {

@@ -4,6 +4,7 @@ export const QUERY_KEYS = {
   PROFILE: "profile",
   USER_LISTS: "userLists",
   SEARCH: "search",
+  SEARCH_MORE: "search-more",
   LIKES: "likes",
   PLACE_LISTS: "placeLists",
   LIKES_STATUSES: "likesStatuses",
