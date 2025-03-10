@@ -68,7 +68,7 @@
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <!-- <li><a href="#acknowledgments">Acknowledgments</a></li> -->
   </ol>
 </details>
 
@@ -184,25 +184,10 @@ Project Link: [https://github.com/lucaswinkler/poitogo](https://github.com/lucas
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
-
+<!--
 ## Acknowledgments
 
-- [Next.js](https://nextjs.org/)
-- [React](https://react.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [PostgreSQL](https://www.postgresql.org/)
-- [Neon](https://neon.tech/)
-- [Drizzle](https://orm.drizzle.team/)
-- [Upstash Redis](https://upstash.com/)
-- [Tanstack Query](https://tanstack.com/query)
-- [Google Places API](https://places.googleapis.com/)
-- [Shadcn](https://ui.shadcn.com/)
-- [Lucide Icons](https://lucide.dev/)
-- [Zod](https://zod.dev/)
-- [Uploadthing](https://uploadthing.com/)
-- [BetterAuth](https://betterauth.com/)
-- [Vercel](https://vercel.com/)
+-  -->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
