@@ -2,10 +2,8 @@ import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { Toaster } from "sonner";
-import { Providers } from "@/providers";
+import { ReactQueryClientProvider } from "@/providers/react-query-client-provider";
 import { createMetadata } from "@/lib/metadata";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,9 +14,9 @@ export const metadata = createMetadata({});
 
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} bg-background font-sans antialiased`}>
-        <Providers>{children}</Providers>
+        <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
         <Toaster
           position="bottom-right"
           expand={true}
@@ -26,8 +24,6 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
           closeButton={true}
           duration={3000}
         />
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );
