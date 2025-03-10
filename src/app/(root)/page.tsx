@@ -1,9 +1,11 @@
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 import { createMetadata } from "@/lib/metadata";
 import { HomeHero, HomeFeatures, HomeCta } from "@/components/home";
 import { CategoryCarouselsSkeleton } from "@/components/home/CategoryCarousel/CategoryCarouselsSkeleton";
 
-const CategoryCarousels = dynamic(
+export const dynamic = "force-static";
+
+const CategoryCarousels = dynamicImport(
   () =>
     import("@/components/home/CategoryCarousel/CategoryCarousels").then(
       (mod) => ({
