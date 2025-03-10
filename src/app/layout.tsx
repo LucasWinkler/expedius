@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { Toaster } from "sonner";
-import { ReactQueryClientProvider } from "@/providers/react-query-client-provider";
+import { QueryProvider } from "@/providers/query-provider";
 import { createMetadata } from "@/lib/metadata";
 
 const inter = Inter({
@@ -16,7 +16,7 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} bg-background font-sans antialiased`}>
-        <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
+        <QueryProvider>{children}</QueryProvider>
         <Toaster
           position="bottom-right"
           expand={true}
