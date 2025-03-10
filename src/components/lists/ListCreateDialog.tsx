@@ -65,7 +65,7 @@ export const ListCreateDialog = ({
         if (!uploadResult) {
           throw new Error("Failed to upload image");
         }
-        imageUrl = uploadResult[0].appUrl;
+        imageUrl = uploadResult[0].ufsUrl;
       }
 
       await createList(
@@ -85,6 +85,7 @@ export const ListCreateDialog = ({
         },
       );
     } catch (error) {
+      console.error(error);
       toast.error("Failed to create list", {
         description: error instanceof Error ? error.message : "Unknown error",
       });

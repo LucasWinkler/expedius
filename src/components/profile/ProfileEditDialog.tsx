@@ -87,7 +87,7 @@ export const ProfileEditDialog = ({
             toast.error("Failed to upload profile image");
             return;
           }
-          imageUrl = uploadResult[0].appUrl;
+          imageUrl = uploadResult[0].ufsUrl;
         } else if (data.image === null) {
           imageUrl = null;
         }

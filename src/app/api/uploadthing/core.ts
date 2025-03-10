@@ -9,7 +9,7 @@ export const ourFileRouter = {
       return {};
     })
     .onUploadComplete(({ file }) => {
-      return { fileUrl: file.appUrl };
+      return { fileUrl: file.ufsUrl };
     }),
   updateProfileImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(async () => {
@@ -18,7 +18,7 @@ export const ourFileRouter = {
       return { userId: session.user.id };
     })
     .onUploadComplete(async ({ file }) => {
-      return { fileUrl: file.appUrl };
+      return { fileUrl: file.ufsUrl };
     }),
   userListImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(async () => {
@@ -27,7 +27,7 @@ export const ourFileRouter = {
       return { userId: session.user.id };
     })
     .onUploadComplete(async ({ file }) => {
-      return { fileUrl: file.appUrl };
+      return { fileUrl: file.ufsUrl };
     }),
 } satisfies FileRouter;
 

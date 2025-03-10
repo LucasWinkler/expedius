@@ -69,7 +69,7 @@ export const ListEditDialog = ({
         if (!uploadResult) {
           throw new Error("Failed to upload image");
         }
-        imageUrl = uploadResult[0].appUrl;
+        imageUrl = uploadResult[0].ufsUrl;
       } else if (data.image === null) {
         imageUrl = null;
       }

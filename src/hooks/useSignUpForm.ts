@@ -75,7 +75,7 @@ export const useSignUpForm = () => {
           toast.error("Failed to upload profile image");
           return;
         }
-        imageUrl = uploadResult[0].appUrl;
+        imageUrl = uploadResult[0].ufsUrl;
       }
 
       await signUp.email(
