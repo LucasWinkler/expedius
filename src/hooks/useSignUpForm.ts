@@ -91,7 +91,7 @@ export const useSignUpForm = () => {
         {
           onSuccess: () => {
             toast.success("Account created!", {
-              description: "Welcome to PoiToGo.",
+              description: "Welcome to Expedius.",
             });
           },
           onError: (ctx) => {

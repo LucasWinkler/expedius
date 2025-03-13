@@ -6,7 +6,7 @@ import { createMetadata } from "@/lib/metadata";
 export const metadata = createMetadata({
   title: "Sign up",
   description:
-    "Create a PoiToGo account to start saving your favorite places and creating custom lists.",
+    "Create a Expedius account to start saving your favorite places and creating custom lists.",
 });
 
 const SignUpPage = async () => {

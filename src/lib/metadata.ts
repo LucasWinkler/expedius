@@ -11,11 +11,11 @@ export const createMetadata = ({
   description,
 }: OpenGraphConfig): Metadata => {
   const baseTitle = title
-    ? `${title} - PoiToGo`
-    : "Discover your next adventure - PoiToGo";
+    ? `${title} - Expedius`
+    : "Discover your next adventure - Expedius";
   const baseDescription =
     description ||
-    "Find and save your favourite places near you or anywhere in the world with PoiToGo. Create custom lists and share your public profile with others.";
+    "Find and save your favourite places near you or anywhere in the world with Expedius. Create custom lists and share your public profile with others.";
   const baseUrl = new URL(env.NEXT_PUBLIC_BASE_URL);
 
   return {
@@ -27,7 +27,7 @@ export const createMetadata = ({
       url: baseUrl,
       title: baseTitle,
       description: baseDescription,
-      siteName: "PoiToGo",
+      siteName: "Expedius",
       images: [
         {
           url: `/og.png`,

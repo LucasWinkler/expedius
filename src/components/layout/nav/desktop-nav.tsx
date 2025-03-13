@@ -25,9 +25,9 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
       <Link
         href="/"
         className="mr-8 bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-lg font-extrabold tracking-tighter text-transparent transition-colors hover:from-foreground hover:via-foreground/80 hover:to-foreground/60 xl:mr-10 2xl:text-xl"
-        aria-label="PoiToGo Home"
+        aria-label="Expedius Home"
       >
-        PoiToGo
+        Expedius
       </Link>
 
       <nav

@@ -9,13 +9,10 @@ export const Footer = () => {
             <Link
               href="/"
               className="bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-xl font-extrabold tracking-tighter text-transparent transition-colors hover:from-foreground hover:via-foreground/80 hover:to-foreground/60 xl:mr-10 2xl:text-xl"
-              aria-label="PoiToGo Home"
+              aria-label="Expedius Home"
             >
-              PoiToGo
+              Expedius
             </Link>
-            <span className="text-xs text-muted-foreground">
-              Points of Interest, To Go
-            </span>
             <p className="mt-2 max-w-xs text-center text-sm text-muted-foreground md:text-start">
               Find, organize, and share your favourite places from around the
               world.

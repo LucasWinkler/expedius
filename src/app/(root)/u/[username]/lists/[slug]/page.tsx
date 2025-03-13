@@ -26,7 +26,7 @@ export const generateMetadata = async ({
   if (!validated.success) {
     return createMetadata({
       title: "Profile not found",
-      description: "The PoiToGo profile you are looking for does not exist.",
+      description: "The Expedius profile you are looking for does not exist.",
     });
   }
 
@@ -36,7 +36,7 @@ export const generateMetadata = async ({
   if (!profile) {
     return createMetadata({
       title: "Profile not found",
-      description: "The PoiToGo profile you are looking for does not exist.",
+      description: "The Expedius profile you are looking for does not exist.",
     });
   }
 
@@ -53,7 +53,7 @@ export const generateMetadata = async ({
   if (!user) {
     return createMetadata({
       title: "Profile not found",
-      description: "The PoiToGo profile you are looking for does not exist.",
+      description: "The Expedius profile you are looking for does not exist.",
     });
   }
 
@@ -80,7 +80,7 @@ export const generateMetadata = async ({
   return createMetadata({
     title,
     description:
-      list.description || `View ${name}'s list "${list.name}" on PoiToGo`,
+      list.description || `View ${name}'s list "${list.name}" on Expedius`,
   });
 };
 

@@ -7,9 +7,8 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="absolute inset-0 bg-zinc-900" />
         <div className="relative z-20 flex flex-col">
           <Link href="/" className="text-lg font-medium">
-            PoiToGo
+            Expedius
           </Link>
-          <p className="text-sm text-zinc-400">Points-Of-Interest To Go</p>
         </div>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">

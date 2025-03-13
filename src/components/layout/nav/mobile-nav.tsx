@@ -58,15 +58,12 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
               <Link
                 href="/"
                 className="mr-8 bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-2xl font-extrabold tracking-tighter text-transparent transition-colors hover:from-foreground hover:via-foreground/80 hover:to-foreground/60 xl:mr-10"
-                aria-label="PoiToGo Home"
+                aria-label="Expedius Home"
                 onClick={() => setIsOpen(false)}
               >
-                PoiToGo
+                Expedius
               </Link>
             </SheetTitle>
-            <span className="text-sm text-muted-foreground">
-              Points of Interest, To Go
-            </span>
           </div>
           <SheetDescription className="sr-only">
             Find, organize, and share your favourite places from around the

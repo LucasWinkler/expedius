@@ -39,7 +39,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_NAME: z
       .string()
       .min(1, "App name is required")
-      .default("PoiToGo"),
+      .default("Expedius"),
     NEXT_PUBLIC_BASE_URL: z
       .string()
       .url()
