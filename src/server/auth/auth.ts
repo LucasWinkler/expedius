@@ -13,10 +13,6 @@ export const auth = betterAuth({
   }),
   appName: env.NEXT_PUBLIC_APP_NAME,
   baseURL: env.NEXT_PUBLIC_BASE_URL,
-  trustedOrigins: [
-    "http://192.168.86.96:3000",
-    "http://192.168.86.96:3000/api/auth",
-  ],
   user: {
     additionalFields: {
       isPublic: {

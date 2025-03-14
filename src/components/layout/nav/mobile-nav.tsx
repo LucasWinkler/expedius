@@ -53,18 +53,16 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
           </Button>
         </SheetTrigger>
         <SheetContent side="right" className="flex w-80 flex-col p-6">
-          <div>
-            <SheetTitle>
-              <Link
-                href="/"
-                className="mr-8 bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-2xl font-extrabold tracking-tighter text-transparent transition-colors hover:from-foreground hover:via-foreground/80 hover:to-foreground/60 xl:mr-10"
-                aria-label="Expedius Home"
-                onClick={() => setIsOpen(false)}
-              >
-                Expedius
-              </Link>
-            </SheetTitle>
-          </div>
+          <SheetTitle>
+            <Link
+              href="/"
+              className="mr-8 bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-2xl font-extrabold tracking-tighter text-transparent transition-colors hover:from-foreground hover:via-foreground/80 hover:to-foreground/60 xl:mr-10"
+              aria-label="Expedius Home"
+              onClick={() => setIsOpen(false)}
+            >
+              Expedius
+            </Link>
+          </SheetTitle>
           <SheetDescription className="sr-only">
             Find, organize, and share your favourite places from around the
             world
