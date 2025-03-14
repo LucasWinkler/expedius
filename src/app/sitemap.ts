@@ -5,8 +5,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: "https://www.expedius.app",
       lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: "monthly",
       priority: 1,
+    },
+    {
+      url: "https://www.expedius.app/discover",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
     },
     {
       url: "https://www.expedius.app/categories",
