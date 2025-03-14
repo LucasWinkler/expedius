@@ -13,30 +13,41 @@ import {
 import { withActionLimit } from "@/server/lib/rate-limit";
 
 export const createList = withActionLimit(
-  async (data: CreateListRequest): Promise<DbList> => {
-    const session = await getServerSession();
-    if (!session) throw new Error("Unauthorized");
+  async (
+    data: CreateListRequest,
+  ): Promise<{ success: boolean; data?: DbList; error?: string }> => {
+    try {
+      const session = await getServerSession();
+      if (!session) return { success: false, error: "Unauthorized" };
 
-    const validation = createListServerSchema.safeParse(data);
-    if (!validation.success) throw new Error("Invalid data provided");
+      const validation = createListServerSchema.safeParse(data);
+      if (!validation.success)
+        return { success: false, error: "Invalid data provided" };
 
-    const existingList = await lists.queries.getByNameAndUserId(
-      validation.data.name,
-      session.user.id,
-    );
-    if (existingList) {
-      throw new Error("You already have a list with this name");
+      const existingList = await lists.queries.getByNameAndUserId(
+        validation.data.name,
+        session.user.id,
+      );
+      if (existingList) {
+        return {
+          success: false,
+          error: "You already have a list with this name",
+        };
+      }
+
+      const newList = await lists.mutations.create(
+        session.user.id,
+        validation.data,
+      );
+
+      revalidateTag("user-lists");
+      revalidateTag(`user-${session.user.id}-lists`);
+
+      return { success: true, data: newList };
+    } catch (e) {
+      console.error("Error creating list:", e);
+      return { success: false, error: "Failed to create list" };
     }
-
-    const newList = await lists.mutations.create(
-      session.user.id,
-      validation.data,
-    );
-
-    revalidateTag("user-lists");
-    revalidateTag(`user-${session.user.id}-lists`);
-
-    return newList;
   },
   "lists",
 );
