@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { Settings, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 
 type DesktopNavProps = {
   session: ClientSession | null;
@@ -89,12 +89,12 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
                     </Link>
                   </DropdownMenuItem>
                 ))}
-                <DropdownMenuItem asChild>
+                {/* <DropdownMenuItem asChild>
                   <Link href="/settings" className="flex items-center gap-2">
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
                   </Link>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => void signOut()}
