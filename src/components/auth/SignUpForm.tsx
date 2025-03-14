@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useSignUpForm } from "@/hooks/useSignUpForm";
 import {
   CredentialsStep,
@@ -12,6 +12,8 @@ import {
   StepIndicator,
   AuthCard,
 } from "./";
+import { AuthSubmitButton } from "./AuthSubmitButton";
+import { SignUpNextButton } from "./SignUpNextButton";
 
 export const SignUpForm = () => {
   const {
@@ -88,26 +90,16 @@ export const SignUpForm = () => {
             )}
 
             {step === "final" ? (
-              <Button type="submit" className="w-[120px]" disabled={isDisabled}>
-                {isDisabled ? (
-                  <>
-                    <Loader2 className="mr-2 size-4 animate-spin" />
-                    {isUploading ? "Uploading..." : "Creating..."}
-                  </>
-                ) : (
-                  "Create Account"
-                )}
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                onClick={(e) => void nextStep(e)}
+              <AuthSubmitButton
                 className="w-[120px]"
-                disabled={isDisabled}
-              >
-                Next
-                <ArrowRight className="ml-2 size-4" />
-              </Button>
+                defaultText="Create Account"
+                loadingState={{
+                  isLoading: isDisabled,
+                  loadingText: isUploading ? "Uploading..." : "Creating...",
+                }}
+              />
+            ) : (
+              <SignUpNextButton nextStep={nextStep} isDisabled={isDisabled} />
             )}
           </div>
         </form>

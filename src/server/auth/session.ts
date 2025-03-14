@@ -13,14 +13,12 @@ export const getServerSession = cache(async () => {
   return session;
 });
 
-export const requireSession = cache(
-  async (redirectTo: string = "/auth/sign-in") => {
-    const session = await getServerSession();
+export const requireSession = async (redirectTo: string = "/auth/sign-in") => {
+  const session = await getServerSession();
 
-    if (!session) {
-      redirect(redirectTo);
-    }
+  if (!session) {
+    redirect(redirectTo);
+  }
 
-    return session;
-  },
-);
+  return session;
+};

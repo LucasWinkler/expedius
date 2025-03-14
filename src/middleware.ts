@@ -1,27 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/server/auth/auth";
-import { betterFetch } from "@better-fetch/fetch";
 import {
   PUBLIC_PATHS,
   AUTH_PATHS,
   AUTH_API_PREFIX,
   UT_API_PREFIX,
 } from "@/constants/routes";
+import { getSessionCookie } from "better-auth/cookies";
 
-export type Session = typeof auth.$Infer.Session;
+export const middleware = (req: NextRequest) => {
+  const sessionCookie = getSessionCookie(req);
 
-export const middleware = async (req: NextRequest) => {
-  const { data: session } = await betterFetch<Session>(
-    "/api/auth/get-session",
-    {
-      baseURL: req.nextUrl.origin,
-      headers: {
-        cookie: req.headers.get("cookie") || "",
-      },
-    },
-  );
-
-  const isAuthenticated = !!session;
+  const isAuthenticated = !!sessionCookie;
   const pathname = req.nextUrl.pathname;
   const isPublicRoute = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
   const isAuthRoute = AUTH_PATHS.some((path) => pathname.startsWith(path));

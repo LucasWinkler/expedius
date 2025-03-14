@@ -67,7 +67,6 @@ export const GET = withApiLimit(async (request: Request) => {
     const cachedPlaces = placesCache.get(cacheKey);
 
     if (cachedPlaces && Date.now() - cachedPlaces.timestamp < CACHE_DURATION) {
-      console.log("Returning cached search results");
       return NextResponse.json(cachedPlaces.data);
     }
   }
