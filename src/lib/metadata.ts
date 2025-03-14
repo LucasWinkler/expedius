@@ -40,6 +40,7 @@ export const createMetadata = ({
     },
     twitter: {
       creator: "@LucasJWinkler",
+      card: "summary_large_image",
     },
   };
 };
