@@ -7,12 +7,18 @@ import { CreateListRequest } from "@/server/validations/lists";
 export const useCreateListForPlace = () => {
   const queryClient = useQueryClient();
 
-  const { mutate, isPending } = useMutation<DbList, Error, CreateListRequest>({
+  const { mutate, isPending } = useMutation<
+    { success: boolean; data?: DbList; error?: string },
+    Error,
+    CreateListRequest
+  >({
     mutationFn: (data: CreateListRequest) => createListAction(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.USER_PLACE_DATA],
-      });
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.USER_PLACE_DATA],
+        });
+      }
     },
   });
 
@@ -23,7 +29,16 @@ export const useCreateListForPlace = () => {
       onError,
     }: { onSuccess?: () => void; onError?: (error: Error) => void } = {},
   ) => {
-    return mutate(data, { onSuccess, onError });
+    return mutate(data, {
+      onSuccess: (response) => {
+        if (response.success) {
+          onSuccess?.();
+        } else if (response.error) {
+          onError?.(new Error(response.error));
+        }
+      },
+      onError,
+    });
   };
 
   return {

@@ -53,20 +53,28 @@ export const useCreateList = (placeId?: string) => {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
 
-  return useMutation({
+  return useMutation<
+    { success: boolean; data?: DbList; error?: string },
+    Error,
+    CreateListRequest
+  >({
     mutationFn: (data: CreateListRequest) => createList(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS] });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USER_LISTS] });
-      if (placeId) {
-        queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.PLACE_LISTS, placeId],
-        });
-      }
-      if (session?.user.username) {
-        queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.LISTS, "infinite", session.user.username],
-        });
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LISTS] });
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USER_LISTS] });
+        if (placeId) {
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.PLACE_LISTS, placeId],
+          });
+        }
+        if (session?.user.username) {
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.LISTS, "infinite", session.user.username],
+          });
+        }
+      } else if (response.error) {
+        throw new Error(response.error);
       }
     },
   });

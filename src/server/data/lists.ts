@@ -11,6 +11,7 @@ import {
 } from "@/server/validations/lists";
 import { generateUniqueSlug } from "@/lib/slug";
 import { defaultListName } from "@/constants";
+import { lower } from "../lib/db-helpers";
 
 export const lists = {
   queries: {
@@ -171,7 +172,10 @@ export const lists = {
 
     getByNameAndUserId: async (name: string, userId: string) => {
       const foundList = await db.query.list.findFirst({
-        where: and(eq(list.userId, userId), eq(list.name, name)),
+        where: and(
+          eq(list.userId, userId),
+          eq(lower(list.name), name.toLowerCase()),
+        ),
       });
       return foundList;
     },
