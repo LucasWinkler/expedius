@@ -8,22 +8,14 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import {
-  Menu,
-  LogIn,
-  UserPlus,
-  LogOut,
-  Search,
-  Home,
-  Grid2X2,
-} from "lucide-react";
+import { Menu, LogIn, UserPlus, LogOut } from "lucide-react";
 import { NavLink } from "./nav-link";
 import type { ClientSession } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import { signOut } from "@/lib/auth-client";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { USER_NAV_ITEMS } from "@/constants";
+import { USER_NAV_ITEMS, MOBILE_NAV_ITEMS } from "@/constants";
 
 type MobileNavProps = {
   session: ClientSession | null;
@@ -70,33 +62,17 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
 
           <nav className="flex flex-1 shrink-0 flex-col overflow-y-auto py-4">
             <ul className="flex flex-col gap-3">
-              <li>
-                <NavLink
-                  href="/"
-                  icon={Home}
-                  label="Home"
-                  onClick={() => setIsOpen(false)}
-                  className="h-11 w-full justify-start gap-3 text-base font-medium"
-                />
-              </li>
-              <li>
-                <NavLink
-                  href="/discover"
-                  icon={Search}
-                  label="Discover"
-                  onClick={() => setIsOpen(false)}
-                  className="h-11 w-full justify-start gap-3 text-base font-medium"
-                />
-              </li>
-              <li>
-                <NavLink
-                  href="/categories"
-                  icon={Grid2X2}
-                  label="Categories"
-                  onClick={() => setIsOpen(false)}
-                  className="h-11 w-full justify-start gap-3 text-base font-medium"
-                />
-              </li>
+              {MOBILE_NAV_ITEMS.map(({ href, icon, label }) => (
+                <li key={label}>
+                  <NavLink
+                    href={href}
+                    icon={icon}
+                    label={label}
+                    onClick={() => setIsOpen(false)}
+                    className="h-11 w-full justify-start gap-3 text-base font-medium"
+                  />
+                </li>
+              ))}
 
               {isPending
                 ? USER_NAV_ITEMS.map((_, index) => (
