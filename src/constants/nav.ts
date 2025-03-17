@@ -5,6 +5,7 @@ import {
   UserCircle,
   Folders,
   FolderHeart,
+  File,
 } from "lucide-react";
 
 export const NAV_ITEMS = [
@@ -17,6 +18,11 @@ export const NAV_ITEMS = [
     href: "/categories",
     icon: Grid2X2,
     label: "Categories",
+  },
+  {
+    href: "/privacy",
+    icon: File,
+    label: "Privacy",
   },
 ] as const;
 
@@ -45,4 +51,12 @@ export const USER_NAV_ITEMS = [
     icon: UserCircle,
     label: "Profile",
   },
+] as const;
+
+export const FOOTER_NAV_ITEMS = [
+  {
+    href: "/",
+    label: "Home",
+  },
+  ...NAV_ITEMS,
 ] as const;
