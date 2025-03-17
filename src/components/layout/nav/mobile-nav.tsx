@@ -68,51 +68,67 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
             world
           </SheetDescription>
 
-          <nav className="flex flex-col gap-3">
-            <NavLink
-              href="/"
-              icon={Home}
-              label="Home"
-              onClick={() => setIsOpen(false)}
-              className="h-11 w-full justify-start gap-3 text-base font-medium"
-            />
-            <NavLink
-              href="/discover"
-              icon={Search}
-              label="Discover"
-              onClick={() => setIsOpen(false)}
-              className="h-11 w-full justify-start gap-3 text-base font-medium"
-            />
-            <NavLink
-              href="/categories"
-              icon={Grid2X2}
-              label="Categories"
-              onClick={() => setIsOpen(false)}
-              className="h-11 w-full justify-start gap-3 text-base font-medium"
-            />
-
-            {isPending ? (
-              <>
-                <Skeleton className="h-11 w-full" />
-                <Skeleton className="h-11 w-full" />
-              </>
-            ) : (
-              session?.user &&
-              USER_NAV_ITEMS.map(({ href, icon, label }) => (
+          <nav className="flex flex-1 shrink-0 flex-col overflow-y-auto py-4">
+            <ul className="flex flex-col gap-3">
+              <li>
                 <NavLink
-                  key={label}
-                  href={href(session.user.username)}
-                  icon={icon}
-                  label={label}
+                  href="/"
+                  icon={Home}
+                  label="Home"
                   onClick={() => setIsOpen(false)}
                   className="h-11 w-full justify-start gap-3 text-base font-medium"
                 />
-              ))
-            )}
+              </li>
+              <li>
+                <NavLink
+                  href="/discover"
+                  icon={Search}
+                  label="Discover"
+                  onClick={() => setIsOpen(false)}
+                  className="h-11 w-full justify-start gap-3 text-base font-medium"
+                />
+              </li>
+              <li>
+                <NavLink
+                  href="/categories"
+                  icon={Grid2X2}
+                  label="Categories"
+                  onClick={() => setIsOpen(false)}
+                  className="h-11 w-full justify-start gap-3 text-base font-medium"
+                />
+              </li>
+
+              {isPending
+                ? USER_NAV_ITEMS.map((_, index) => (
+                    <li key={index}>
+                      <div className="flex h-11 w-full items-center gap-3 px-3">
+                        <Skeleton className="size-4 rounded-full" />
+                        <Skeleton className="h-5 w-24" />
+                      </div>
+                    </li>
+                  ))
+                : session?.user &&
+                  USER_NAV_ITEMS.map(({ href, icon, label }) => (
+                    <li key={label}>
+                      <NavLink
+                        href={href(session.user.username)}
+                        icon={icon}
+                        label={label}
+                        onClick={() => setIsOpen(false)}
+                        className="h-11 w-full justify-start gap-3 text-base font-medium"
+                      />
+                    </li>
+                  ))}
+            </ul>
           </nav>
 
-          <div className="mt-auto space-y-6">
-            {!isPending && (
+          <div className="mt-auto space-y-6 border-t pt-6">
+            {isPending ? (
+              <div className="space-y-3">
+                <Skeleton className="h-11 w-full" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+            ) : (
               <>
                 {session?.user ? (
                   <Button
@@ -159,20 +175,6 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
                 )}
               </>
             )}
-
-            <div className="border-t pt-6">
-              <p className="text-sm text-muted-foreground">
-                Developed by{" "}
-                <Link
-                  href="https://github.com/lucaswinkler"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-foreground/80 underline-offset-4 hover:underline"
-                >
-                  Lucas Winkler
-                </Link>
-              </p>
-            </div>
           </div>
         </SheetContent>
       </Sheet>
