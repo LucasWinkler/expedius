@@ -52,3 +52,11 @@ export const USER_NAV_ITEMS = [
     label: "Profile",
   },
 ] as const;
+
+export const FOOTER_NAV_ITEMS = [
+  {
+    href: "/",
+    label: "Home",
+  },
+  ...NAV_ITEMS,
+] as const;

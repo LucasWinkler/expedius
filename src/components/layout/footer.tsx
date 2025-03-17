@@ -1,3 +1,4 @@
+import { FOOTER_NAV_ITEMS } from "@/constants";
 import Link from "next/link";
 
 export const Footer = () => {
@@ -20,24 +21,15 @@ export const Footer = () => {
           </div>
           <div className="flex flex-col items-center gap-4 md:items-end">
             <nav aria-label="Footer navigation" className="flex gap-4">
-              <Link
-                href="/"
-                className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-              >
-                Home
-              </Link>
-              <Link
-                href="/discover"
-                className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-              >
-                Discover
-              </Link>
-              <Link
-                href="/categories"
-                className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-              >
-                Categories
-              </Link>
+              {FOOTER_NAV_ITEMS.map(({ href, label }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                >
+                  {label}
+                </Link>
+              ))}
             </nav>
             <p className="text-center text-sm text-muted-foreground md:text-start">
               © {new Date().getFullYear()} Expedius · Developed by{" "}
