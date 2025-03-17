@@ -98,34 +98,37 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
                 />
               </li>
 
-              {isPending ? (
-                <>
-                  <li>
-                    <Skeleton className="h-11 w-full" />
-                  </li>
-                  <li>
-                    <Skeleton className="h-11 w-full" />
-                  </li>
-                </>
-              ) : (
-                session?.user &&
-                USER_NAV_ITEMS.map(({ href, icon, label }) => (
-                  <li key={label}>
-                    <NavLink
-                      href={href(session.user.username)}
-                      icon={icon}
-                      label={label}
-                      onClick={() => setIsOpen(false)}
-                      className="h-11 w-full justify-start gap-3 text-base font-medium"
-                    />
-                  </li>
-                ))
-              )}
+              {isPending
+                ? USER_NAV_ITEMS.map((_, index) => (
+                    <li key={index}>
+                      <div className="flex h-11 w-full items-center gap-3 px-3">
+                        <Skeleton className="size-4 rounded-full" />
+                        <Skeleton className="h-5 w-24" />
+                      </div>
+                    </li>
+                  ))
+                : session?.user &&
+                  USER_NAV_ITEMS.map(({ href, icon, label }) => (
+                    <li key={label}>
+                      <NavLink
+                        href={href(session.user.username)}
+                        icon={icon}
+                        label={label}
+                        onClick={() => setIsOpen(false)}
+                        className="h-11 w-full justify-start gap-3 text-base font-medium"
+                      />
+                    </li>
+                  ))}
             </ul>
           </nav>
 
           <div className="mt-auto space-y-6 border-t pt-6">
-            {!isPending && (
+            {isPending ? (
+              <div className="space-y-3">
+                <Skeleton className="h-11 w-full" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+            ) : (
               <>
                 {session?.user ? (
                   <Button
