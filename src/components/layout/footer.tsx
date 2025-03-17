@@ -22,25 +22,25 @@ export const Footer = () => {
             <nav aria-label="Footer navigation" className="flex gap-4">
               <Link
                 href="/"
-                className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground hover:no-underline"
+                className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
               >
                 Home
               </Link>
               <Link
                 href="/discover"
-                className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground hover:no-underline"
+                className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
               >
                 Discover
               </Link>
               <Link
                 href="/categories"
-                className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground hover:no-underline"
+                className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
               >
                 Categories
               </Link>
             </nav>
-            <p className="text-sm text-muted-foreground">
-              Developed by{" "}
+            <p className="text-center text-sm text-muted-foreground md:text-start">
+              © {new Date().getFullYear()} Expedius · Developed by{" "}
               <Link
                 href="https://github.com/lucaswinkler"
                 target="_blank"
