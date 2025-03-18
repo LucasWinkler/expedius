@@ -3,7 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useListsInfinite } from "@/hooks/useLists";
 import { ListCard } from "../lists/ListCard";
-import { Loader2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import type { DbListWithPlacesCount } from "@/server/types/db";
 import { useState } from "react";
@@ -17,6 +17,8 @@ import { LikeButton } from "../places/LikeButton";
 import type { Place } from "@/types";
 import { useSession } from "@/lib/auth-client";
 import { SaveToListButton } from "../places/SaveToListButton";
+import { ListCardSkeleton } from "../skeletons/ListCardSkeleton";
+import { PlaceCardSkeleton } from "../skeletons/PlaceCardSkeleton";
 
 interface ProfileViewProps {
   username: string;
@@ -118,11 +120,13 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
         </div>
         <TabsContent value="lists">
           {listsStatus === "pending" ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            <div className="space-y-8">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <ListCardSkeleton key={i} />
+              ))}
             </div>
           ) : listsStatus === "error" ? (
-            <div className="py-8 text-center text-muted-foreground">
+            <div className="py-8 text-center text-red-500">
               Error loading lists
             </div>
           ) : (
@@ -139,12 +143,10 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
                 />
               ))}
 
-              <div ref={listsRef} className="h-8 w-full">
+              <div ref={listsRef}>
                 {hasNextLists ? (
                   isFetchingNextLists ? (
-                    <div className="flex justify-center py-4">
-                      <Loader2 className="size-6 animate-spin text-muted-foreground" />
-                    </div>
+                    <ListCardSkeleton />
                   ) : (
                     <div className="flex justify-center py-4">
                       <span className="text-sm text-muted-foreground">
@@ -152,12 +154,6 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
                       </span>
                     </div>
                   )
-                ) : allLists.length > 0 ? (
-                  <div className="flex justify-center py-4">
-                    <span className="text-sm text-muted-foreground">
-                      No more lists to load
-                    </span>
-                  </div>
                 ) : null}
               </div>
             </div>
@@ -166,11 +162,13 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
 
         <TabsContent value="likes">
           {likesStatus === "pending" ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <PlaceCardSkeleton showActions key={i} />
+              ))}
             </div>
           ) : likesStatus === "error" ? (
-            <div className="py-8 text-center text-muted-foreground">
+            <div className="py-8 text-center text-red-500">
               Error loading likes
             </div>
           ) : (
@@ -196,11 +194,12 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
                 ))}
               </div>
 
-              <div ref={likesRef} className="h-8 w-full">
+              <div ref={likesRef}>
                 {hasNextLikes ? (
                   isFetchingNextLikes ? (
-                    <div className="flex justify-center py-4">
-                      <Loader2 className="size-6 animate-spin text-muted-foreground" />
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <PlaceCardSkeleton showActions />
+                      <PlaceCardSkeleton showActions />
                     </div>
                   ) : (
                     <div className="flex justify-center py-4">
@@ -209,12 +208,6 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
                       </span>
                     </div>
                   )
-                ) : allLikes.length > 0 ? (
-                  <div className="flex justify-center py-4">
-                    <span className="text-sm text-muted-foreground">
-                      No more likes to load
-                    </span>
-                  </div>
                 ) : null}
               </div>
             </div>
