@@ -157,5 +157,3 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
     </div>
   );
 };
-
-export default MobileNav;
