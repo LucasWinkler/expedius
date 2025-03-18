@@ -49,7 +49,7 @@ export const ProfileHeader = ({
   };
 
   return (
-    <header>
+    <header className="w-full">
       <div
         className="relative h-48 w-full"
         style={{
