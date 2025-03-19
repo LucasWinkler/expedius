@@ -1,12 +1,15 @@
 import { notFound } from "next/navigation";
 import { users } from "@/server/data/users";
 import { lists } from "@/server/data/lists";
-import { profileParamsSchema } from "@/lib/validations/profile";
+import {
+  profileListsParamsSchema,
+  profileParamsSchema,
+} from "@/lib/validations/profile";
 import { ProfilePrivateView } from "@/components/profile/ProfilePrivateView";
 import { ListView } from "@/components/lists/ListView";
-import type { PublicProfileData } from "@/server/types/profile";
 import { Metadata } from "next";
 import { createMetadata } from "@/lib/metadata";
+import { getServerSession } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -40,9 +43,9 @@ export const generateMetadata = async ({
     });
   }
 
-  const { name, isPublic, isOwnProfile } = profile;
+  const { name, isPublic, isOwner } = profile;
 
-  if (!isPublic && !isOwnProfile) {
+  if (!isPublic && !isOwner) {
     return createMetadata({
       title: "Private Profile",
       description: "This profile is private",
@@ -66,14 +69,14 @@ export const generateMetadata = async ({
     });
   }
 
-  if (!list.isPublic && !isOwnProfile) {
+  if (!list.isPublic && !isOwner) {
     return createMetadata({
       title: "Private List",
       description: "This list is private",
     });
   }
 
-  const title = isOwnProfile
+  const title = isOwner
     ? `My List: ${list.name}`
     : `${name}'s List: ${list.name}`;
 
@@ -88,38 +91,29 @@ export default async function ListPage({
   params,
   searchParams,
 }: ListPageProps) {
-  const validated = profileParamsSchema.safeParse({
+  const validated = profileListsParamsSchema.safeParse({
     username: (await params).username,
     page: (await searchParams).page,
     limit: 10,
   });
-
   if (!validated.success) {
     notFound();
   }
 
-  const profile = await users.queries.getProfile(validated.data);
-
-  if (!profile) {
+  const user = await users.queries.getByUsername(validated.data.username);
+  if (!user) {
     notFound();
   }
 
-  if ("type" in profile && profile.type === "private") {
-    return <ProfilePrivateView username={profile.username} />;
+  const session = await getServerSession();
+  const isOwner = session?.user.id === user.id;
+
+  if (!user.isPublic && !isOwner) {
+    return <ProfilePrivateView username={user.username} />;
   }
 
-  const publicProfile = profile as PublicProfileData;
-
-  const list = await lists.queries.getBySlug(
-    (await params).slug,
-    publicProfile.user.id,
-  );
-
-  if (!list) {
-    notFound();
-  }
-
-  if (!list.isPublic && !publicProfile.isOwnProfile) {
+  const list = await lists.queries.getBySlug((await params).slug, user.id);
+  if (!list || (!list.isPublic && !isOwner)) {
     notFound();
   }
 
@@ -127,7 +121,7 @@ export default async function ListPage({
     <ListView
       list={list}
       username={validated.data.username}
-      isOwnProfile={publicProfile.isOwnProfile}
+      isOwner={isOwner}
       currentPage={validated.data.page}
     />
   );

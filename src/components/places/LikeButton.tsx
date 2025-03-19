@@ -23,8 +23,8 @@ export const LikeButton = ({
   const { data: userData, like } = usePlaceInteractions();
   const { toggle: toggleLike, isPending } = like;
   const isInLikesTab = !!username;
-  const isOwnProfile = session?.user.username === username;
-  const shouldUpdateLikesQuery = isInLikesTab && isOwnProfile;
+  const isOwner = session?.user.username === username;
+  const shouldUpdateLikesQuery = isInLikesTab && isOwner;
   const likesQuery = useLikesInfinite(username ?? "", shouldUpdateLikesQuery);
 
   const isLiked = userData?.likes.some((like) => like.placeId === placeId);

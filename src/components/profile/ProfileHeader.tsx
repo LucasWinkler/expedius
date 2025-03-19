@@ -15,14 +15,14 @@ import {
 
 interface ProfileHeaderProps {
   user: DbUser;
-  isOwnProfile: boolean;
+  isOwner: boolean;
   totalLists: number;
   totalLikes: number;
 }
 
 export const ProfileHeader = ({
   user,
-  isOwnProfile,
+  isOwner,
   totalLists,
   totalLikes,
 }: ProfileHeaderProps) => {
@@ -56,7 +56,7 @@ export const ProfileHeader = ({
           backgroundColor: user.colour || "hsl(var(--muted))",
         }}
       >
-        {isOwnProfile && (
+        {isOwner && (
           <div className="container mx-auto flex justify-end gap-2 px-4 pt-6 md:max-w-3xl">
             <ProfileActions
               colour={user.colour}

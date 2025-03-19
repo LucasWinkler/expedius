@@ -51,14 +51,14 @@ const PlaceActions = ({ placeId, username }: PlaceActionsProps) => {
 interface ListViewProps {
   list: DbList;
   username: string;
-  isOwnProfile: boolean;
+  isOwner: boolean;
   currentPage: number;
 }
 
 export const ListView = ({
   list,
   username,
-  isOwnProfile,
+  isOwner,
   currentPage,
 }: ListViewProps) => {
   const { data, isLoading, error } = useSavedPlaces(list.id, currentPage);
@@ -155,7 +155,7 @@ export const ListView = ({
               {(data?.metadata.totalItems ?? 0) === 1 ? "place" : "places"}
             </span>
           </div>
-          {isOwnProfile && (
+          {isOwner && (
             <span className="text-sm text-muted-foreground">
               {list.isPublic ? "Public" : "Private"}
             </span>
