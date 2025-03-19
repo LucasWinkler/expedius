@@ -5,6 +5,7 @@ import { like } from "@/server/db/schema";
 import type { DbLike, DbUser } from "@/server/types/db";
 import { getServerSession } from "../auth/session";
 import type { PaginationParams } from "@/types";
+import { PaginatedResponse } from "../types/profile";
 
 export const likes = {
   queries: {
@@ -26,7 +27,7 @@ export const likes = {
     getAllByUserId: async (
       userId: DbUser["id"],
       { page = 1, limit = 10 }: PaginationParams = {},
-    ) => {
+    ): Promise<PaginatedResponse<DbLike>> => {
       return unstable_cache(
         async () => {
           const offset = (page - 1) * limit;
@@ -95,6 +96,18 @@ export const likes = {
       );
 
       return cachedFn();
+    },
+
+    getPaginatedLikes: async (
+      userId: DbUser["id"],
+      { page = 1, limit = 10 }: PaginationParams = {},
+    ): Promise<PaginatedResponse<DbLike>> => {
+      const userLikes = await likes.queries.getAllByUserId(userId, {
+        page,
+        limit,
+      });
+
+      return userLikes;
     },
   },
 

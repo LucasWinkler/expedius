@@ -23,7 +23,7 @@ import { ListCard } from "@/components/lists/ListCard";
 interface ListsViewProps {
   lists: DbListWithPlacesCount[];
   username: string;
-  isOwnProfile: boolean;
+  isOwner: boolean;
   totalPages: number;
   currentPage: number;
   totalLists: number;
@@ -32,7 +32,7 @@ interface ListsViewProps {
 export const ListsView = ({
   lists,
   username,
-  isOwnProfile,
+  isOwner,
   totalPages,
   currentPage,
   totalLists,
@@ -132,7 +132,7 @@ export const ListsView = ({
           <div className="rounded-md border p-2">
             Search/filtering coming soon
           </div>
-          {isOwnProfile && (
+          {isOwner && (
             <Button onClick={() => setIsCreateDialogOpen(true)}>
               <Plus aria-hidden="true" className="mr-2 size-4" />
               New List
@@ -152,8 +152,8 @@ export const ListsView = ({
                 key={list.id}
                 list={list}
                 username={username}
-                isOwnProfile={isOwnProfile}
-                showPrivacyBadge={isOwnProfile}
+                isOwner={isOwner}
+                showPrivacyBadge={isOwner}
                 onEdit={() => setEditingList(list)}
                 onDelete={() => setDeletingList(list)}
               />

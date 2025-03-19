@@ -1,11 +1,15 @@
 import { notFound } from "next/navigation";
 import { users } from "@/server/data/users";
-import { profileParamsSchema } from "@/lib/validations/profile";
-import type { PublicProfileData } from "@/server/types/profile";
+import {
+  profileListsParamsSchema,
+  profileParamsSchema,
+} from "@/lib/validations/profile";
 import { ListsView } from "@/components/lists/ListsView";
 import { ProfilePrivateView } from "@/components/profile/ProfilePrivateView";
 import { Metadata } from "next";
 import { createMetadata } from "@/lib/metadata";
+import { getServerSession } from "@/server/auth/session";
+import { lists } from "@/server/data/lists";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -39,16 +43,16 @@ export const generateMetadata = async ({
     });
   }
 
-  const { name, isPublic, isOwnProfile } = profile;
+  const { name, isPublic, isOwner } = profile;
 
-  if (!isPublic && !isOwnProfile) {
+  if (!isPublic && !isOwner) {
     return createMetadata({
       title: "Private Profile",
       description: "This profile is private",
     });
   }
 
-  const title = isOwnProfile ? "My Lists" : `${name}'s Lists`;
+  const title = isOwner ? "My Lists" : `${name}'s Lists`;
 
   return createMetadata({
     title,
@@ -60,36 +64,40 @@ export default async function ListsPage({
   params,
   searchParams,
 }: ListsPageProps) {
-  const validated = profileParamsSchema.safeParse({
+  const validated = profileListsParamsSchema.safeParse({
     username: (await params).username,
     page: (await searchParams).page,
     limit: 10,
   });
-
   if (!validated.success) {
     notFound();
   }
 
-  const profile = await users.queries.getProfile(validated.data);
-
-  if (!profile) {
+  const user = await users.queries.getByUsername(validated.data.username);
+  if (!user) {
     notFound();
   }
 
-  if ("type" in profile && profile.type === "private") {
-    return <ProfilePrivateView username={profile.username} />;
+  const session = await getServerSession();
+  const isOwner = session?.user.id === user.id;
+
+  if (!user.isPublic && !isOwner) {
+    return <ProfilePrivateView username={user.username} />;
   }
 
-  const publicProfile = profile as PublicProfileData;
+  const paginatedLists = await lists.queries.getAllByUserId(user.id, isOwner, {
+    page: validated.data.page,
+    limit: validated.data.limit,
+  });
 
   return (
     <ListsView
-      lists={publicProfile.lists.items}
+      lists={paginatedLists.items}
       username={validated.data.username}
-      isOwnProfile={publicProfile.isOwnProfile}
-      totalPages={publicProfile.lists.metadata.totalPages}
+      isOwner={isOwner}
+      totalPages={paginatedLists.metadata.totalPages}
       currentPage={validated.data.page}
-      totalLists={publicProfile.lists.metadata.totalItems}
+      totalLists={paginatedLists.metadata.totalItems}
     />
   );
 }

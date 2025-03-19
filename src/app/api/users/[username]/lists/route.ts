@@ -31,12 +31,11 @@ export async function GET(request: Request, { params }: RouteParams) {
     }
 
     const session = await getServerSession();
-    const isOwnProfile =
-      session?.user.username === validatedParams.params.username;
+    const isOwner = session?.user.username === validatedParams.params.username;
 
     const paginatedLists = await lists.queries.getAllByUsername(
       validatedParams.params.username,
-      isOwnProfile,
+      isOwner,
       result.data,
     );
 

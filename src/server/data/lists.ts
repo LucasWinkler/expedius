@@ -31,7 +31,7 @@ export const lists = {
 
     getAllByUserId: async (
       userId: DbUser["id"],
-      isOwnProfile: boolean,
+      isOwner: boolean,
       { page = 1, limit = 10 }: PaginationParams = {},
     ) => {
       return unstable_cache(
@@ -46,14 +46,14 @@ export const lists = {
             .where(
               and(
                 eq(list.userId, userId),
-                isOwnProfile ? undefined : eq(list.isPublic, true),
+                isOwner ? undefined : eq(list.isPublic, true),
               ),
             );
 
           const items = await db.query.list.findMany({
             where: and(
               eq(list.userId, userId),
-              isOwnProfile ? undefined : eq(list.isPublic, true),
+              isOwner ? undefined : eq(list.isPublic, true),
             ),
             orderBy: (list, { desc }) => [desc(list.createdAt)],
             limit,
@@ -84,7 +84,7 @@ export const lists = {
             },
           };
         },
-        [`user-${userId}-lists-page-${page}-auth-${isOwnProfile}`],
+        [`user-${userId}-lists-page-${page}-auth-${isOwner}`],
         {
           tags: [`user-${userId}-lists`, `user-lists`],
           revalidate: 60,
@@ -94,7 +94,7 @@ export const lists = {
 
     getAllByUsername: async (
       username: string,
-      isOwnProfile: boolean,
+      isOwner: boolean,
       { page = 1, limit = 10 }: PaginationParams = {},
     ) => {
       return unstable_cache(
@@ -102,12 +102,12 @@ export const lists = {
           const user = await users.queries.getByUsername(username);
           if (!user) return null;
 
-          return lists.queries.getAllByUserId(user.id, isOwnProfile, {
+          return lists.queries.getAllByUserId(user.id, isOwner, {
             page,
             limit,
           });
         },
-        [`user-${username}-lists-page-${page}-auth-${isOwnProfile}`],
+        [`user-${username}-lists-page-${page}-auth-${isOwner}`],
         {
           tags: [`user-${username}-lists`, `user-lists`],
           revalidate: 60,

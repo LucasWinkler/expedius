@@ -24,9 +24,9 @@ export const getUser = cache(
     if (!user) return null;
 
     const session = await getServerSession();
-    const isOwnProfile = session?.user.id === user.id;
+    const isOwner = session?.user.id === user.id;
 
-    if (!isOwnProfile && !user.isPublic) {
+    if (!isOwner && !user.isPublic) {
       return {
         username: user.username,
         type: "private",

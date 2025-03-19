@@ -1,11 +1,16 @@
 import { notFound } from "next/navigation";
 import { users } from "@/server/data/users";
-import { profileParamsSchema } from "@/lib/validations/profile";
-import type { PublicProfileData } from "@/server/types/profile";
+import {
+  profileLikesParamsSchema,
+  profileParamsSchema,
+} from "@/lib/validations/profile";
 import { LikesView } from "@/components/likes/LikesView";
 import { ProfilePrivateView } from "@/components/profile/ProfilePrivateView";
 import { Metadata } from "next";
 import { createMetadata } from "@/lib/metadata";
+import { likes } from "@/server/data/likes";
+import { getLikesWithPlaceDetails } from "@/server/services/likes";
+import { getServerSession } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -39,16 +44,16 @@ export const generateMetadata = async ({
     });
   }
 
-  const { name, isPublic, isOwnProfile } = profile;
+  const { name, isPublic, isOwner } = profile;
 
-  if (!isPublic && !isOwnProfile) {
+  if (!isPublic && !isOwner) {
     return createMetadata({
       title: "Private Profile",
       description: "This profile is private",
     });
   }
 
-  const title = isOwnProfile ? "My Liked Places" : `${name}'s Liked Places`;
+  const title = isOwner ? "My Liked Places" : `${name}'s Liked Places`;
 
   return createMetadata({
     title,
@@ -60,35 +65,41 @@ export default async function LikesPage({
   params,
   searchParams,
 }: LikesPageProps) {
-  const validated = profileParamsSchema.safeParse({
+  const validated = profileLikesParamsSchema.safeParse({
     username: (await params).username,
     page: (await searchParams).page,
     limit: 10,
   });
-
   if (!validated.success) {
     notFound();
   }
 
-  const profile = await users.queries.getProfile(validated.data);
-
-  if (!profile) {
+  const user = await users.queries.getByUsername(validated.data.username);
+  if (!user) {
     notFound();
   }
 
-  if ("type" in profile && profile.type === "private") {
-    return <ProfilePrivateView username={profile.username} />;
+  const session = await getServerSession();
+  const isOwner = session?.user.id === user.id;
+
+  if (!user.isPublic && !isOwner) {
+    return <ProfilePrivateView username={user.username} />;
   }
 
-  const publicProfile = profile as PublicProfileData;
+  const paginatedLikes = await likes.queries.getPaginatedLikes(user.id, {
+    page: validated.data.page,
+    limit: validated.data.limit,
+  });
+
+  const likesWithPlaceDetails = await getLikesWithPlaceDetails(user.id);
 
   return (
     <LikesView
-      likes={publicProfile.likes.items}
+      likes={likesWithPlaceDetails}
       username={validated.data.username}
-      totalPages={publicProfile.likes.metadata.totalPages}
+      totalPages={paginatedLikes.metadata.totalPages}
       currentPage={validated.data.page}
-      totalLikes={publicProfile.likes.metadata.totalItems}
+      totalLikes={paginatedLikes.metadata.totalItems}
     />
   );
 }

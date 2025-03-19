@@ -5,10 +5,10 @@ import { getServerSession } from "@/server/auth/session";
 
 export const canViewProfile = async (profileUser: DbUser) => {
   const session = await getServerSession();
-  const isOwnProfile = session?.user.id === profileUser.id;
+  const isOwner = session?.user.id === profileUser.id;
 
   return {
-    canView: isOwnProfile || profileUser.isPublic,
-    isOwnProfile,
+    canView: isOwner || profileUser.isPublic,
+    isOwner,
   };
 };

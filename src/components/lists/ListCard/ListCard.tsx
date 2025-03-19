@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 interface ListCardProps {
   list: DbListWithPlacesCount;
-  isOwnProfile: boolean;
+  isOwner: boolean;
   username: string;
   showPrivacyBadge?: boolean;
   onEdit: (list: DbListWithPlacesCount) => void;
@@ -23,7 +23,7 @@ interface ListCardProps {
 
 export const ListCard = ({
   list,
-  isOwnProfile,
+  isOwner,
   username,
   showPrivacyBadge = false,
   onEdit,
@@ -85,7 +85,7 @@ export const ListCard = ({
               <ListTitle name={list.name} />
             </Link>
 
-            {isOwnProfile && (
+            {isOwner && (
               <ListActions
                 list={list}
                 username={username}
