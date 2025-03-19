@@ -2,6 +2,7 @@ import dynamicImport from "next/dynamic";
 import { createMetadata } from "@/lib/metadata";
 import { HomeHero, HomeFeatures, HomeCta } from "@/components/home";
 import { CategoryCarouselsSkeleton } from "@/components/home/CategoryCarousel/CategoryCarouselsSkeleton";
+import { HomeFaq } from "@/components/home/HomeFaq";
 
 export const dynamic = "force-static";
 
@@ -28,6 +29,7 @@ const Home = () => {
       <HomeFeatures />
       <CategoryCarousels />
       <HomeCta />
+      <HomeFaq />
     </>
   );
 };
