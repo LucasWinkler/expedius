@@ -32,6 +32,14 @@ export const HomeFeatures = () => {
 
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">
+      <div className="mb-8 text-center md:mb-16">
+        <h2 className="text-balance text-3xl font-semibold lg:text-4xl">
+          Simplify your exploration
+        </h2>
+        <p className="mt-4 text-muted-foreground">
+          Everything you need to discover and organize your favourite spots
+        </p>
+      </div>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
         {features.map(({ title, description, icon: Icon }, index) => (
           <div
