@@ -31,7 +31,7 @@ export const CategoryCarousel = ({
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
-    rootMargin: "100px 0px",
+    rootMargin: "200px 0px",
   });
 
   const { data, isPending, isError } = useCategoryPlaces({
