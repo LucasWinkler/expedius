@@ -21,12 +21,11 @@ export const useProfile = ({ username, initialData }: UseProfileOptions) => {
     initialData,
   });
 
-  const isOwnProfile =
-    profile?.type === "public" && session?.user.id === profile.id;
+  const isOwner = profile?.type === "public" && session?.user.id === profile.id;
 
   return {
     profile,
-    isOwnProfile,
+    isOwner,
     isLoading: false,
   };
 };
