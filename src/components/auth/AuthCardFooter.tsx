@@ -1,4 +1,4 @@
-import { Home, Search } from "lucide-react";
+import { AUTH_FOOTER_NAV_ITEMS } from "@/constants/nav";
 import Link from "next/link";
 
 interface AuthCardFooterProps {
@@ -17,21 +17,17 @@ export const AuthCardFooter = ({
           {altAction}
         </Link>
       </p>
-      <div className="flex justify-center gap-4 text-sm text-muted-foreground">
-        <Link
-          href="/"
-          className="flex items-center gap-1 hover:text-foreground"
-        >
-          <Home className="size-3" />
-          Home
-        </Link>
-        <Link
-          href="/discover"
-          className="flex items-center gap-1 hover:text-foreground"
-        >
-          <Search className="size-3" />
-          <span>Discover</span>
-        </Link>
+      <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
+        {AUTH_FOOTER_NAV_ITEMS.map(({ href, icon: Icon, label }) => (
+          <Link
+            key={href}
+            href={href}
+            className="flex items-center gap-1 hover:text-foreground"
+          >
+            <Icon className="size-3 shrink-0" />
+            {label}
+          </Link>
+        ))}
       </div>
     </div>
   );

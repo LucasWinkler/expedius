@@ -60,3 +60,16 @@ export const FOOTER_NAV_ITEMS = [
   },
   ...NAV_ITEMS,
 ] as const;
+
+export const AUTH_FOOTER_NAV_ITEMS = [
+  {
+    href: "/",
+    icon: Home,
+    label: "Home",
+  },
+  {
+    href: "/privacy",
+    icon: File,
+    label: "Privacy",
+  },
+] as const;

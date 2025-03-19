@@ -137,11 +137,7 @@ export const HomeFaq = () => {
                     </li>
                     <li className="text-muted-foreground">
                       Place data comes from Google Places API, which has its own
-                      quota limits that we must adhere to
-                    </li>
-                    <li className="text-muted-foreground">
-                      During peak usage times, you might experience temporary
-                      slowdowns in place search or creation
+                      quota limits
                     </li>
                   </ul>
                 </AccordionContent>
