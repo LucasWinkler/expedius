@@ -6,6 +6,16 @@ import type { DbLike, DbUser } from "@/server/types/db";
 import { getServerSession } from "../auth/session";
 import type { PaginationParams } from "@/types";
 
+export type PaginatedLikes = {
+  items: DbLike[];
+  metadata: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    hasNextPage: boolean;
+  };
+};
+
 export const likes = {
   queries: {
     getByPlaceId: async (userId: DbUser["id"], placeId: DbLike["placeId"]) => {
@@ -25,8 +35,8 @@ export const likes = {
 
     getAllByUserId: async (
       userId: DbUser["id"],
-      { page = 1, limit = 10 }: PaginationParams = {},
-    ) => {
+      { page = 1, limit = 10 }: PaginationParams,
+    ): Promise<PaginatedLikes> => {
       return unstable_cache(
         async () => {
           const offset = (page - 1) * limit;
@@ -95,6 +105,18 @@ export const likes = {
       );
 
       return cachedFn();
+    },
+
+    getPaginatedLikes: async (
+      userId: DbUser["id"],
+      { page = 1, limit = 10 }: PaginationParams,
+    ): Promise<PaginatedLikes> => {
+      const userLikes = await likes.queries.getAllByUserId(userId, {
+        page,
+        limit,
+      });
+
+      return userLikes;
     },
   },
 
