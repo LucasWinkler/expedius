@@ -1,16 +1,15 @@
 import type { DbUser } from "@/server/types/db";
-// import type { lists } from "@/server/data/lists";
 import type { Place } from "@/types";
 
-// interface PaginatedResponse<T> {
-//   items: T[];
-//   metadata: {
-//     currentPage: number;
-//     totalPages: number;
-//     totalItems: number;
-//     hasNextPage: boolean;
-//   };
-// }
+export interface PaginatedResponse<T> {
+  items: T[];
+  metadata: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    hasNextPage: boolean;
+  };
+}
 
 export interface LikeItem {
   placeId: string;

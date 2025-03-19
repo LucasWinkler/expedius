@@ -5,34 +5,6 @@ import type { DbUser } from "@/server/types/db";
 import { db } from "@/server/db";
 import { user, like, list } from "@/server/db/schema";
 import { getServerSession } from "@/server/auth/session";
-// import { getEnhancedPlacePhoto } from "@/server/services/photos";
-// import type { Place } from "@/types";
-
-// const FIELD_MASK = [
-//   "id",
-//   "displayName",
-//   "formattedAddress",
-//   "photos",
-//   "rating",
-//   "userRatingCount",
-//   "priceLevel",
-// ].join(",");
-
-// const processPlacePhotos = async (place: Place): Promise<Place> => {
-//   try {
-//     if (!place.photos?.[0]) {
-//       return place;
-//     }
-
-//     return {
-//       ...place,
-//       image: await getEnhancedPlacePhoto(place.photos[0].name),
-//     };
-//   } catch (error) {
-//     console.warn(`Failed to process photo for place ${place.id}:`, error);
-//     return place;
-//   }
-// };
 
 export const users = {
   queries: {
