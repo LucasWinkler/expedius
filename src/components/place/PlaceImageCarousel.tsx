@@ -38,22 +38,18 @@ export function PlaceImageCarousel({
       >
         <CarouselContent>
           {photos.map((photo, index) => (
-            <CarouselItem key={photo.name}>
-              <a
-                href={photo.googleMapsUri}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative block aspect-video w-full"
-              >
-                <Image
-                  src={`/api/places/photo/${encodeURIComponent(photo.name)}?maxHeightPx=1080&maxWidthPx=1920`}
-                  alt={`${placeName} photo ${index + 1}`}
-                  className="object-cover"
-                  fill
-                  priority={index === 0}
-                  unoptimized
-                />
-              </a>
+            <CarouselItem
+              className="relative block aspect-video w-full"
+              key={photo.name}
+            >
+              <Image
+                src={`/api/places/photo/${encodeURIComponent(photo.name)}?maxHeightPx=1080&maxWidthPx=1920`}
+                alt={`${placeName} photo ${index + 1}`}
+                className="object-cover"
+                fill
+                priority={index === 0}
+                unoptimized
+              />
             </CarouselItem>
           ))}
         </CarouselContent>
