@@ -1,16 +1,14 @@
 import { LIKES_FIELD_MASK } from "@/constants/likes";
 import { processPlaceThumbnail } from "./photos";
 import { env } from "@/env";
-import { likes } from "@/server/data/likes";
+import { DbLike } from "../types/db";
 
-export const getLikesWithPlaceDetails = async (userId: string) => {
-  const userLikes = await likes.queries.getAllByUserId(userId, {
-    page: 1,
-    limit: 10,
-  });
-
+export const getLikesWithPlaceDetails = async (
+  userId: string,
+  likes: DbLike[],
+) => {
   const likesWithPlaceDetails = await Promise.all(
-    userLikes.items.map(async (like) => {
+    likes.map(async (like) => {
       const res = await fetch(
         `${env.GOOGLE_PLACES_API_BASE_URL}/places/${like.placeId}`,
         {

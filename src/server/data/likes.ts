@@ -102,12 +102,21 @@ export const likes = {
       userId: DbUser["id"],
       { page = 1, limit = 10 }: PaginationParams = {},
     ): Promise<PaginatedResponse<DbLike>> => {
-      const userLikes = await likes.queries.getAllByUserId(userId, {
-        page,
-        limit,
-      });
+      return unstable_cache(
+        async () => {
+          const userLikes = await likes.queries.getAllByUserId(userId, {
+            page,
+            limit,
+          });
 
-      return userLikes;
+          return userLikes;
+        },
+        [`user-${userId}-likes-page-${page}-limit-${limit}`],
+        {
+          tags: [`user-${userId}-likes`, `user-likes`],
+          revalidate: 60,
+        },
+      )();
     },
   },
 

@@ -68,7 +68,7 @@ export default async function LikesPage({
   const validated = profileLikesParamsSchema.safeParse({
     username: (await params).username,
     page: (await searchParams).page,
-    limit: 10,
+    limit: 12,
   });
   if (!validated.success) {
     notFound();
@@ -91,7 +91,10 @@ export default async function LikesPage({
     limit: validated.data.limit,
   });
 
-  const likesWithPlaceDetails = await getLikesWithPlaceDetails(user.id);
+  const likesWithPlaceDetails = await getLikesWithPlaceDetails(
+    user.id,
+    paginatedLikes.items,
+  );
 
   return (
     <LikesView
