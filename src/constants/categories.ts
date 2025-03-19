@@ -21,6 +21,9 @@ import {
   Clapperboard,
   Sparkles,
   Flower2,
+  Music,
+  BookMarked,
+  Apple,
 } from "lucide-react";
 
 export const HOME_CATEGORIES = [
@@ -170,5 +173,23 @@ export const ALL_CATEGORIES = [
     query: "botanical garden",
     icon: Flower2,
     description: "Plant collections and gardens",
+  },
+  {
+    title: "Live Music",
+    query: "live music venue",
+    icon: Music,
+    description: "Concert halls and performance spaces",
+  },
+  {
+    title: "Bookstores",
+    query: "bookstore",
+    icon: BookMarked,
+    description: "Independent and specialty book shops",
+  },
+  {
+    title: "Farmers Markets",
+    query: "farmers market",
+    icon: Apple,
+    description: "Fresh local produce and artisanal goods",
   },
 ] as const;

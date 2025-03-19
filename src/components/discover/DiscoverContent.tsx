@@ -9,7 +9,7 @@ export const DiscoverContent = () => {
   const { query } = useSearch();
 
   return (
-    <div className="container mx-auto px-4 py-6 sm:py-8 md:py-10">
+    <>
       <div className="mb-8 space-y-4">
         <SearchBar variant="advanced" />
         {query && (
@@ -22,6 +22,6 @@ export const DiscoverContent = () => {
       <div className="mt-6">
         {query ? <SearchResults /> : <DiscoverEmptyState />}
       </div>
-    </div>
+    </>
   );
 };

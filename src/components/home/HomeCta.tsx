@@ -5,8 +5,8 @@ export const HomeCta = () => {
     <section className="border-t bg-muted/50">
       <div className="container mx-auto px-4 py-24">
         <div className="flex flex-col items-center text-center">
-          <h2 className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
-            Start Your Journey Today
+          <h2 className="max-w-2xl text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+            Start your journey today
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
             Create an account to save your favourite places, build custom lists,

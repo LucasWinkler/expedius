@@ -20,7 +20,7 @@ const POPULAR_CATEGORIES = [
 
 export const DiscoverEmptyState = () => {
   const router = useRouter();
-  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(true);
   const [isTipsOpen, setIsTipsOpen] = useState(false);
 
   const handleCategoryClick = (query: string) => {
