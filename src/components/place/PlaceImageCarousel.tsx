@@ -11,6 +11,8 @@ import {
 import type { PlacePhoto } from "@/types";
 import { useCarouselState } from "@/hooks";
 import Image from "next/image";
+import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PlaceImageCarouselProps {
   photos?: PlacePhoto[];
@@ -22,6 +24,8 @@ export function PlaceImageCarousel({
   placeName,
 }: PlaceImageCarouselProps) {
   const { currentSnapPoint, snapPointCount, api, setApi } = useCarouselState();
+  const [imagesLoaded, setImagesLoaded] = useState<Record<string, boolean>>({});
+
   if (!photos?.length) {
     return null;
   }
@@ -42,6 +46,9 @@ export function PlaceImageCarousel({
               className="relative block aspect-video w-full"
               key={photo.name}
             >
+              {!imagesLoaded[photo.name] && (
+                <Skeleton className="absolute inset-0 rounded-none" />
+              )}
               <Image
                 src={`/api/places/photo/${encodeURIComponent(photo.name)}?maxHeightPx=1080&maxWidthPx=1920`}
                 alt={`${placeName} photo ${index + 1}`}
@@ -49,6 +56,9 @@ export function PlaceImageCarousel({
                 fill
                 priority={index === 0}
                 unoptimized
+                onLoad={() =>
+                  setImagesLoaded((prev) => ({ ...prev, [photo.name]: true }))
+                }
               />
             </CarouselItem>
           ))}
