@@ -1,50 +1,22 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useListsInfinite } from "@/hooks/useLists";
-import { ListCard } from "../lists/ListCard";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus } from "lucide-react";
-import { useInView } from "react-intersection-observer";
 import type { DbListWithPlacesCount } from "@/server/types/db";
 import { useState } from "react";
 import { ListDeleteDialog } from "../lists/ListDeleteDialog";
 import { Button } from "../ui/button";
 import ListCreateDialog from "../lists/ListCreateDialog";
 import ListEditDialog from "../lists/ListEditDialog";
-import { useLikesInfinite } from "@/hooks/useLikes";
-import { PlaceCard } from "../places/PlaceCard";
-import { LikeButton } from "../places/LikeButton";
-import type { Place } from "@/types";
-import { useSession } from "@/lib/auth-client";
-import { SaveToListButton } from "../places/SaveToListButton";
-import { ListCardSkeleton } from "../skeletons/ListCardSkeleton";
-import { PlaceCardSkeleton } from "../skeletons/PlaceCardSkeleton";
+import { ProfileLikesTab } from "./ProfileLikesTab";
+import { ProfileListsTab } from "./ProfileListsTab";
 
 interface ProfileViewProps {
   username: string;
-  isOwnProfile: boolean;
+  isOwner: boolean;
 }
 
-interface LikeItem {
-  placeId: string;
-  place: Place;
-}
-
-export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
-  const {
-    data: listsData,
-    fetchNextPage: fetchNextLists,
-    hasNextPage: hasNextLists,
-    isFetchingNextPage: isFetchingNextLists,
-    status: listsStatus,
-  } = useListsInfinite(username);
-  const {
-    data: likesData,
-    fetchNextPage: fetchNextLikes,
-    hasNextPage: hasNextLikes,
-    isFetchingNextPage: isFetchingNextLikes,
-    status: likesStatus,
-  } = useLikesInfinite(username, true);
+export const ProfileView = ({ username, isOwner }: ProfileViewProps) => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingList, setEditingList] = useState<DbListWithPlacesCount | null>(
     null,
@@ -52,43 +24,14 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
   const [deletingList, setDeletingList] =
     useState<DbListWithPlacesCount | null>(null);
   const [activeTab, setActiveTab] = useState<"lists" | "likes">("lists");
-  const { data: session } = useSession();
 
-  const { ref: listsRef } = useInView({
-    threshold: 0,
-    rootMargin: "200px 0px",
-    onChange: (inView) => {
-      if (inView && hasNextLists && !isFetchingNextLists) {
-        fetchNextLists();
-      }
-    },
-  });
+  const handleEditList = (list: DbListWithPlacesCount) => {
+    setEditingList(list);
+  };
 
-  const { ref: likesRef } = useInView({
-    threshold: 0,
-    rootMargin: "200px 0px",
-    onChange: (inView) => {
-      if (inView && hasNextLikes && !isFetchingNextLikes) {
-        fetchNextLikes();
-      }
-    },
-  });
-
-  const allLists =
-    listsData?.pages.flatMap((page, pageIndex) =>
-      page.items.map((item) => ({
-        ...item,
-        key: `${item.id}-${pageIndex}`,
-      })),
-    ) ?? [];
-
-  const allLikes =
-    likesData?.pages.flatMap((page, pageIndex) =>
-      page.items.map((item: LikeItem) => ({
-        ...item,
-        key: `${item.placeId}-${pageIndex}`,
-      })),
-    ) ?? [];
+  const handleDeleteList = (list: DbListWithPlacesCount) => {
+    setDeletingList(list);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 md:max-w-3xl">
@@ -106,7 +49,7 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
             </TabsTrigger>
           </TabsList>
 
-          {isOwnProfile && activeTab === "lists" && (
+          {isOwner && activeTab === "lists" && (
             <Button
               variant="ghost"
               size="sm"
@@ -118,104 +61,17 @@ export const ProfileView = ({ username, isOwnProfile }: ProfileViewProps) => {
             </Button>
           )}
         </div>
-        <TabsContent value="lists">
-          {listsStatus === "pending" ? (
-            <div className="space-y-8">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <ListCardSkeleton key={i} />
-              ))}
-            </div>
-          ) : listsStatus === "error" ? (
-            <div className="py-8 text-center text-red-500">
-              Error loading lists
-            </div>
-          ) : (
-            <div className="space-y-8">
-              {allLists.map((list) => (
-                <ListCard
-                  key={list.key}
-                  list={list}
-                  username={username}
-                  isOwnProfile={isOwnProfile}
-                  onEdit={() => setEditingList(list)}
-                  onDelete={() => setDeletingList(list)}
-                  showPrivacyBadge={isOwnProfile}
-                />
-              ))}
 
-              <div ref={listsRef}>
-                {hasNextLists ? (
-                  isFetchingNextLists ? (
-                    <ListCardSkeleton />
-                  ) : (
-                    <div className="flex justify-center py-4">
-                      <span className="text-sm text-muted-foreground">
-                        Scroll for more lists
-                      </span>
-                    </div>
-                  )
-                ) : null}
-              </div>
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="likes">
-          {likesStatus === "pending" ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <PlaceCardSkeleton showActions key={i} />
-              ))}
-            </div>
-          ) : likesStatus === "error" ? (
-            <div className="py-8 text-center text-red-500">
-              Error loading likes
-            </div>
-          ) : (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {allLikes.map((like) => (
-                  <PlaceCard
-                    key={like.key}
-                    place={like.place}
-                    isListItem
-                    actions={
-                      session ? (
-                        <div className="flex flex-col gap-2">
-                          <LikeButton
-                            placeId={like.placeId}
-                            username={username}
-                          />
-                          <SaveToListButton placeId={like.placeId} />
-                        </div>
-                      ) : undefined
-                    }
-                  />
-                ))}
-              </div>
-
-              <div ref={likesRef}>
-                {hasNextLikes ? (
-                  isFetchingNextLikes ? (
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <PlaceCardSkeleton showActions />
-                      <PlaceCardSkeleton showActions />
-                    </div>
-                  ) : (
-                    <div className="flex justify-center py-4">
-                      <span className="text-sm text-muted-foreground">
-                        Scroll for more likes
-                      </span>
-                    </div>
-                  )
-                ) : null}
-              </div>
-            </div>
-          )}
-        </TabsContent>
+        <ProfileListsTab
+          username={username}
+          isOwner={isOwner}
+          onEdit={handleEditList}
+          onDelete={handleDeleteList}
+        />
+        <ProfileLikesTab username={username} />
       </Tabs>
 
-      {isOwnProfile && activeTab === "lists" && (
+      {isOwner && activeTab === "lists" && (
         <ListCreateDialog
           open={isCreateDialogOpen}
           onOpenChange={setIsCreateDialogOpen}

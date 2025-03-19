@@ -2,11 +2,11 @@ import { notFound } from "next/navigation";
 import { users } from "@/server/data/users";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileView } from "@/components/profile/ProfileView";
-import type { PublicProfileData } from "@/server/types/profile";
 import { profileParamsSchema } from "@/lib/validations/profile";
-import { ProfilePrivateView } from "@/components/profile/ProfilePrivateView";
 import { Metadata } from "next";
 import { createMetadata } from "@/lib/metadata";
+import { getServerSession } from "@/server/auth/session";
+import { ProfilePrivateView } from "@/components/profile/ProfilePrivateView";
 
 interface ProfilePageProps {
   params: Promise<{ username: string }>;
@@ -36,12 +36,12 @@ export const generateMetadata = async ({
     });
   }
 
-  const { name, username, isPublic, isOwnProfile } = profile;
+  const { name, username, isPublic, isOwner } = profile;
 
   const privateProfileTitle = `Private Profile (@${username})`;
   const publicProfileTitle = `${name} (@${username})`;
 
-  const title = isOwnProfile
+  const title = isOwner
     ? `${name} (@${username})`
     : isPublic
       ? publicProfileTitle
@@ -63,29 +63,31 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     notFound();
   }
 
-  const profile = await users.queries.getProfile(validated.data);
-  if (!profile) {
+  const user = await users.queries.getByUsername(validated.data.username);
+  if (!user) {
     notFound();
   }
 
-  if ("type" in profile && profile.type === "private") {
-    return <ProfilePrivateView username={profile.username} />;
+  const session = await getServerSession();
+  const isOwner = session?.user.id === user.id;
+
+  if (!user.isPublic && !isOwner) {
+    return <ProfilePrivateView username={user.username} />;
   }
 
-  const publicProfile = profile as PublicProfileData;
+  const { listsCount, likesCount } = await users.queries.getListsAndLikesCount(
+    user.id,
+  );
 
   return (
     <article>
       <ProfileHeader
-        user={publicProfile.user}
-        isOwnProfile={publicProfile.isOwnProfile}
-        totalLists={publicProfile.lists.metadata.totalItems}
-        totalLikes={publicProfile.totalLikes}
+        user={user}
+        isOwner={isOwner}
+        totalLists={listsCount}
+        totalLikes={likesCount}
       />
-      <ProfileView
-        username={publicProfile.user.username}
-        isOwnProfile={publicProfile.isOwnProfile}
-      />
+      <ProfileView username={user.username} isOwner={isOwner} />
     </article>
   );
 }
