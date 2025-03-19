@@ -21,7 +21,7 @@ import ListCreateDialog from "../lists/ListCreateDialog";
 interface ProfileListsProps {
   lists: DbListWithPlacesCount[];
   username: string;
-  isOwnProfile: boolean;
+  isOwner: boolean;
   totalPages: number;
   currentPage: number;
 }
@@ -29,7 +29,7 @@ interface ProfileListsProps {
 export const ProfileLists = ({
   lists,
   username,
-  isOwnProfile,
+  isOwner,
   totalPages,
   currentPage,
 }: ProfileListsProps) => {
@@ -100,8 +100,8 @@ export const ProfileLists = ({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>{isOwnProfile ? "My Lists" : "Their Lists"}</CardTitle>
-        {isOwnProfile && (
+        <CardTitle>{isOwner ? "My Lists" : "Their Lists"}</CardTitle>
+        {isOwner && (
           <Button
             variant="outline"
             size="sm"
@@ -119,8 +119,8 @@ export const ProfileLists = ({
               key={list.id}
               list={list}
               username={username}
-              isOwnProfile={isOwnProfile}
-              showPrivacyBadge={isOwnProfile}
+              isOwner={isOwner}
+              showPrivacyBadge={isOwner}
               onEdit={() => setEditingList(list)}
               onDelete={() => setDeletingList(list)}
             />

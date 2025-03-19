@@ -14,3 +14,11 @@ export const profileLikesParamsSchema = z.object({
 });
 
 export type ProfileLikesParams = z.infer<typeof profileLikesParamsSchema>;
+
+export const profileListsParamsSchema = z.object({
+  username: z.string().min(1).max(50),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().default(PAGINATION.ITEMS_PER_PAGE),
+});
+
+export type ProfileListsParams = z.infer<typeof profileListsParamsSchema>;

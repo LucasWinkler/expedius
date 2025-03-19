@@ -26,7 +26,7 @@ export const likes = {
 
     getAllByUserId: async (
       userId: DbUser["id"],
-      { page = 1, limit = 10 }: PaginationParams,
+      { page = 1, limit = 10 }: PaginationParams = {},
     ): Promise<PaginatedResponse<DbLike>> => {
       return unstable_cache(
         async () => {
@@ -100,7 +100,7 @@ export const likes = {
 
     getPaginatedLikes: async (
       userId: DbUser["id"],
-      { page = 1, limit = 10 }: PaginationParams,
+      { page = 1, limit = 10 }: PaginationParams = {},
     ): Promise<PaginatedResponse<DbLike>> => {
       const userLikes = await likes.queries.getAllByUserId(userId, {
         page,
