@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +8,7 @@ import { useUploadThing } from "@/lib/uploadthing";
 import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { checkUsernameAvailability } from "@/server/actions/user";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export type SignUpStep = "credentials" | "profile" | "final";
 
@@ -15,8 +17,9 @@ export const useSignUpForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { startUpload, isUploading } = useUploadThing("signUpImage");
   const searchParams = useSearchParams();
+  const router = useRouter();
   const callbackURL = searchParams.get("callbackUrl") || "/";
-  const altActionLink = `/auth/sign-in${callbackURL ? `?callbackUrl=${callbackURL}` : ""}`;
+  const altActionLink = `/auth/sign-up${callbackURL ? `?callbackUrl=${callbackURL}` : ""}`;
 
   const form = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
@@ -93,6 +96,7 @@ export const useSignUpForm = () => {
             toast.success("Account created!", {
               description: "Welcome to Expedius.",
             });
+            router.push(callbackURL);
           },
           onError: (ctx) => {
             toast.error("Registration failed", {
