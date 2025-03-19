@@ -33,10 +33,13 @@ export const HomeFeatures = () => {
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">
       <div className="mb-8 text-center md:mb-16">
-        <h2 className="text-balance text-3xl font-semibold lg:text-4xl">
+        <h2 className="animate-fade-up text-balance text-3xl font-semibold opacity-0 lg:text-4xl">
           Simplify your exploration
         </h2>
-        <p className="mt-4 text-muted-foreground">
+        <p
+          className="animate-fade-up mt-4 text-muted-foreground opacity-0"
+          style={{ animationDelay: "100ms" }}
+        >
           Everything you need to discover and organize your favourite spots
         </p>
       </div>
