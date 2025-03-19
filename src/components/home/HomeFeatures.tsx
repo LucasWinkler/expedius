@@ -53,7 +53,7 @@ export const HomeFeatures = () => {
             <div className="inline-flex rounded-lg bg-primary/10 p-3 text-primary">
               <Icon className="size-6" />
             </div>
-            <h2 className="text-lg font-semibold">{title}</h2>
+            <h3 className="text-lg font-semibold">{title}</h3>
             <p className="text-sm text-muted-foreground">{description}</p>
           </div>
         ))}

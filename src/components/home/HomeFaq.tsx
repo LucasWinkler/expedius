@@ -11,10 +11,10 @@ export const HomeFaq = () => {
       <div className="mx-auto max-w-5xl px-6">
         <div className="grid gap-y-12 px-2 lg:grid-cols-[1fr_1fr]">
           <div className="text-center lg:text-left">
-            <h2 className="mb-4 text-3xl font-semibold md:text-4xl">
-              Frequently <br className="hidden lg:block" /> Asked{" "}
+            <h2 className="mb-4 text-balance text-3xl font-semibold md:text-4xl">
+              Frequently <br className="hidden lg:block" /> asked{" "}
               <br className="hidden lg:block" />
-              Questions
+              questions
             </h2>
             <p>Common questions about Expedius</p>
           </div>
