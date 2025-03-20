@@ -19,7 +19,7 @@ export const useSignUpForm = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const callbackURL = searchParams.get("callbackUrl") || "/";
-  const altActionLink = `/auth/sign-up${callbackURL ? `?callbackUrl=${callbackURL}` : ""}`;
+  const altActionLink = `/auth/sign-in${callbackURL ? `?callbackUrl=${callbackURL}` : ""}`;
 
   const form = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
