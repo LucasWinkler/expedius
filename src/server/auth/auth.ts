@@ -8,6 +8,7 @@ import { env } from "@/env";
 import { resend } from "@/lib/email";
 import { minPasswordLength } from "@/constants";
 import { EmailVerification } from "@/components/emails/email-verification";
+import { ResetPassword } from "@/components/emails/reset-password";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -53,6 +54,14 @@ export const auth = betterAuth({
     autoSignIn: true,
     minPasswordLength: minPasswordLength,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      await resend.emails.send({
+        from: "Expedius <noreply@lucaswinkler.dev>",
+        to: user.email,
+        subject: "Reset your password",
+        react: ResetPassword({ url, name: user.name }),
+      });
+    },
   },
   emailVerification: {
     sendOnSignUp: true,
