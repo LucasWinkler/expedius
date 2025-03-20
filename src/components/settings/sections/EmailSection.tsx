@@ -75,12 +75,16 @@ export function EmailSection({
   async function handleResendVerification() {
     setIsLoading(true);
     try {
-      toast.info("This feature is not available in the current version", {
-        description:
-          "Please contact support if you need help verifying your email",
+      await authClient.sendVerificationEmail({
+        email: currentEmail,
+        callbackURL: "/settings",
+      });
+
+      toast.success("Verification email sent", {
+        description: "Please check your inbox to verify your email address",
       });
     } catch (error) {
-      toast.error("An error occurred", {
+      toast.error("Failed to send verification email", {
         description: "Please try again later",
       });
       console.error(error);
