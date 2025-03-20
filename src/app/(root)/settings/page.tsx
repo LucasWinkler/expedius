@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { createMetadata } from "@/lib/metadata";
 import { getServerSession } from "@/server/auth/session";
-import { cookies } from "next/headers";
 import {
   DeleteAccountSection,
   EmailSection,
@@ -18,8 +17,6 @@ export const metadata: Metadata = createMetadata({
 
 export default async function Settings() {
   const session = await getServerSession();
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("better-auth.session_token")?.value;
 
   if (!session) {
     redirect("/login?callbackUrl=/settings");
@@ -41,7 +38,7 @@ export default async function Settings() {
         />
         <PasswordSection />
         <TwoFactorSection />
-        <SessionsSection sessionToken={sessionToken} />
+        <SessionsSection sessionToken={session.session.token} />
         <DeleteAccountSection />
       </div>
     </div>
