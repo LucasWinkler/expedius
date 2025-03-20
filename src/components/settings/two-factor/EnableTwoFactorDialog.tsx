@@ -37,7 +37,6 @@ export function EnableTwoFactorDialog({
     },
   });
 
-  // Reset form when dialog closes
   useEffect(() => {
     if (!isOpen) {
       form.reset();

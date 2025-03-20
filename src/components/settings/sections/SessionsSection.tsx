@@ -46,7 +46,6 @@ interface Session {
   deviceType?: "desktop" | "mobile" | "tablet";
 }
 
-// Extract the actual session token (part before the period)
 function extractTokenId(fullToken?: string): string | undefined {
   if (!fullToken) return undefined;
   return fullToken.split(".")[0];
@@ -63,11 +62,9 @@ export function SessionsSection({ sessionToken }: SessionsProps) {
 
   const currentTokenId = extractTokenId(sessionToken);
 
-  // Handle dialog close
   function handleDialogClose(isOpen: boolean) {
     setShowConfirmDialog(isOpen);
 
-    // Reset selected session when dialog closes
     if (!isOpen) {
       setSelectedSession(null);
     }
@@ -99,13 +96,10 @@ export function SessionsSection({ sessionToken }: SessionsProps) {
             };
           });
 
-          // Sort sessions to show current device first, then by last active date
           const sortedSessions = enhancedSessions.sort((a, b) => {
-            // Current session always comes first
             if (a.isCurrent) return -1;
             if (b.isCurrent) return 1;
 
-            // Otherwise sort by last active date (most recent first)
             const dateA = a.lastActiveAt || a.createdAt;
             const dateB = b.lastActiveAt || b.createdAt;
             return new Date(dateB).getTime() - new Date(dateA).getTime();
@@ -153,7 +147,6 @@ export function SessionsSection({ sessionToken }: SessionsProps) {
     try {
       await authClient.revokeOtherSessions();
 
-      // Keep only the current session
       setSessions(sessions.filter((session) => session.isCurrent));
 
       toast.success("All other sessions revoked successfully");
@@ -176,7 +169,6 @@ export function SessionsSection({ sessionToken }: SessionsProps) {
     if (isMobile) deviceType = "Mobile";
     if (isTablet) deviceType = "Tablet";
 
-    // Set the device type for icon selection
     session.deviceType = deviceType.toLowerCase() as
       | "desktop"
       | "mobile"
@@ -356,7 +348,6 @@ export function SessionsSection({ sessionToken }: SessionsProps) {
   );
 }
 
-// Helper component to display relative time
 function RelativeTime({ date }: { date: string }) {
   if (!date) return <span>Unknown</span>;
 
@@ -392,11 +383,9 @@ function RelativeTime({ date }: { date: string }) {
       </span>
     );
 
-  // Format date for older sessions
   return <span>{sessionDate.toLocaleDateString()}</span>;
 }
 
-// Skeleton loader component for session cards
 function SessionCardSkeleton() {
   return (
     <div className="rounded-md border p-4">

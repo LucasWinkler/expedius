@@ -42,7 +42,6 @@ export function QrCodeDialog({
     },
   });
 
-  // Reset form and trust device state when dialog closes
   useEffect(() => {
     if (!isOpen) {
       form.reset();
