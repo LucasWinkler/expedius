@@ -43,14 +43,14 @@ export const HomeFeatures = () => {
           Everything you need to discover and organize your favourite spots
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
         {features.map(({ title, description, icon: Icon }, index) => (
           <div
             key={title}
-            className="animate-fade-up group space-y-3 rounded-lg p-4 opacity-0 transition-colors hover:bg-muted/50"
+            className="animate-fade-up group space-y-3 rounded-lg p-4 text-center opacity-0 transition-colors hover:bg-muted/50 sm:text-left"
             style={{ animationDelay: `${index * 100 + 500}ms` }}
           >
-            <div className="inline-flex rounded-lg bg-primary/10 p-3 text-primary">
+            <div className="mx-auto inline-flex rounded-lg bg-primary/10 p-3 text-primary sm:mx-0">
               <Icon className="size-6" />
             </div>
             <h3 className="text-lg font-semibold">{title}</h3>

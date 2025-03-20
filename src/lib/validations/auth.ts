@@ -1,11 +1,6 @@
-import {
-  maxNameLength,
-  maxUsernameLength,
-  minNameLength,
-  minPasswordLength,
-  minUsernameLength,
-} from "@/constants";
+import { maxNameLength, minNameLength, minPasswordLength } from "@/constants";
 import { z } from "zod";
+import { usernameSchema } from "./user";
 
 export const passwordSchema = z
   .string()
@@ -27,21 +22,7 @@ export const signUpSchema = z
       .trim()
       .min(minNameLength, `Name must be at least ${minNameLength} characters`)
       .max(maxNameLength, `Name must be less than ${maxNameLength} characters`),
-    username: z
-      .string()
-      .trim()
-      .min(
-        minUsernameLength,
-        `Username must be at least ${minUsernameLength} characters`,
-      )
-      .max(
-        maxUsernameLength,
-        `Username must be less than ${maxUsernameLength} characters`,
-      )
-      .regex(
-        /^[a-zA-Z0-9_-]+$/,
-        "Username can only contain letters, numbers, underscores and dashes",
-      ),
+    username: usernameSchema,
     image: z
       .custom<File[]>()
       .optional()
