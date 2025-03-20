@@ -46,7 +46,7 @@ export function EnableTwoFactorDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="w-full sm:w-auto">
           <Shield className="mr-2 size-4" />
           Setup 2FA
         </Button>

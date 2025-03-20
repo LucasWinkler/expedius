@@ -47,7 +47,9 @@ export function DisableTwoFactorDialog({
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">Disable 2FA</Button>
+        <Button variant="destructive" className="w-full sm:w-auto">
+          Disable 2FA
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

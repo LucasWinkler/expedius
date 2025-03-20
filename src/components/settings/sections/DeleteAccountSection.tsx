@@ -135,7 +135,7 @@ export function DeleteAccountSection() {
             onOpenChange={handleDialogClose}
           >
             <AlertDialogTrigger asChild>
-              <Button variant="destructive">
+              <Button variant="destructive" className="w-full sm:w-auto">
                 <Trash2 className="mr-2 size-4" />
                 Delete Account
               </Button>

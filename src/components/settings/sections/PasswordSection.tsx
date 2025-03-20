@@ -150,7 +150,11 @@ export function PasswordSection() {
           />
 
           <div className="flex justify-end pt-2">
-            <Button type="submit" disabled={isLoading || isSuccess}>
+            <Button
+              type="submit"
+              disabled={isLoading || isSuccess}
+              className="w-full sm:w-auto"
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />

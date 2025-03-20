@@ -305,6 +305,7 @@ export function SessionsSection({ sessionToken }: SessionsProps) {
                     variant="destructive"
                     onClick={handleRevokeOtherSessions}
                     disabled={isRevokingAll || sessions.length <= 1}
+                    className="w-full sm:w-auto"
                   >
                     {isRevokingAll ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
