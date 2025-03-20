@@ -5,6 +5,9 @@ import { db } from "@/server/db";
 import * as schema from "@/server/db/schema";
 import { lists } from "@/server/data/lists";
 import { env } from "@/env";
+import { resend } from "@/lib/email";
+import { minPasswordLength } from "@/constants";
+import { EmailVerification } from "@/components/emails/email-verification";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -48,6 +51,20 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
+    minPasswordLength: minPasswordLength,
+    requireEmailVerification: true,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await resend.emails.send({
+        from: "Expedius <hello@lucaswinkler.dev>",
+        to: user.email,
+        subject: "Verify your email address for Expedius",
+        react: EmailVerification({ url, name: user.name }),
+      });
+    },
   },
   databaseHooks: {
     user: {
