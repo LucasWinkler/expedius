@@ -3,10 +3,11 @@ import { lists } from "@/server/data/lists";
 import { paginationSchema } from "@/server/validations/pagination";
 import { getServerSession } from "@/server/auth/session";
 import { z } from "zod";
+import { usernameSchema } from "@/lib/validations/user";
 
 const routeContextSchema = z.object({
   params: z.object({
-    username: z.string(),
+    username: usernameSchema,
   }),
 });
 

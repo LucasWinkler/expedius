@@ -6,10 +6,11 @@ import { env } from "@/env";
 import { users } from "@/server/data/users";
 import { getEnhancedPlacePhoto } from "@/server/services/photos";
 import type { Place } from "@/types";
+import { usernameSchema } from "@/lib/validations";
 
 const routeContextSchema = z.object({
   params: z.object({
-    username: z.string(),
+    username: usernameSchema,
   }),
 });
 
