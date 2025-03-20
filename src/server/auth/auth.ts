@@ -9,6 +9,9 @@ import { resend } from "@/lib/email";
 import { minPasswordLength } from "@/constants";
 import { EmailVerification } from "@/components/emails/email-verification";
 import { ResetPassword } from "@/components/emails/reset-password";
+import { EmailChange } from "@/components/emails/email-change";
+import { DeleteAccount } from "@/components/emails/delete-account";
+import { twoFactor } from "better-auth/plugins/two-factor";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -18,6 +21,42 @@ export const auth = betterAuth({
   appName: env.NEXT_PUBLIC_APP_NAME,
   baseURL: env.NEXT_PUBLIC_BASE_URL,
   user: {
+    deleteUser: {
+      enabled: true,
+      sendDeleteAccountVerification: async ({
+        user,
+        url,
+      }: {
+        user: { email: string; name: string; id: string };
+        url: string;
+      }) => {
+        await resend.emails.send({
+          from: "Expedius <noreply@lucaswinkler.dev>",
+          to: user.email,
+          subject: "Delete account",
+          react: DeleteAccount({ url, name: user.name }),
+        });
+      },
+    },
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailVerification: async ({
+        user,
+        newEmail,
+        url,
+      }: {
+        user: { email: string; name: string };
+        newEmail: string;
+        url: string;
+      }) => {
+        await resend.emails.send({
+          from: "Expedius <noreply@lucaswinkler.dev>",
+          to: user.email,
+          subject: "Approve email change",
+          react: EmailChange({ url, name: user.name, newEmail }),
+        });
+      },
+    },
     additionalFields: {
       isPublic: {
         type: "boolean",
@@ -90,5 +129,10 @@ export const auth = betterAuth({
       maxAge: 5 * 60,
     },
   },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    twoFactor({
+      issuer: env.NEXT_PUBLIC_APP_NAME,
+    }),
+  ],
 } satisfies BetterAuthOptions);

@@ -41,7 +41,12 @@ export const SignInForm = () => {
       await signIn.email(
         { ...data, callbackURL },
         {
-          onSuccess: () => {
+          onSuccess: (ctx) => {
+            if (ctx.data.twoFactorRedirect) {
+              window.location.href = `/auth/two-factor?callbackUrl=${encodeURIComponent(callbackURL)}`;
+              return;
+            }
+
             toast.success("Welcome back!", {
               description: "You have been successfully signed in.",
             });
