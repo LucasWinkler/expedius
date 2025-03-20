@@ -14,17 +14,18 @@ export const metadata = createMetadata({
 const TwoFactorPage = async ({
   searchParams,
 }: {
-  searchParams: { callbackUrl?: string };
+  searchParams: Promise<{ callbackUrl?: string }>;
 }) => {
   const session = await getServerSession();
+  const { callbackUrl } = await searchParams;
 
   if (session) {
-    redirect(searchParams.callbackUrl || "/");
+    redirect(callbackUrl || "/");
   }
 
   return (
     <Suspense fallback={<AuthLoading />}>
-      <TwoFactorForm callbackURL={searchParams.callbackUrl} />
+      <TwoFactorForm callbackURL={callbackUrl} />
     </Suspense>
   );
 };
