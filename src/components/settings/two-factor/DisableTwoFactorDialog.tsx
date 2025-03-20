@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import {
   Form,
   FormControl,
@@ -70,12 +70,12 @@ export function DisableTwoFactorDialog({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Enter your password to confirm</FormLabel>
+                  <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Your current password"
+                    <PasswordInput
+                      placeholder="Enter your current password"
                       autoComplete="current-password"
+                      disabled={isLoading}
                       {...field}
                     />
                   </FormControl>
