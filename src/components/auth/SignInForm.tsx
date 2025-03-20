@@ -47,6 +47,13 @@ export const SignInForm = () => {
             });
           },
           onError: (ctx) => {
+            if (ctx.error.status === 403) {
+              toast.error("Sign in failed", {
+                description: "Please check your email to verify your account.",
+              });
+              return;
+            }
+
             toast.error("Sign in failed", {
               description: ctx.error.message,
             });
