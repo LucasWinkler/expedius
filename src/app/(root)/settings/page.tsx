@@ -19,7 +19,7 @@ export default async function Settings() {
   const session = await getServerSession();
 
   if (!session) {
-    redirect("/sign-in?callbackUrl=/settings");
+    redirect("/auth/sign-in?callbackUrl=/settings");
   }
 
   return (
