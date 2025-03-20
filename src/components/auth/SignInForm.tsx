@@ -103,6 +103,14 @@ export const SignInForm = () => {
                 <FormControl>
                   <PasswordInput autoComplete="current-password" {...field} />
                 </FormControl>
+                <div className="flex justify-end">
+                  <a
+                    href={`/auth/forgot-password${callbackURL ? `?callbackUrl=${callbackURL}` : ""}`}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
