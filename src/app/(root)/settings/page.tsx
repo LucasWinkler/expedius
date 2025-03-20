@@ -23,7 +23,7 @@ export default async function Settings() {
   }
 
   return (
-    <div className="container mx-auto max-w-screen-lg px-4 py-10">
+    <div className="container mx-auto px-4 py-10 lg:max-w-screen-lg">
       <div className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
         <p className="mt-2 text-sm text-muted-foreground">
