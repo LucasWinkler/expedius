@@ -113,7 +113,6 @@
 ## Roadmap
 
 - [ ] Filtering, sorting, and searching for lists
-- [ ] Settings page for changing password, email, etc.
 - [ ] Possibly add social features
   - [ ] Followers
   - [ ] Following
