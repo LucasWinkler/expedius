@@ -30,6 +30,7 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_TOKEN: z
       .string()
       .min(1, "Upstash Redis REST token is required"),
+    RESEND_API_KEY: z.string().min(1, "Resend API key is required"),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -63,6 +64,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
   },
 
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
