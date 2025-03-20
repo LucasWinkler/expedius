@@ -59,7 +59,7 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
       await resend.emails.send({
-        from: "Expedius <hello@lucaswinkler.dev>",
+        from: "Expedius <noreply@lucaswinkler.dev>",
         to: user.email,
         subject: "Verify your email address for Expedius",
         react: EmailVerification({ url, name: user.name }),
