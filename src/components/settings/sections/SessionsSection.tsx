@@ -162,12 +162,15 @@ export function SessionsSection({ sessionToken }: SessionsProps) {
   const formatDeviceInfo = (session: Session) => {
     if (!session.userAgent) return "Unknown device";
 
-    const isMobile = /mobile/i.test(session.userAgent);
-    const isTablet = /tablet|ipad/i.test(session.userAgent);
+    const isMobile =
+      /mobile|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(
+        session.userAgent,
+      );
+    const isTablet = /tablet|ipad|playbook|silk/i.test(session.userAgent);
 
     let deviceType = "Desktop";
-    if (isMobile) deviceType = "Mobile";
     if (isTablet) deviceType = "Tablet";
+    else if (isMobile) deviceType = "Mobile";
 
     session.deviceType = deviceType.toLowerCase() as
       | "desktop"
@@ -175,14 +178,14 @@ export function SessionsSection({ sessionToken }: SessionsProps) {
       | "tablet";
 
     let browser = "Unknown";
-    if (session.userAgent.includes("Chrome")) browser = "Chrome";
     if (session.userAgent.includes("Firefox")) browser = "Firefox";
-    if (
+    else if (session.userAgent.includes("Edge")) browser = "Edge";
+    else if (session.userAgent.includes("Chrome")) browser = "Chrome";
+    else if (
       session.userAgent.includes("Safari") &&
       !session.userAgent.includes("Chrome")
     )
       browser = "Safari";
-    if (session.userAgent.includes("Edge")) browser = "Edge";
 
     return `${deviceType} • ${browser}`;
   };
@@ -192,7 +195,19 @@ export function SessionsSection({ sessionToken }: SessionsProps) {
       return <CheckCircle2 className="h-5 w-5 text-primary" />;
     }
 
-    switch (session.deviceType) {
+    const deviceType =
+      session?.deviceType ||
+      (session.userAgent
+        ? /mobile|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(
+            session.userAgent,
+          )
+          ? "mobile"
+          : /tablet|ipad|playbook|silk/i.test(session.userAgent)
+            ? "tablet"
+            : "desktop"
+        : "desktop");
+
+    switch (deviceType) {
       case "mobile":
         return <Smartphone className="h-5 w-5 text-muted-foreground" />;
       case "tablet":
