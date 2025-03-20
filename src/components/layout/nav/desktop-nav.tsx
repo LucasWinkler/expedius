@@ -63,7 +63,7 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium">{session.user.name}</p>
                   <Link
-                    href={`/users/${session.user.username}`}
+                    href={`/u/${session.user.username}`}
                     className="text-xs text-muted-foreground"
                   >
                     @{session.user.username}
