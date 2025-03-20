@@ -4,8 +4,9 @@ import {
   Grid2X2,
   UserCircle,
   Folders,
-  FolderHeart,
   File,
+  Settings,
+  Heart,
 } from "lucide-react";
 
 export const NAV_ITEMS = [
@@ -38,7 +39,7 @@ export const MOBILE_NAV_ITEMS = [
 export const USER_NAV_ITEMS = [
   {
     href: (username: string) => `/u/${username}/likes`,
-    icon: FolderHeart,
+    icon: Heart,
     label: "Likes",
   },
   {
@@ -50,6 +51,11 @@ export const USER_NAV_ITEMS = [
     href: (username: string) => `/u/${username}`,
     icon: UserCircle,
     label: "Profile",
+  },
+  {
+    href: () => "/settings",
+    icon: Settings,
+    label: "Settings",
   },
 ] as const;
 

@@ -93,8 +93,10 @@ export const useSignUpForm = () => {
         },
         {
           onSuccess: () => {
-            toast.success("Account created!", {
-              description: "Welcome to Expedius.",
+            toast.info("Account created! Please verify your email", {
+              description:
+                "Check your inbox for a verification link before signing in.",
+              duration: 6000,
             });
             router.push(callbackURL);
           },

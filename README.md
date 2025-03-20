@@ -113,10 +113,7 @@
 ## Roadmap
 
 - [ ] Filtering, sorting, and searching for lists
-- [ ] Password reset
-- [ ] Email verification
-- [ ] Settings page for changing password, email, etc.
-- [ ] Social features
+- [ ] Possibly add social features
   - [ ] Followers
   - [ ] Following
   - [ ] Some type of social feed possibly?

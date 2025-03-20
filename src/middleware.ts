@@ -4,18 +4,22 @@ import {
   AUTH_PATHS,
   AUTH_API_PREFIX,
   UT_API_PREFIX,
+  PROTECTED_PATHS,
 } from "@/constants/routes";
 import { getSessionCookie } from "better-auth/cookies";
 
 export const middleware = (req: NextRequest) => {
   const sessionCookie = getSessionCookie(req);
+  const pathname = req.nextUrl.pathname;
 
   const isAuthenticated = !!sessionCookie;
-  const pathname = req.nextUrl.pathname;
   const isPublicRoute = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
   const isAuthRoute = AUTH_PATHS.some((path) => pathname.startsWith(path));
   const isAuthApi = pathname.startsWith(AUTH_API_PREFIX);
   const isUTApi = pathname.startsWith(UT_API_PREFIX);
+  const isProtectedRoute = PROTECTED_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  );
 
   if (isAuthApi || isUTApi) {
     return NextResponse.next();
@@ -28,7 +32,7 @@ export const middleware = (req: NextRequest) => {
     return NextResponse.next();
   }
 
-  if (!isAuthenticated && !isPublicRoute) {
+  if (!isAuthenticated && (isProtectedRoute || !isPublicRoute)) {
     let callbackUrl = pathname;
     if (req.nextUrl.search) {
       callbackUrl += req.nextUrl.search;

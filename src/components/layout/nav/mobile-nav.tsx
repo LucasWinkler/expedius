@@ -16,6 +16,7 @@ import { signOut } from "@/lib/auth-client";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { USER_NAV_ITEMS, MOBILE_NAV_ITEMS } from "@/constants";
+import { Separator } from "@/components/ui/separator";
 
 type MobileNavProps = {
   session: ClientSession | null;
@@ -74,27 +75,32 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
                 </li>
               ))}
 
-              {isPending
-                ? USER_NAV_ITEMS.map((_, index) => (
-                    <li key={index}>
-                      <div className="flex h-11 w-full items-center gap-3 px-3">
-                        <Skeleton className="size-4 rounded-full" />
-                        <Skeleton className="h-5 w-24" />
-                      </div>
-                    </li>
-                  ))
-                : session?.user &&
-                  USER_NAV_ITEMS.map(({ href, icon, label }) => (
-                    <li key={label}>
-                      <NavLink
-                        href={href(session.user.username)}
-                        icon={icon}
-                        label={label}
-                        onClick={() => setIsOpen(false)}
-                        className="h-11 w-full justify-start gap-3 text-base font-medium"
-                      />
-                    </li>
-                  ))}
+              {(isPending || session?.user) && (
+                <>
+                  <Separator className="my-2" />
+                  {isPending
+                    ? USER_NAV_ITEMS.map((_, index) => (
+                        <li key={index}>
+                          <div className="flex h-11 w-full items-center gap-3 px-3">
+                            <Skeleton className="size-4 rounded-full" />
+                            <Skeleton className="h-5 w-24" />
+                          </div>
+                        </li>
+                      ))
+                    : session?.user &&
+                      USER_NAV_ITEMS.map(({ href, icon, label }) => (
+                        <li key={label}>
+                          <NavLink
+                            href={href(session.user.username)}
+                            icon={icon}
+                            label={label}
+                            onClick={() => setIsOpen(false)}
+                            className="h-11 w-full justify-start gap-3 text-base font-medium"
+                          />
+                        </li>
+                      ))}
+                </>
+              )}
             </ul>
           </nav>
 

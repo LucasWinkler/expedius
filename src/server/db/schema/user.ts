@@ -16,6 +16,7 @@ export const user = pgTable("user", {
   }),
   isPublic: boolean("is_public").notNull().default(false),
   colour: text("colour").notNull().default(defaultColor),
+  twoFactorEnabled: boolean("two_factor_enabled").default(false).notNull(),
   ...timestamps,
 });
 
