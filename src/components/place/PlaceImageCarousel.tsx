@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -47,7 +47,12 @@ export function PlaceImageCarousel({
               key={photo.name}
             >
               {!imagesLoaded[photo.name] && (
-                <Skeleton className="absolute inset-0 rounded-none" />
+                <div className="absolute inset-0">
+                  <Skeleton className="absolute inset-0 rounded-none" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                  </div>
+                </div>
               )}
               <Image
                 src={`/api/places/photo/${encodeURIComponent(photo.name)}?maxHeightPx=1080&maxWidthPx=1920`}
