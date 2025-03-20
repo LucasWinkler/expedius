@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { PAGINATION } from "@/constants";
-
-const usernameSchema = z.string().min(1).max(50).toLowerCase();
+import { usernameSchema } from "./user";
 
 export const profileParamsSchema = z.object({
   username: usernameSchema,

@@ -1,26 +1,18 @@
 import { NextResponse } from "next/server";
-import { users } from "@/server/data/users";
-import { z } from "zod";
 import { withApiLimit } from "@/server/lib/rate-limit";
-
-const usernameSchema = z.object({
-  username: z.string().min(3),
-});
+import { checkUsernameAvailability } from "@/server/actions/user";
 
 export const GET = withApiLimit(async (request: Request) => {
   try {
     const { searchParams } = new URL(request.url);
     const username = searchParams.get("username");
 
-    const result = usernameSchema.safeParse({ username });
-    if (!result.success) {
+    if (!username) {
       return NextResponse.json({ available: false }, { status: 400 });
     }
 
-    const existingUser = await users.queries.getByUsername(
-      result.data.username,
-    );
-    return NextResponse.json({ available: !existingUser });
+    const isAvailable = await checkUsernameAvailability(username);
+    return NextResponse.json({ available: isAvailable });
   } catch (error) {
     console.error("Error checking username", error);
     return NextResponse.json(

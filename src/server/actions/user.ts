@@ -10,14 +10,15 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/server/auth/auth";
 import { headers } from "next/headers";
 import { withActionLimit } from "../lib/rate-limit";
+import { usernameSchema } from "@/lib/validations";
 
 export const checkUsernameAvailability = async (username: string) => {
-  if (username.length < 3) {
+  const result = usernameSchema.safeParse(username);
+  if (!result.success) {
     return { available: false };
   }
 
-  const existingUser = await users.queries.getByUsername(username);
-
+  const existingUser = await users.queries.getByUsername(result.data);
   return { available: !existingUser };
 };
 

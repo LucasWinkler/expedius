@@ -27,11 +27,25 @@ export const usernameSchema = z
   )
   .max(
     maxUsernameLength,
-    `Username must be less than ${maxUsernameLength} characters`,
+    `Username cannot exceed ${maxUsernameLength} characters`,
   )
-  .regex(
-    /^[a-zA-Z0-9_-]+$/,
-    "Username can only contain letters, numbers, underscores and dashes",
+  .refine(
+    (username) => {
+      const hasOnlyAllowedChars = /^[a-z0-9_-]+$/.test(username);
+
+      const dashCount = (username.match(/-/g) || []).length;
+      const underscoreCount = (username.match(/_/g) || []).length;
+
+      const hasValidSpecialChars =
+        (dashCount <= 1 && underscoreCount === 0) ||
+        (underscoreCount <= 1 && dashCount === 0);
+
+      return hasOnlyAllowedChars && hasValidSpecialChars;
+    },
+    {
+      message:
+        "Username must contain only lowercase letters, numbers, and at most one underscore OR dash (not both)",
+    },
   );
 
 export const updateProfileSchema = z.object({
