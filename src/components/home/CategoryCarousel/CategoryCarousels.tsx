@@ -1,7 +1,6 @@
 "use client";
 
 import { HOME_CATEGORIES } from "@/constants";
-import { LocationProvider } from "@/contexts";
 import { CategoryCarousel } from "./";
 
 export const CategoryCarousels = () => {
@@ -15,18 +14,16 @@ export const CategoryCarousels = () => {
           Browse popular categories to jumpstart your exploration
         </p>
       </div>
-      <LocationProvider>
-        {HOME_CATEGORIES.map(({ title, query, icon }) => {
-          return (
-            <CategoryCarousel
-              key={title}
-              title={title}
-              query={query}
-              icon={icon}
-            />
-          );
-        })}
-      </LocationProvider>
+      {HOME_CATEGORIES.map(({ title, query, icon }) => {
+        return (
+          <CategoryCarousel
+            key={title}
+            title={title}
+            query={query}
+            icon={icon}
+          />
+        );
+      })}
     </section>
   );
 };
