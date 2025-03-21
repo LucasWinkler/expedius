@@ -135,7 +135,7 @@
   }
 }
 
-@keyframes float {
+@keyframes float-simple {
   0% {
     transform: translateY(0);
   }
@@ -147,7 +147,7 @@
   }
 }
 
-@keyframes float-alt {
+@keyframes float-simple-alt {
   0% {
     transform: translateY(0);
   }
@@ -159,51 +159,18 @@
   }
 }
 
-@keyframes float-rotate-1 {
+@keyframes float-reverse {
   0% {
-    transform: translateY(0) rotate(-2deg);
+    transform: translateY(0);
   }
-  50% {
-    transform: translateY(-5px) rotate(-2deg);
+  30% {
+    transform: translateY(-3px);
+  }
+  70% {
+    transform: translateY(-8px);
   }
   100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-}
-
-@keyframes float-rotate-2 {
-  0% {
-    transform: translateY(0) rotate(3deg);
-  }
-  50% {
-    transform: translateY(-7px) rotate(3deg);
-  }
-  100% {
-    transform: translateY(0) rotate(3deg);
-  }
-}
-
-@keyframes float-rotate-3 {
-  0% {
-    transform: translateY(0) rotate(-2.5deg);
-  }
-  50% {
-    transform: translateY(-5px) rotate(-2.5deg);
-  }
-  100% {
-    transform: translateY(0) rotate(-2.5deg);
-  }
-}
-
-@keyframes float-rotate-4 {
-  0% {
-    transform: translateY(0) rotate(2deg);
-  }
-  50% {
-    transform: translateY(-7px) rotate(2deg);
-  }
-  100% {
-    transform: translateY(0) rotate(2deg);
+    transform: translateY(0);
   }
 }
 
@@ -212,38 +179,23 @@
   will-change: transform, opacity;
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+.animate-float-simple {
+  animation: float-simple 6s ease-in-out infinite;
 }
 
-.animate-float-alt {
-  animation: float-alt 7s ease-in-out infinite;
+.animate-float-simple-alt {
+  animation: float-simple-alt 7s ease-in-out infinite;
 }
 
-.animate-float-rotate-1 {
-  animation: float-rotate-1 6s ease-in-out infinite;
-}
-
-.animate-float-rotate-2 {
-  animation: float-rotate-2 7s ease-in-out infinite;
-}
-
-.animate-float-rotate-3 {
-  animation: float-rotate-3 6s ease-in-out infinite;
-}
-
-.animate-float-rotate-4 {
-  animation: float-rotate-4 7s ease-in-out infinite;
+.animate-float-reverse {
+  animation: float-reverse 8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up,
-  .animate-float,
-  .animate-float-alt,
-  .animate-float-rotate-1,
-  .animate-float-rotate-2,
-  .animate-float-rotate-3,
-  .animate-float-rotate-4 {
+  .animate-float-simple,
+  .animate-float-simple-alt,
+  .animate-float-reverse {
     animation: none;
   }
 }
