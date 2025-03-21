@@ -1,11 +1,14 @@
 import { Nav, Footer } from "@/components/layout";
+import { LocationProvider } from "@/contexts";
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <Nav />
-      <main>{children}</main>
-      <Footer />
+      <LocationProvider>
+        <Nav />
+        <main>{children}</main>
+        <Footer />
+      </LocationProvider>
     </>
   );
 };

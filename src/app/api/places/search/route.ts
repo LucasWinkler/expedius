@@ -37,13 +37,12 @@ export const GET = withApiLimit(async (request: Request) => {
     return new NextResponse("Missing query parameter", { status: 400 });
   }
 
+  const parsedSize = Number(size);
   const parsedRadius = radius ? Number(radius) : PLACE_FILTERS.RADIUS.DEFAULT;
   const validatedRadius = Math.min(
     Math.max(parsedRadius, PLACE_FILTERS.RADIUS.MIN),
     PLACE_FILTERS.RADIUS.MAX,
   );
-
-  const parsedSize = Number(size);
   const parsedMinRating = minRating
     ? Math.min(
         Math.max(Number(minRating), PLACE_FILTERS.RATING.MIN),
@@ -52,8 +51,7 @@ export const GET = withApiLimit(async (request: Request) => {
     : undefined;
   const parsedOpenNow = openNow === "true" ? true : undefined;
 
-  // Only use cache for initial queries, not for pagination
-  if (!pageToken) {
+  const generateCacheKey = () => {
     const cacheKeyParams = [
       `query:${query}`,
       `size:${parsedSize}`,
@@ -63,7 +61,11 @@ export const GET = withApiLimit(async (request: Request) => {
       ...(parsedMinRating ? [`minRating:${parsedMinRating}`] : []),
       ...(parsedOpenNow ? [`openNow:${parsedOpenNow}`] : []),
     ].filter(Boolean);
-    const cacheKey = `search:${cacheKeyParams.join(":")}`;
+    return `search:${cacheKeyParams.join(":")}`;
+  };
+
+  if (!pageToken) {
+    const cacheKey = generateCacheKey();
     const cachedPlaces = placesCache.get(cacheKey);
 
     if (cachedPlaces && Date.now() - cachedPlaces.timestamp < CACHE_DURATION) {
@@ -72,62 +74,39 @@ export const GET = withApiLimit(async (request: Request) => {
   }
 
   try {
-    const apiUrl = `${env.GOOGLE_PLACES_API_BASE_URL}/places:searchText`;
-    const body: {
-      textQuery?: string;
-      languageCode?: string;
-      pageSize?: number;
-      minRating?: number;
-      openNow?: boolean;
-      locationBias?: {
-        circle: {
-          center: {
-            latitude: number;
-            longitude: number;
-          };
-          radius: number;
-        };
-      };
-      pageToken?: string;
-    } = {
+    const body = {
       textQuery: query || "",
       languageCode: "en",
       pageSize: parsedSize,
+      ...(pageToken && { pageToken }),
+      ...(parsedMinRating && { minRating: parsedMinRating }),
+      ...(parsedOpenNow !== undefined && { openNow: parsedOpenNow }),
+      ...(lat &&
+        lng && {
+          locationBias: {
+            circle: {
+              center: {
+                latitude: Number(lat),
+                longitude: Number(lng),
+              },
+              radius: validatedRadius,
+            },
+          },
+        }),
     };
 
-    if (pageToken) {
-      body.pageToken = pageToken;
-    }
-
-    if (parsedMinRating) {
-      body.minRating = parsedMinRating;
-    }
-
-    if (parsedOpenNow !== undefined) {
-      body.openNow = parsedOpenNow;
-    }
-
-    if (lat && lng) {
-      body.locationBias = {
-        circle: {
-          center: {
-            latitude: Number(lat),
-            longitude: Number(lng),
-          },
-          radius: validatedRadius,
+    const res = await fetch(
+      `${env.GOOGLE_PLACES_API_BASE_URL}/places:searchText`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
+          "X-Goog-FieldMask": FIELD_MASK,
         },
-      };
-    }
-
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
-        "X-Goog-FieldMask": FIELD_MASK,
+        body: JSON.stringify(body),
       },
-      body: JSON.stringify(body),
-    });
+    );
 
     if (!res.ok) {
       console.error(`Places API error: ${res.status} ${res.statusText}`);
@@ -138,18 +117,8 @@ export const GET = withApiLimit(async (request: Request) => {
 
     const placesData = await res.json();
 
-    // Only cache initial queries
     if (!pageToken) {
-      const cacheKeyParams = [
-        `query:${query}`,
-        `size:${parsedSize}`,
-        lat && `lat:${lat}`,
-        lng && `lng:${lng}`,
-        `radius:${validatedRadius}`,
-        ...(parsedMinRating ? [`minRating:${parsedMinRating}`] : []),
-        ...(parsedOpenNow ? [`openNow:${parsedOpenNow}`] : []),
-      ].filter(Boolean);
-      const cacheKey = `search:${cacheKeyParams.join(":")}`;
+      const cacheKey = generateCacheKey();
       placesCache.set(cacheKey, { data: placesData, timestamp: Date.now() });
     }
 
