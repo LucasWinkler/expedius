@@ -122,19 +122,130 @@
 }
 
 @keyframes fade-up {
-  from {
+  0% {
     opacity: 0;
     transform: translateY(20px);
   }
-  to {
+  50% {
+    opacity: 0.6;
+  }
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-alt {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-rotate-1 {
+  0% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-2deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+}
+
+@keyframes float-rotate-2 {
+  0% {
+    transform: translateY(0) rotate(3deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(3deg);
+  }
+  100% {
+    transform: translateY(0) rotate(3deg);
+  }
+}
+
+@keyframes float-rotate-3 {
+  0% {
+    transform: translateY(0) rotate(-2.5deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-2.5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-2.5deg);
+  }
+}
+
+@keyframes float-rotate-4 {
+  0% {
+    transform: translateY(0) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0) rotate(2deg);
+  }
+}
+
 .animate-fade-up {
-  animation: fade-up 0.5s ease forwards;
+  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   will-change: transform, opacity;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-alt {
+  animation: float-alt 7s ease-in-out infinite;
+}
+
+.animate-float-rotate-1 {
+  animation: float-rotate-1 6s ease-in-out infinite;
+}
+
+.animate-float-rotate-2 {
+  animation: float-rotate-2 7s ease-in-out infinite;
+}
+
+.animate-float-rotate-3 {
+  animation: float-rotate-3 6s ease-in-out infinite;
+}
+
+.animate-float-rotate-4 {
+  animation: float-rotate-4 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-float,
+  .animate-float-alt,
+  .animate-float-rotate-1,
+  .animate-float-rotate-2,
+  .animate-float-rotate-3,
+  .animate-float-rotate-4 {
+    animation: none;
+  }
 }
 
 .bg-grid-white {
