@@ -1,10 +1,10 @@
 "use client";
 
 import { HOME_CATEGORIES } from "@/constants";
-import { CategoryCarousel } from "./";
+import { CategoryCarousel } from ".";
 import { Badge } from "@/components/ui/badge";
 
-export const CategoryCarousels = () => {
+export const HomeCarousels = () => {
   return (
     <section className="container mx-auto space-y-12 px-4 pb-16 pt-6 md:pb-24 md:pt-8">
       <div className="mb-8 text-center md:mb-16">
@@ -12,10 +12,10 @@ export const CategoryCarousels = () => {
           Categories
         </Badge>
         <h2 className="text-balance text-3xl font-semibold lg:text-4xl">
-          Featured categories
+          Explore by category
         </h2>
         <p className="mt-4 text-muted-foreground">
-          Browse popular categories to jumpstart your exploration
+          Find local places by type to get started with your exploration
         </p>
       </div>
       {HOME_CATEGORIES.map(({ title, query, icon }) => {

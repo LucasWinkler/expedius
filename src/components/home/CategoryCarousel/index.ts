@@ -1,4 +1,4 @@
 export { CategoryCarousel } from "./CategoryCarousel";
-export { CategoryCarousels } from "./CategoryCarousels";
+export { HomeCarousels as CategoryCarousels } from "./HomeCarousels";
 export { CategoryHeader } from "./CategoryHeader";
 export { CategoryCarouselSkeleton } from "./CategoryCarouselSkeleton";

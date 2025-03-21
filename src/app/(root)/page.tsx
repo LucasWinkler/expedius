@@ -8,11 +8,9 @@ export const dynamic = "force-static";
 
 const CategoryCarousels = dynamicImport(
   () =>
-    import("@/components/home/CategoryCarousel/CategoryCarousels").then(
-      (mod) => ({
-        default: mod.CategoryCarousels,
-      }),
-    ),
+    import("@/components/home/CategoryCarousel/HomeCarousels").then((mod) => ({
+      default: mod.HomeCarousels,
+    })),
   {
     loading: CategoryCarouselsSkeleton,
   },
