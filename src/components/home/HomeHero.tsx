@@ -11,7 +11,7 @@ export const HomeHero = () => {
       <ParallaxDestinations />
       <div className="container relative z-20 mx-auto px-4">
         <header className="mx-auto max-w-4xl rounded-3xl p-6 text-center 2xl:max-w-5xl">
-          <h1 className="mx-auto bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl lg:text-7xl 2xl:text-8xl">
+          <h1 className="mx-auto text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl md:text-6xl lg:text-7xl 2xl:text-8xl">
             Discover your
             <br />
             next adventure.
