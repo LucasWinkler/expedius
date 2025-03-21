@@ -79,20 +79,33 @@ export async function searchPlacesClient(
   pageToken?: string | null,
 ): Promise<PlaceSearchResponse | null> {
   try {
-    const searchParams = new URLSearchParams({
+    const params: Record<string, string> = {
       q: query,
-      minRating: filters?.minRating?.toString() || "",
-      openNow: filters?.openNow?.toString() || "",
-      radius: filters?.radius?.toString() || "",
       size: size.toString(),
-      lat: coords.latitude?.toString() || "",
-      lng: coords.longitude?.toString() || "",
-    });
+    };
 
-    if (pageToken) {
-      searchParams.set("pageToken", pageToken);
+    if (filters?.minRating) {
+      params.minRating = filters.minRating.toString();
     }
 
+    if (filters?.openNow !== undefined) {
+      params.openNow = filters.openNow.toString();
+    }
+
+    if (filters?.radius) {
+      params.radius = filters.radius.toString();
+    }
+
+    if (coords.latitude !== null && coords.longitude !== null) {
+      params.lat = coords.latitude.toString();
+      params.lng = coords.longitude.toString();
+    }
+
+    if (pageToken) {
+      params.pageToken = pageToken;
+    }
+
+    const searchParams = new URLSearchParams(params);
     const url = `/api/places/search?${searchParams.toString()}`;
 
     const res = await fetch(url);
