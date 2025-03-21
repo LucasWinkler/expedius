@@ -20,7 +20,7 @@ const TogglePasswordVisibilityButton = ({
       type="button"
       variant="ghost"
       size="sm"
-      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+      className="absolute right-0 top-0 h-full rounded-full px-3 py-2 hover:bg-muted/90"
       onClick={onClick}
     >
       {showPassword ? (
