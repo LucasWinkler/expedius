@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 
 export const HomeFaq = () => {
   return (
@@ -11,6 +12,9 @@ export const HomeFaq = () => {
       <div className="mx-auto max-w-5xl px-6">
         <div className="grid gap-y-12 px-2 lg:grid-cols-[1fr_1fr]">
           <div className="text-center lg:text-left">
+            <Badge variant="eyebrow" className="mb-3">
+              FAQ
+            </Badge>
             <h2 className="mb-4 text-balance text-3xl font-semibold md:text-4xl">
               Frequently <br className="hidden lg:block" /> asked{" "}
               <br className="hidden lg:block" />
