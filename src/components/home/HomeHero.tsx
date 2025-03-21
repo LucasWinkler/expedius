@@ -16,7 +16,7 @@ export const HomeHero = () => {
             <br />
             next adventure.
           </h1>
-          <p className="mx-auto mt-4 max-w-[35ch] text-base text-foreground/90 sm:mt-5 sm:text-lg md:text-xl 2xl:mt-6 2xl:text-2xl">
+          <p className="mx-auto mt-4 max-w-[35ch] text-base text-muted-foreground sm:mt-5 sm:text-lg md:text-xl 2xl:mt-6 2xl:text-2xl">
             Find, organize, and share your favourite places from around the
             world.
           </p>
