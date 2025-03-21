@@ -20,8 +20,8 @@ export const PlaceCardSkeleton = ({
       </div>
       {showActions && (
         <div className="absolute right-4 top-4 flex flex-col gap-2">
-          <Skeleton className="h-8 w-8" />
-          <Skeleton className="h-8 w-8" />
+          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="h-8 w-8 rounded-full" />
         </div>
       )}
     </div>
