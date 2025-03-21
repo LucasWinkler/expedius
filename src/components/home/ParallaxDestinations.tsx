@@ -25,6 +25,11 @@ type Destination = {
       left?: string;
       right?: string;
     };
+    extraLargeDesktop?: {
+      top: string;
+      left?: string;
+      right?: string;
+    };
   };
   size: {
     desktop: {
@@ -36,6 +41,10 @@ type Destination = {
       height: string;
     };
     largeDesktop?: {
+      width: string;
+      height: string;
+    };
+    extraLargeDesktop?: {
       width: string;
       height: string;
     };
@@ -54,12 +63,14 @@ const destinations: Destination[] = [
     initialPosition: {
       desktop: { top: "15%", right: "5%" },
       tablet: { top: "15%", right: "2%" },
-      largeDesktop: { top: "15%", right: "8%" },
+      largeDesktop: { top: "15%", right: "5%" },
+      extraLargeDesktop: { top: "15%", right: "10%" },
     },
     size: {
       desktop: { width: "200px", height: "150px" },
-      tablet: { width: "170px", height: "130px" },
+      tablet: { width: "180px", height: "140px" },
       largeDesktop: { width: "220px", height: "165px" },
+      extraLargeDesktop: { width: "280px", height: "210px" },
     },
     parallaxFactor: 0.16,
     zIndex: 2,
@@ -73,12 +84,14 @@ const destinations: Destination[] = [
     initialPosition: {
       desktop: { top: "45%", left: "5%" },
       tablet: { top: "40%", left: "2%" },
-      largeDesktop: { top: "45%", left: "8%" },
+      largeDesktop: { top: "45%", left: "5%" },
+      extraLargeDesktop: { top: "45%", left: "10%" },
     },
     size: {
       desktop: { width: "220px", height: "150px" },
-      tablet: { width: "180px", height: "130px" },
+      tablet: { width: "190px", height: "140px" },
       largeDesktop: { width: "240px", height: "165px" },
+      extraLargeDesktop: { width: "300px", height: "205px" },
     },
     parallaxFactor: 0.24,
     zIndex: 1,
@@ -92,12 +105,14 @@ const destinations: Destination[] = [
     initialPosition: {
       desktop: { top: "18%", left: "5%" },
       tablet: { top: "18%", left: "2%" },
-      largeDesktop: { top: "18%", left: "8%" },
+      largeDesktop: { top: "18%", left: "5%" },
+      extraLargeDesktop: { top: "18%", left: "10%" },
     },
     size: {
       desktop: { width: "180px", height: "140px" },
-      tablet: { width: "160px", height: "120px" },
+      tablet: { width: "165px", height: "130px" },
       largeDesktop: { width: "200px", height: "155px" },
+      extraLargeDesktop: { width: "260px", height: "200px" },
     },
     parallaxFactor: 0.12,
     zIndex: 3,
@@ -111,12 +126,14 @@ const destinations: Destination[] = [
     initialPosition: {
       desktop: { top: "60%", right: "5%" },
       tablet: { top: "62%", right: "2%" },
-      largeDesktop: { top: "60%", right: "8%" },
+      largeDesktop: { top: "60%", right: "3%" },
+      extraLargeDesktop: { top: "60%", right: "10%" },
     },
     size: {
       desktop: { width: "230px", height: "160px" },
-      tablet: { width: "180px", height: "130px" },
+      tablet: { width: "195px", height: "145px" },
       largeDesktop: { width: "250px", height: "175px" },
+      extraLargeDesktop: { width: "320px", height: "220px" },
     },
     parallaxFactor: 0.2,
     zIndex: 1,
@@ -127,7 +144,7 @@ export const ParallaxDestinations = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [screenSize, setScreenSize] = useState<
-    "mobile" | "desktop" | "tablet" | "largeDesktop"
+    "mobile" | "desktop" | "tablet" | "largeDesktop" | "extraLargeDesktop"
   >("desktop");
 
   const [parallaxOffsets, setParallaxOffsets] = useState<number[]>(
@@ -142,8 +159,10 @@ export const ParallaxDestinations = () => {
         setScreenSize("tablet");
       } else if (window.innerWidth < 1920) {
         setScreenSize("desktop");
-      } else {
+      } else if (window.innerWidth < 2400) {
         setScreenSize("largeDesktop");
+      } else {
+        setScreenSize("extraLargeDesktop");
       }
     };
 
@@ -171,6 +190,8 @@ export const ParallaxDestinations = () => {
           factor = dest.parallaxFactor * 0.7;
         } else if (screenSize === "largeDesktop") {
           factor = dest.parallaxFactor * 1.2;
+        } else if (screenSize === "extraLargeDesktop") {
+          factor = dest.parallaxFactor * 1.5;
         }
 
         return scrollY * -factor;
@@ -202,7 +223,6 @@ export const ParallaxDestinations = () => {
     >
       <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-background/30" />
 
-      {/* Container to match the nav width */}
       <div className="container relative mx-auto h-full px-4">
         {destinations.map((dest, index) => {
           let width = dest.size.desktop.width;
@@ -214,6 +234,12 @@ export const ParallaxDestinations = () => {
           } else if (screenSize === "largeDesktop" && dest.size.largeDesktop) {
             width = dest.size.largeDesktop.width;
             height = dest.size.largeDesktop.height;
+          } else if (
+            screenSize === "extraLargeDesktop" &&
+            dest.size.extraLargeDesktop
+          ) {
+            width = dest.size.extraLargeDesktop.width;
+            height = dest.size.extraLargeDesktop.height;
           }
 
           const positionStyle: React.CSSProperties = {
@@ -231,6 +257,11 @@ export const ParallaxDestinations = () => {
             dest.initialPosition.largeDesktop
           ) {
             positionStyle.top = dest.initialPosition.largeDesktop.top;
+          } else if (
+            screenSize === "extraLargeDesktop" &&
+            dest.initialPosition.extraLargeDesktop
+          ) {
+            positionStyle.top = dest.initialPosition.extraLargeDesktop.top;
           } else {
             positionStyle.top = dest.initialPosition.desktop.top;
           }
@@ -243,6 +274,11 @@ export const ParallaxDestinations = () => {
               dest.initialPosition.largeDesktop?.left
             ) {
               positionStyle.left = dest.initialPosition.largeDesktop.left;
+            } else if (
+              screenSize === "extraLargeDesktop" &&
+              dest.initialPosition.extraLargeDesktop?.left
+            ) {
+              positionStyle.left = dest.initialPosition.extraLargeDesktop.left;
             } else {
               positionStyle.left = dest.initialPosition.desktop.left;
             }
@@ -254,6 +290,12 @@ export const ParallaxDestinations = () => {
               dest.initialPosition.largeDesktop?.right
             ) {
               positionStyle.right = dest.initialPosition.largeDesktop.right;
+            } else if (
+              screenSize === "extraLargeDesktop" &&
+              dest.initialPosition.extraLargeDesktop?.right
+            ) {
+              positionStyle.right =
+                dest.initialPosition.extraLargeDesktop.right;
             } else {
               positionStyle.right = dest.initialPosition.desktop.right;
             }
@@ -297,7 +339,7 @@ export const ParallaxDestinations = () => {
                     transitionDelay: `${index * 0.2}s`,
                   }}
                 >
-                  <div className="relative h-full w-full overflow-hidden rounded-2xl opacity-75 shadow-md transition-all duration-300 ease-out hover:opacity-90 hover:shadow-lg">
+                  <div className="relative h-full w-full overflow-hidden rounded-2xl opacity-85 shadow-md transition-all duration-300 ease-out hover:scale-[1.02] hover:opacity-100 hover:shadow-lg">
                     <Image
                       src={dest.image}
                       alt={dest.location}
@@ -307,7 +349,7 @@ export const ParallaxDestinations = () => {
                       priority
                       draggable={false}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/5" />
                     <div className="absolute bottom-0 left-0 p-3 text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.8)]">
                       <div className="text-xs font-medium uppercase tracking-wide opacity-95">
                         {dest.category}
