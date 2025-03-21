@@ -48,12 +48,12 @@ export const HomeFeatures = () => {
         {features.map(({ title, description, icon: Icon }) => (
           <div
             key={title}
-            className="group space-y-3 rounded-lg p-4 text-center transition-colors hover:bg-muted/50 sm:text-left"
+            className="group flex flex-col items-center rounded-lg border border-border/20 p-6 text-center shadow-md transition-colors hover:bg-muted/50 sm:items-start sm:text-left"
           >
-            <div className="mx-auto inline-flex rounded-lg bg-primary/10 p-3 text-primary sm:mx-0">
-              <Icon className="size-6" />
+            <div className="mb-4 inline-flex rounded-full bg-primary/10 p-3.5 text-primary">
+              <Icon className="size-7" />
             </div>
-            <h3 className="text-lg font-semibold">{title}</h3>
+            <h3 className="mb-2 text-lg font-semibold">{title}</h3>
             <p className="text-sm text-muted-foreground">{description}</p>
           </div>
         ))}
