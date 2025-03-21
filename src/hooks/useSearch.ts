@@ -25,16 +25,22 @@ export const useSearch = () => {
     coords,
     isLoading: isLoadingLocation,
     permissionState,
+    isPermissionPending,
   } = useLocation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const useLocationBias =
-    !isLoadingLocation &&
-    permissionState === "granted" &&
-    coords.latitude !== null &&
-    coords.longitude !== null;
+  const useLocationBias = useMemo(() => {
+    const result =
+      permissionState === "granted" &&
+      !isLoadingLocation &&
+      !isPermissionPending &&
+      coords.latitude !== null &&
+      coords.longitude !== null;
+
+    return result;
+  }, [coords, isLoadingLocation, permissionState, isPermissionPending]);
 
   const query = searchParams.get("q") ?? "";
   const minRating = searchParams.get("rating")
@@ -68,7 +74,6 @@ export const useSearch = () => {
     isChangingSearchParams.current = true;
 
     setCurrentQuery(query);
-
     setPageToken(null);
     setAllPlaces([]);
     setPaginationError(null);
@@ -133,6 +138,31 @@ export const useSearch = () => {
     [searchParams, router, pathname],
   );
 
+  const shouldEnableSearch = useMemo(() => {
+    if (query.length === 0) return false;
+
+    // If location permission is still pending, don't search yet
+    if (isPermissionPending) return false;
+
+    // If permission granted but location still loading, don't search yet
+    if (permissionState === "granted" && isLoadingLocation) return false;
+
+    // If permission denied/unavailable/timeout, we can search without location
+    if (["denied", "unavailable", "timeout"].includes(permissionState))
+      return true;
+
+    // If permission granted and we have location data, we can search
+    if (
+      permissionState === "granted" &&
+      !isLoadingLocation &&
+      coords.latitude !== null &&
+      coords.longitude !== null
+    )
+      return true;
+
+    return false;
+  }, [query, permissionState, isLoadingLocation, coords, isPermissionPending]);
+
   const {
     data: searchData,
     isPending,
@@ -161,12 +191,11 @@ export const useSearch = () => {
 
         return result;
       } catch (error) {
-        console.error("Search error:", error);
+        console.error("[SEARCH] Error:", error);
         throw error;
       }
     },
-    enabled:
-      query.length > 0 && (!isLoadingLocation || permissionState !== "prompt"),
+    enabled: shouldEnableSearch,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
   });
@@ -185,9 +214,7 @@ export const useSearch = () => {
       const tokenFromKey = queryKey[5] as string | null;
 
       if (isChangingSearchParams.current) {
-        console.warn(
-          "Search parameters are changing, aborting pagination request",
-        );
+        console.warn("[SEARCH] Parameters changing, aborting pagination");
         return null;
       }
 
@@ -196,7 +223,7 @@ export const useSearch = () => {
       }
 
       if (queryFromKey !== currentQuery) {
-        console.warn("Query has changed, aborting pagination request");
+        console.warn("[SEARCH] Query changed, aborting pagination");
         return null;
       }
 
@@ -215,7 +242,7 @@ export const useSearch = () => {
 
         return result;
       } catch (error) {
-        console.error("Pagination error:", error);
+        console.error("[SEARCH] Pagination error:", error);
         setPaginationError("Failed to load more results. Please try again.");
         throw error;
       } finally {
@@ -226,7 +253,8 @@ export const useSearch = () => {
       !!pageToken &&
       query.length > 0 &&
       query === currentQuery &&
-      !isChangingSearchParams.current,
+      !isChangingSearchParams.current &&
+      shouldEnableSearch,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
   });
@@ -261,12 +289,10 @@ export const useSearch = () => {
       }
 
       if (isChangingSearchParams.current) {
-        console.warn("Search parameters are changing, not loading more");
         return;
       }
 
       if (query !== currentQuery) {
-        console.warn("Query has changed, not loading more");
         return;
       }
 
@@ -283,7 +309,7 @@ export const useSearch = () => {
         setIsLoadingMore(true);
         setPageToken(nextPageToken);
       } catch (error) {
-        console.error("Error loading more results:", error);
+        console.error("[SEARCH] Load more error:", error);
         setPaginationError("Failed to load more results. Please try again.");
         setIsLoadingMore(false);
       }
@@ -322,5 +348,7 @@ export const useSearch = () => {
       : searchData?.nextPageToken),
     isLoadingMore: isPaginationPending && isLoadingMore,
     paginationError,
+    isPermissionPending,
+    locationPermissionState: permissionState,
   };
 };

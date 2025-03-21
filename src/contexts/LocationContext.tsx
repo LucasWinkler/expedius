@@ -8,19 +8,19 @@ import {
   type ReactNode,
 } from "react";
 
-// Define possible location permission states
 export type LocationPermissionState =
-  | "prompt" // Initial state, permission not yet requested
-  | "granted" // User granted permission
-  | "denied" // User denied permission
-  | "unavailable" // Geolocation API not available
-  | "timeout"; // Geolocation request timed out
+  | "prompt"
+  | "granted"
+  | "denied"
+  | "unavailable"
+  | "timeout";
 
 interface LocationContextType {
   coords: LocationCoords;
   isLoading: boolean;
   error: string | null;
   permissionState: LocationPermissionState;
+  isPermissionPending: boolean;
 }
 
 export type LocationCoords = {
@@ -36,6 +36,7 @@ const LocationContext = createContext<LocationContextType>({
   isLoading: true,
   error: null,
   permissionState: "prompt",
+  isPermissionPending: true,
 });
 
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
@@ -50,21 +51,25 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [permissionState, setPermissionState] =
     useState<LocationPermissionState>("prompt");
+  const [isPermissionPending, setIsPermissionPending] = useState(true);
 
   useEffect(() => {
     if (!navigator.geolocation) {
       setPermissionState("unavailable");
       setIsLoading(false);
+      setIsPermissionPending(false);
       return;
     }
 
     const handleSuccess = (position: GeolocationPosition) => {
-      setCoords({
+      const newCoords = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
-      });
+      };
+      setCoords(newCoords);
       setPermissionState("granted");
       setIsLoading(false);
+      setIsPermissionPending(false);
     };
 
     const handleError = (err: GeolocationPositionError) => {
@@ -80,15 +85,17 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
       }
 
       setIsLoading(false);
+      setIsPermissionPending(false);
     };
 
     const options: PositionOptions = {
       enableHighAccuracy: true,
-      timeout: 5000,
+      timeout: 10000, // Increased timeout to avoid premature timeouts
       maximumAge: 0,
     };
 
     const requestLocation = () => {
+      setIsLoading(true);
       navigator.geolocation.getCurrentPosition(
         handleSuccess,
         handleError,
@@ -108,6 +115,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
         } else if (permission.state === "denied") {
           setPermissionState("denied");
           setIsLoading(false);
+          setIsPermissionPending(false);
         } else {
           requestLocation();
         }
@@ -120,6 +128,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
             setPermissionState("denied");
             setCoords({ latitude: null, longitude: null });
             setIsLoading(false);
+            setIsPermissionPending(false);
           }
         });
       } catch (error) {
@@ -136,6 +145,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
     isLoading,
     error,
     permissionState,
+    isPermissionPending,
   };
 
   return (
