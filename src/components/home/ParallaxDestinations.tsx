@@ -20,6 +20,11 @@ type Destination = {
       left?: string;
       right?: string;
     };
+    largeDesktop?: {
+      top: string;
+      left?: string;
+      right?: string;
+    };
   };
   size: {
     desktop: {
@@ -27,6 +32,10 @@ type Destination = {
       height: string;
     };
     tablet?: {
+      width: string;
+      height: string;
+    };
+    largeDesktop?: {
       width: string;
       height: string;
     };
@@ -43,12 +52,14 @@ const destinations: Destination[] = [
     image: "/assets/destinations/eiffel-tower.jpg",
     rotation: -2,
     initialPosition: {
-      desktop: { top: "15%", right: "20%" },
+      desktop: { top: "15%", right: "15%" },
       tablet: { top: "15%", right: "12%" },
+      largeDesktop: { top: "15%", right: "20%" },
     },
     size: {
       desktop: { width: "200px", height: "150px" },
       tablet: { width: "170px", height: "130px" },
+      largeDesktop: { width: "220px", height: "165px" },
     },
     parallaxFactor: 0.16,
     zIndex: 2,
@@ -60,12 +71,14 @@ const destinations: Destination[] = [
     image: "/assets/destinations/cafe.jpg",
     rotation: 3,
     initialPosition: {
-      desktop: { top: "45%", left: "18%" },
+      desktop: { top: "45%", left: "14%" },
       tablet: { top: "40%", left: "8%" },
+      largeDesktop: { top: "45%", left: "18%" },
     },
     size: {
       desktop: { width: "220px", height: "150px" },
       tablet: { width: "180px", height: "130px" },
+      largeDesktop: { width: "240px", height: "165px" },
     },
     parallaxFactor: 0.24,
     zIndex: 1,
@@ -77,12 +90,14 @@ const destinations: Destination[] = [
     image: "/assets/destinations/museum.jpg",
     rotation: -2.5,
     initialPosition: {
-      desktop: { top: "18%", left: "18%" },
+      desktop: { top: "18%", left: "14%" },
       tablet: { top: "18%", left: "10%" },
+      largeDesktop: { top: "18%", left: "18%" },
     },
     size: {
       desktop: { width: "180px", height: "140px" },
       tablet: { width: "160px", height: "120px" },
+      largeDesktop: { width: "200px", height: "155px" },
     },
     parallaxFactor: 0.12,
     zIndex: 3,
@@ -94,12 +109,14 @@ const destinations: Destination[] = [
     image: "/assets/destinations/restaurant.jpg",
     rotation: 2,
     initialPosition: {
-      desktop: { top: "60%", right: "18%" },
+      desktop: { top: "60%", right: "14%" },
       tablet: { top: "62%", right: "9%" },
+      largeDesktop: { top: "60%", right: "18%" },
     },
     size: {
       desktop: { width: "230px", height: "160px" },
       tablet: { width: "180px", height: "130px" },
+      largeDesktop: { width: "250px", height: "175px" },
     },
     parallaxFactor: 0.2,
     zIndex: 1,
@@ -109,9 +126,9 @@ const destinations: Destination[] = [
 export const ParallaxDestinations = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [screenSize, setScreenSize] = useState<"mobile" | "desktop" | "tablet">(
-    "desktop",
-  );
+  const [screenSize, setScreenSize] = useState<
+    "mobile" | "desktop" | "tablet" | "largeDesktop"
+  >("desktop");
 
   const [parallaxOffsets, setParallaxOffsets] = useState<number[]>(
     destinations.map(() => 0),
@@ -123,8 +140,10 @@ export const ParallaxDestinations = () => {
         setScreenSize("mobile");
       } else if (window.innerWidth < 1536) {
         setScreenSize("tablet");
-      } else {
+      } else if (window.innerWidth < 1920) {
         setScreenSize("desktop");
+      } else {
+        setScreenSize("largeDesktop");
       }
     };
 
@@ -146,10 +165,14 @@ export const ParallaxDestinations = () => {
       const scrollY = window.scrollY;
 
       const newOffsets = destinations.map((dest) => {
-        const factor =
-          screenSize !== "desktop"
-            ? dest.parallaxFactor * 0.7
-            : dest.parallaxFactor;
+        let factor = dest.parallaxFactor;
+
+        if (screenSize === "tablet") {
+          factor = dest.parallaxFactor * 0.7;
+        } else if (screenSize === "largeDesktop") {
+          factor = dest.parallaxFactor * 1.2;
+        }
+
         return scrollY * -factor;
       });
 
@@ -180,38 +203,58 @@ export const ParallaxDestinations = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-background/30" />
 
       {destinations.map((dest, index) => {
-        const width =
-          screenSize !== "desktop" && dest.size.tablet
-            ? dest.size.tablet.width
-            : dest.size.desktop.width;
+        let width = dest.size.desktop.width;
+        let height = dest.size.desktop.height;
 
-        const height =
-          screenSize !== "desktop" && dest.size.tablet
-            ? dest.size.tablet.height
-            : dest.size.desktop.height;
+        if (screenSize === "tablet" && dest.size.tablet) {
+          width = dest.size.tablet.width;
+          height = dest.size.tablet.height;
+        } else if (screenSize === "largeDesktop" && dest.size.largeDesktop) {
+          width = dest.size.largeDesktop.width;
+          height = dest.size.largeDesktop.height;
+        }
 
         const positionStyle: React.CSSProperties = {
           position: "absolute",
           width,
           height,
           zIndex: dest.zIndex,
-          top:
-            screenSize === "tablet" && dest.initialPosition.tablet
-              ? dest.initialPosition.tablet.top
-              : dest.initialPosition.desktop.top,
           transitionDelay: `${index * 50}ms`,
         };
 
+        if (screenSize === "tablet" && dest.initialPosition.tablet) {
+          positionStyle.top = dest.initialPosition.tablet.top;
+        } else if (
+          screenSize === "largeDesktop" &&
+          dest.initialPosition.largeDesktop
+        ) {
+          positionStyle.top = dest.initialPosition.largeDesktop.top;
+        } else {
+          positionStyle.top = dest.initialPosition.desktop.top;
+        }
+
         if (dest.initialPosition.desktop.left) {
-          positionStyle.left =
-            screenSize === "tablet" && dest.initialPosition.tablet?.left
-              ? dest.initialPosition.tablet.left
-              : dest.initialPosition.desktop.left;
+          if (screenSize === "tablet" && dest.initialPosition.tablet?.left) {
+            positionStyle.left = dest.initialPosition.tablet.left;
+          } else if (
+            screenSize === "largeDesktop" &&
+            dest.initialPosition.largeDesktop?.left
+          ) {
+            positionStyle.left = dest.initialPosition.largeDesktop.left;
+          } else {
+            positionStyle.left = dest.initialPosition.desktop.left;
+          }
         } else if (dest.initialPosition.desktop.right) {
-          positionStyle.right =
-            screenSize === "tablet" && dest.initialPosition.tablet?.right
-              ? dest.initialPosition.tablet.right
-              : dest.initialPosition.desktop.right;
+          if (screenSize === "tablet" && dest.initialPosition.tablet?.right) {
+            positionStyle.right = dest.initialPosition.tablet.right;
+          } else if (
+            screenSize === "largeDesktop" &&
+            dest.initialPosition.largeDesktop?.right
+          ) {
+            positionStyle.right = dest.initialPosition.largeDesktop.right;
+          } else {
+            positionStyle.right = dest.initialPosition.desktop.right;
+          }
         }
 
         let animationClass = "animate-float-simple";
