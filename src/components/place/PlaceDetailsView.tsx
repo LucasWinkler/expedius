@@ -62,7 +62,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
       title: place.displayName.text,
       text:
         place.editorialSummary?.text ??
-        `Check out ${place.displayName.text} on Poitogo`,
+        `Check out ${place.displayName.text} on Expedius`,
       url: shareUrl,
     };
 

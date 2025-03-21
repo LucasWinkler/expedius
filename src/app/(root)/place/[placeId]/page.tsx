@@ -21,12 +21,12 @@ export async function generateMetadata({
       title: place.displayName.text,
       description:
         place.editorialSummary?.text ??
-        `Discover ${place.displayName.text} on Poitogo. ${place.formattedAddress}`,
+        `Discover ${place.displayName.text} on Expedius. ${place.formattedAddress}`,
     });
   } catch {
     return createMetadata({
       title: "Place Details",
-      description: "Discover amazing places on Poitogo",
+      description: "Discover amazing places on Expedius",
     });
   }
 }
