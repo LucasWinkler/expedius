@@ -81,13 +81,16 @@ export type PlaceDetails = Place & {
     };
     authorAttribution: {
       displayName: string;
+      uri: string;
       photoUri?: string;
     };
+    googleMapsUri: string;
   }[];
   paymentOptions?: {
     acceptsCreditCards?: boolean;
     acceptsDebitCards?: boolean;
     acceptsCashOnly?: boolean;
+    acceptsNfc?: boolean;
   };
   parkingOptions?: {
     freeParking?: boolean;
@@ -106,6 +109,33 @@ export type PlaceDetails = Place & {
   servesBrunch?: boolean;
   servesCoffee?: boolean;
   outdoorSeating?: boolean;
+  liveMusic?: boolean;
+  menuForChildren?: boolean;
+  restroom?: boolean;
+  goodForWatchingSports?: boolean;
+  servesDessert?: boolean;
+  servesVegetarianFood?: boolean;
+  servesBeer?: boolean;
+  servesWine?: boolean;
+  primaryTypeDisplayName: string;
+  types: string[];
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  googleMapsLinks: {
+    directionsUri: string;
+    placeUri: string;
+    writeReviewUri: string;
+    reviewsUri: string;
+    photosUri: string;
+  };
+  accessibilityOptions?: {
+    wheelchairAccessibleParking?: boolean;
+    wheelchairAccessibleEntrance?: boolean;
+  };
+  pureServiceAreaBusiness?: boolean;
+  businessStatus: string;
 };
 
 // Business/Domain types
