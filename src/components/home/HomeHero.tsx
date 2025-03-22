@@ -1,5 +1,5 @@
 import { SearchSuggestions, SearchBar } from "@/components/search";
-import { ParallaxDestinations } from "./ParallaxDestinations";
+import { ParallaxDestinationsWrapper } from "./ParallaxDestinationsWrapper";
 
 export const HomeHero = () => {
   return (
@@ -8,7 +8,6 @@ export const HomeHero = () => {
         <div className="bg-grid-white absolute inset-0 bg-[size:125px_125px] opacity-15 2xl:bg-[size:150px_150px]" />
         <div className="absolute inset-0 bg-gradient-to-b from-background/75 via-background/40 to-background/20" />
       </div>
-      <ParallaxDestinations />
       <div className="container relative z-20 mx-auto px-4">
         <header className="mx-auto max-w-4xl rounded-3xl p-4 text-center sm:p-6 2xl:max-w-5xl">
           <h1 className="mx-auto text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl 2xl:text-8xl">
@@ -30,6 +29,7 @@ export const HomeHero = () => {
           </div>
         </div>
       </div>
+      <ParallaxDestinationsWrapper />
       <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-muted to-transparent"></div>
     </section>
   );

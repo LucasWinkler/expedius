@@ -147,63 +147,74 @@ export const ParallaxDestinations = () => {
     "mobile" | "desktop" | "tablet" | "largeDesktop" | "extraLargeDesktop"
   >("desktop");
 
-  const [parallaxOffsets, setParallaxOffsets] = useState<number[]>(
+  const [parallaxOffsets, setParallaxOffsets] = useState<number[]>(() =>
     destinations.map(() => 0),
   );
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      if (window.innerWidth < 1024) {
-        setScreenSize("mobile");
-      } else if (window.innerWidth < 1536) {
-        setScreenSize("tablet");
-      } else if (window.innerWidth < 1920) {
-        setScreenSize("desktop");
-      } else if (window.innerWidth < 2400) {
-        setScreenSize("largeDesktop");
-      } else {
-        setScreenSize("extraLargeDesktop");
-      }
-    };
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 100);
 
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    setIsMounted(true);
+    const timer = setTimeout(() => {
+      const checkScreenSize = () => {
+        if (window.innerWidth < 1024) {
+          setScreenSize("mobile");
+        } else if (window.innerWidth < 1536) {
+          setScreenSize("tablet");
+        } else if (window.innerWidth < 1920) {
+          setScreenSize("desktop");
+        } else if (window.innerWidth < 2400) {
+          setScreenSize("largeDesktop");
+        } else {
+          setScreenSize("extraLargeDesktop");
+        }
+      };
+
+      checkScreenSize();
+      window.addEventListener("resize", checkScreenSize);
+      return () => window.removeEventListener("resize", checkScreenSize);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
     if (screenSize === "mobile") return;
 
-    const handleScroll = () => {
-      if (!containerRef.current) return;
+    const timer = setTimeout(() => {
+      const handleScroll = () => {
+        if (!containerRef.current) return;
 
-      const scrollY = window.scrollY;
+        const scrollY = window.scrollY;
 
-      const newOffsets = destinations.map((dest) => {
-        let factor = dest.parallaxFactor;
+        const newOffsets = destinations.map((dest) => {
+          let factor = dest.parallaxFactor;
 
-        if (screenSize === "tablet") {
-          factor = dest.parallaxFactor * 0.7;
-        } else if (screenSize === "largeDesktop") {
-          factor = dest.parallaxFactor * 1.2;
-        } else if (screenSize === "extraLargeDesktop") {
-          factor = dest.parallaxFactor * 1.5;
-        }
+          if (screenSize === "tablet") {
+            factor = dest.parallaxFactor * 0.7;
+          } else if (screenSize === "largeDesktop") {
+            factor = dest.parallaxFactor * 1.2;
+          } else if (screenSize === "extraLargeDesktop") {
+            factor = dest.parallaxFactor * 1.5;
+          }
 
-        return scrollY * -factor;
-      });
+          return scrollY * -factor;
+        });
 
-      setParallaxOffsets(newOffsets);
-    };
+        setParallaxOffsets(newOffsets);
+      };
 
-    handleScroll();
+      handleScroll();
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => window.removeEventListener("scroll", handleScroll);
+    }, 200);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => clearTimeout(timer);
   }, [screenSize]);
 
   if (screenSize === "mobile") {
@@ -346,7 +357,8 @@ export const ParallaxDestinations = () => {
                       fill
                       className="object-cover"
                       sizes={width}
-                      priority
+                      priority={index === 0}
+                      loading={index === 0 ? undefined : "lazy"}
                       draggable={false}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/5" />
