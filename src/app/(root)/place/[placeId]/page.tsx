@@ -39,11 +39,9 @@ export default async function PlaceDetailsPage({
     const placeDetails = await getPlaceDetails(placeId);
 
     return (
-      <main className="container mx-auto px-4 py-8">
-        <Suspense fallback={<PlaceDetailsSkeleton />}>
-          <PlaceDetailsView place={placeDetails} />
-        </Suspense>
-      </main>
+      <Suspense fallback={<PlaceDetailsSkeleton />}>
+        <PlaceDetailsView place={placeDetails} />
+      </Suspense>
     );
   } catch (error) {
     console.error("Error fetching place details:", error);

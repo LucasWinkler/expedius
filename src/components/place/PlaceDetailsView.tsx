@@ -69,7 +69,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
   };
 
   return (
-    <article className="relative mx-auto max-w-6xl space-y-6 sm:space-y-8 xl:space-y-12">
+    <article className="container relative mx-auto space-y-6 px-4 py-8 sm:space-y-8 md:py-12 xl:max-w-6xl xl:space-y-12 xl:py-16">
       <PlaceDetailsHeader
         displayName={place.displayName}
         rating={place.rating}
@@ -98,7 +98,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
             </section>
           )}
 
-          {place.reviews && place.reviews.length > 0 && (
+          {/* {place.reviews && place.reviews.length > 0 && (
             <section className="space-y-6">
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold tracking-tight">
@@ -156,7 +156,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
                 ))}
               </div>
             </section>
-          )}
+          )} */}
         </div>
 
         <div className="space-y-8">
