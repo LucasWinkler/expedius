@@ -76,6 +76,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
         userRatingCount={place.userRatingCount}
         priceLevel={place.priceLevel}
         types={place.types}
+        googleMapsLinks={place.googleMapsLinks}
       />
 
       {place.photos?.length && (
@@ -85,7 +86,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
         />
       )}
 
-      <div className="grid gap-12 lg:grid-cols-[2fr_1fr] [&>*:nth-child(2)]:-order-1 lg:[&>*:nth-child(2)]:order-none">
+      {/* <div className="grid gap-12 lg:grid-cols-[2fr_1fr] [&>*:nth-child(2)]:-order-1 lg:[&>*:nth-child(2)]:order-none">
         <div className="space-y-12">
           {place.editorialSummary && (
             <section className="space-y-4">
@@ -98,7 +99,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
             </section>
           )}
 
-          {/* {place.reviews && place.reviews.length > 0 && (
+          {place.reviews && place.reviews.length > 0 && (
             <section className="space-y-6">
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold tracking-tight">
@@ -156,7 +157,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
                 ))}
               </div>
             </section>
-          )} */}
+          )}
         </div>
 
         <div className="space-y-8">
@@ -290,7 +291,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
             </section>
           )}
         </div>
-      </div>
+      </div> */}
     </article>
   );
 }
