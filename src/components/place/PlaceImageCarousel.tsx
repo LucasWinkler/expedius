@@ -46,7 +46,7 @@ export function PlaceImageCarousel({
         <CarouselContent>
           {photos.map((photo, index) => (
             <CarouselItem
-              className="relative block aspect-video w-full"
+              className="relative block aspect-video w-full select-none"
               key={photo.name}
             >
               {!imagesLoaded[photo.name] && (
@@ -68,7 +68,7 @@ export function PlaceImageCarousel({
                   setImagesLoaded((prev) => ({ ...prev, [photo.name]: true }))
                 }
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
             </CarouselItem>
           ))}
         </CarouselContent>
