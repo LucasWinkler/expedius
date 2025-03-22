@@ -14,7 +14,7 @@ export const Footer = () => {
             >
               Expedius
             </Link>
-            <p className="mt-2 max-w-xs text-center text-sm text-muted-foreground md:text-start">
+            <p className="mt-2 max-w-xs text-center text-sm text-foreground/80 md:text-start">
               Find, organize, and share your favourite places from around the
               world.
             </p>
@@ -25,19 +25,19 @@ export const Footer = () => {
                 <Link
                   key={label}
                   href={href}
-                  className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                  className="text-sm text-foreground/80 underline-offset-4 transition-colors hover:text-foreground hover:underline"
                 >
                   {label}
                 </Link>
               ))}
             </nav>
-            <p className="text-center text-sm text-muted-foreground md:text-start">
+            <p className="text-center text-sm text-foreground/80 md:text-start">
               © {new Date().getFullYear()} Expedius · Developed by{" "}
               <Link
                 href="https://github.com/lucaswinkler"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground hover:no-underline"
+                className="text-foreground/80 underline underline-offset-4 transition-colors hover:text-foreground hover:no-underline"
               >
                 Lucas Winkler
               </Link>
