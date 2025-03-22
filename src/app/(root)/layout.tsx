@@ -6,7 +6,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     <>
       <LocationProvider>
         <Nav />
-        <main>{children}</main>
+        <main className="flex-grow">{children}</main>
         <Footer />
       </LocationProvider>
     </>

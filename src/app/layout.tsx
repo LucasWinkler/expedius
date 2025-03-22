@@ -15,7 +15,9 @@ export const metadata = createMetadata({});
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} bg-background font-sans antialiased`}>
+      <body
+        className={`${inter.variable} flex min-h-screen flex-col bg-background font-sans antialiased`}
+      >
         <QueryProvider>{children}</QueryProvider>
         <Toaster
           position="bottom-right"
