@@ -26,6 +26,8 @@ export const useSearch = () => {
     isLoading: isLoadingLocation,
     permissionState,
     isPermissionPending,
+    requestLocation,
+    hasRequestedLocation,
   } = useLocation();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -163,6 +165,13 @@ export const useSearch = () => {
     return false;
   }, [query, permissionState, isLoadingLocation, coords, isPermissionPending]);
 
+  // Request location when needed
+  useEffect(() => {
+    if (query.length > 0 && !hasRequestedLocation) {
+      void requestLocation();
+    }
+  }, [query, hasRequestedLocation, requestLocation]);
+
   const {
     data: searchData,
     isPending,
@@ -177,6 +186,11 @@ export const useSearch = () => {
     ],
     queryFn: async () => {
       try {
+        // Ensure location has been requested if needed
+        if (!hasRequestedLocation) {
+          await requestLocation();
+        }
+
         const result = await searchPlacesClient(
           query,
           size,

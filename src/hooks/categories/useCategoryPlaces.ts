@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { searchPlacesClient } from "@/lib/search";
 import { useLocation } from "@/contexts/LocationContext";
 import { QUERY_KEYS } from "@/constants";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 
 interface UseCategoryPlacesOptions {
   query: string;
@@ -18,6 +18,8 @@ export const useCategoryPlaces = ({
     isLoading: isLoadingLocation,
     permissionState,
     isPermissionPending,
+    requestLocation,
+    hasRequestedLocation,
   } = useLocation();
 
   const useLocationBias = useMemo(() => {
@@ -34,17 +36,13 @@ export const useCategoryPlaces = ({
   const shouldEnableQuery = useMemo(() => {
     if (!enabled) return false;
 
-    // If location permission is still pending, don't query yet
     if (isPermissionPending) return false;
 
-    // If permission granted but location still loading, don't query yet
     if (permissionState === "granted" && isLoadingLocation) return false;
 
-    // If permission denied/unavailable/timeout, we can search without location
     if (["denied", "unavailable", "timeout"].includes(permissionState))
       return true;
 
-    // If permission granted and we have location data, we can search
     if (
       permissionState === "granted" &&
       !isLoadingLocation &&
@@ -62,10 +60,20 @@ export const useCategoryPlaces = ({
     isPermissionPending,
   ]);
 
+  useEffect(() => {
+    if (enabled && !hasRequestedLocation) {
+      void requestLocation();
+    }
+  }, [enabled, hasRequestedLocation, requestLocation]);
+
   return useQuery({
     queryKey: [QUERY_KEYS.CATEGORIES, query, useLocationBias ? coords : null],
     queryFn: async () => {
       try {
+        if (!hasRequestedLocation) {
+          await requestLocation();
+        }
+
         const result = await searchPlacesClient(
           query,
           6,
