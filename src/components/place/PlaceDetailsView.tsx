@@ -20,26 +20,16 @@ import { Button } from "@/components/ui/button";
 import { ProxiedImage } from "../ui/ProxiedImage";
 import { LikeButton } from "../places/LikeButton";
 import { PlaceImageCarousel } from "./PlaceImageCarousel";
+import { PLACE_FEATURES } from "@/constants/places";
+import { formatBooleanFeatures, formatPlaceType } from "@/utils/places";
+import { getPriceLevelDisplayShort } from "@/lib/place";
+import { PlaceDetailsHeader } from "./PlaceDetailsHeader";
 
 const SaveToListButton = dynamic(
   () =>
     import("../places/SaveToListButton").then((mod) => mod.SaveToListButton),
   { ssr: false },
 );
-
-const FEATURES = [
-  { key: "dineIn", label: "Dine-in" },
-  { key: "takeout", label: "Takeout" },
-  { key: "delivery", label: "Delivery" },
-  { key: "curbsidePickup", label: "Curbside pickup" },
-  { key: "reservable", label: "Reservations" },
-  { key: "outdoorSeating", label: "Outdoor seating" },
-  { key: "servesBreakfast", label: "Breakfast" },
-  { key: "servesLunch", label: "Lunch" },
-  { key: "servesDinner", label: "Dinner" },
-  { key: "servesBrunch", label: "Brunch" },
-  { key: "servesCoffee", label: "Coffee" },
-] as const;
 
 interface PlaceDetailsViewProps {
   place: PlaceDetails;
@@ -52,9 +42,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
     setCanShare(Boolean(navigator?.share));
   }, []);
 
-  const availableFeatures = FEATURES.filter(
-    (feature) => place[feature.key as keyof typeof place],
-  );
+  const availableFeatures = formatBooleanFeatures(place, PLACE_FEATURES);
 
   const handleShare = async () => {
     const shareUrl = window.location.href;
@@ -81,43 +69,23 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
   };
 
   return (
-    <div className="relative space-y-8 sm:space-y-12">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 sm:flex-row sm:items-start sm:justify-between sm:py-6">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            {place.displayName.text}
-          </h1>
-          <p className="text-base text-muted-foreground sm:text-lg">
-            {place.formattedAddress}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 self-start">
-          <Button
-            variant="secondary"
-            size="icon"
-            className={
-              "size-9 shrink-0 bg-background/80 backdrop-blur hover:bg-background/90"
-            }
-            onClick={handleShare}
-            title="Share"
-          >
-            <Share2 aria-hidden="true" />
-          </Button>
-          <SaveToListButton className="size-9 shrink-0" placeId={place.id} />
-          <LikeButton className="size-9 shrink-0" placeId={place.id} />
-        </div>
-      </div>
+    <article className="relative mx-auto max-w-6xl space-y-6 sm:space-y-8 xl:space-y-12">
+      <PlaceDetailsHeader
+        displayName={place.displayName}
+        rating={place.rating}
+        userRatingCount={place.userRatingCount}
+        priceLevel={place.priceLevel}
+        types={place.types}
+      />
 
       {place.photos?.length && (
-        <div className="mx-auto max-w-6xl">
-          <PlaceImageCarousel
-            photos={place.photos}
-            placeName={place.displayName.text}
-          />
-        </div>
+        <PlaceImageCarousel
+          photos={place.photos}
+          placeName={place.displayName.text}
+        />
       )}
 
-      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[2fr_1fr] [&>*:nth-child(2)]:-order-1 lg:[&>*:nth-child(2)]:order-none">
+      <div className="grid gap-12 lg:grid-cols-[2fr_1fr] [&>*:nth-child(2)]:-order-1 lg:[&>*:nth-child(2)]:order-none">
         <div className="space-y-12">
           {place.editorialSummary && (
             <section className="space-y-4">
@@ -194,7 +162,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
         <div className="space-y-8">
           <section className="space-y-6 rounded-xl bg-muted p-6">
             <h2 className="text-xl font-semibold tracking-tight">
-              Essential information
+              Essential Information
             </h2>
             <div className="space-y-4">
               {place.websiteUri && (
@@ -306,16 +274,16 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
           {availableFeatures.length > 0 && (
             <section className="space-y-6 rounded-xl bg-muted p-6">
               <h2 className="text-xl font-semibold tracking-tight">
-                Available amenities
+                Available Amenities
               </h2>
               <div className="flex flex-wrap gap-2">
                 {availableFeatures.map((feature) => (
                   <Badge
-                    key={feature.key}
+                    key={feature}
                     variant="secondary"
                     className="rounded-lg bg-muted-foreground/10 px-3.5 py-1.5 text-sm font-medium text-foreground hover:bg-muted-foreground/20"
                   >
-                    {feature.label}
+                    {feature}
                   </Badge>
                 ))}
               </div>
@@ -323,6 +291,6 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 }
