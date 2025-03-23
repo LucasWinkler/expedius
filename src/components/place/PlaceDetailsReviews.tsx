@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
-import { Card } from "../ui/card";
 import {
   useState,
   useRef,
@@ -130,7 +129,7 @@ export const PlaceDetailsReviews = ({
   };
 
   return (
-    <Card className="p-6">
+    <section className="rounded-lg border border-border bg-card p-6">
       <h2 className="mb-4 text-xl font-semibold">Popular Reviews</h2>
       <a
         href={googleMapsLinks.reviewsUri}
@@ -189,6 +188,6 @@ export const PlaceDetailsReviews = ({
           </p>
         )}
       </div>
-    </Card>
+    </section>
   );
 };
