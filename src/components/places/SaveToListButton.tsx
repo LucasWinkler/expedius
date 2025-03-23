@@ -76,7 +76,14 @@ export const SaveToListButton = ({
         )}
         onClick={(e) => e.preventDefault()}
       >
-        <Bookmark aria-hidden="true" />
+        <Bookmark
+          className={cn(
+            "size-4",
+            isSaved && "fill-blue-500 text-blue-500",
+            className,
+          )}
+          aria-hidden="true"
+        />
         <span className="sr-only">Save to list(s)</span>
       </Button>
     </SaveToListDropdown>
