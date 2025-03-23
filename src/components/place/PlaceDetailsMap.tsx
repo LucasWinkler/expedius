@@ -1,9 +1,9 @@
-interface PlaceMapProps {
+interface PlaceDetailsMapProps {
   lat: number;
   lng: number;
 }
 
-export default function PlaceMap({ lat, lng }: PlaceMapProps) {
+export default function PlaceDetailsMap({ lat, lng }: PlaceDetailsMapProps) {
   return (
     <div className="relative size-full">
       <div className="flex h-full items-center justify-center bg-muted text-muted-foreground">

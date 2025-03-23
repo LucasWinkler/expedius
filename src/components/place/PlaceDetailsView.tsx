@@ -7,7 +7,7 @@ import { formatBooleanFeatures } from "@/utils/places";
 import { PlaceDetailsHeader } from "./PlaceDetailsHeader";
 import { PlaceDetailsInformation } from "./PlaceDetailsInformation";
 import { PlaceDetailsReviews } from "./PlaceDetailsReviews";
-import PlaceMap from "./PlaceMap";
+import PlaceDetailsMap from "./PlaceDetailsMap";
 import { PlaceDetailsActions } from "./PlaceDetailsActions";
 
 interface PlaceDetailsViewProps {
@@ -84,7 +84,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
             <section className="rounded-lg border border-border bg-card p-6">
               <h2 className="mb-4 text-xl font-semibold">Location</h2>
               <div className="mb-4 aspect-video overflow-hidden rounded-lg">
-                <PlaceMap
+                <PlaceDetailsMap
                   lat={place.location.latitude}
                   lng={place.location.longitude}
                 />
