@@ -166,7 +166,7 @@ export const PlaceDetailsReviews = ({
                   />
                   {index < reviewsArray.length - 1 &&
                     (showAllReviews || index < 1) && (
-                      <Separator className="mt-2" />
+                      <Separator className="mt-4" />
                     )}
                 </div>
               ))}
