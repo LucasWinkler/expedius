@@ -354,7 +354,8 @@ export const useSearch = () => {
     size,
     updateSearchParams,
     data: mergedData,
-    isPending: isPending && !searchData,
+    isPending:
+      isPending || (!!searchData && allPlaces.length === 0 && !isError),
     isError,
     loadMore,
     hasMore: !!(pageToken

@@ -22,15 +22,20 @@ export const SearchResults = () => {
     isLoadingMore,
     paginationError,
     size,
+    isError,
   } = useSearch();
 
   const skeletonCount = size || 3;
 
-  if (isPending && !data?.places?.length) {
+  if (isPending || (data && !data.places)) {
     return <SearchSkeleton />;
   }
 
-  if (!data?.places?.length) {
+  if (isError) {
+    return <NoPlaceResults isError={true} />;
+  }
+
+  if (!isPending && data?.places?.length === 0) {
     return <NoPlaceResults />;
   }
 
