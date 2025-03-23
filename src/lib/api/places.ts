@@ -37,6 +37,8 @@ const PLACE_DETAILS_FIELD_MASK = [
   "primaryTypeDisplayName",
   "location",
   "goodForWatchingSports",
+  "goodForGroups",
+  "goodForChildren",
   "menuForChildren",
   "servesDessert",
   "restroom",
@@ -46,6 +48,7 @@ const PLACE_DETAILS_FIELD_MASK = [
   "accessibilityOptions",
   "pureServiceAreaBusiness",
   "utcOffsetMinutes",
+  "allowsDogs",
 ].join(",");
 
 export const getPlaceDetails = cache(

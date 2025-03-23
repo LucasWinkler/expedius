@@ -98,10 +98,13 @@ export type PlaceDetails = Place & {
     acceptsNfc?: boolean;
   };
   parkingOptions?: {
-    freeParking?: boolean;
-    paidParking?: boolean;
-    streetParking?: boolean;
+    freeParkingLot?: boolean;
+    paidParkingLot?: boolean;
+    freeStreetParking?: boolean;
+    paidStreetParking?: boolean;
     valetParking?: boolean;
+    freeGarageParking?: boolean;
+    paidGarageParking?: boolean;
   };
   dineIn?: boolean;
   takeout?: boolean;
@@ -118,6 +121,8 @@ export type PlaceDetails = Place & {
   menuForChildren?: boolean;
   restroom?: boolean;
   goodForWatchingSports?: boolean;
+  goodForGroups?: boolean;
+  goodForChildren?: boolean;
   servesDessert?: boolean;
   servesVegetarianFood?: boolean;
   servesBeer?: boolean;
@@ -134,11 +139,13 @@ export type PlaceDetails = Place & {
   accessibilityOptions?: {
     wheelchairAccessibleParking?: boolean;
     wheelchairAccessibleEntrance?: boolean;
+    wheelchairAccessibleRestroom?: boolean;
+    wheelchairAccessibleSeating?: boolean;
   };
   pureServiceAreaBusiness?: boolean;
   businessStatus: string;
   utcOffsetMinutes?: number;
-  nextCloseTime?: string;
+  allowsDogs?: boolean;
 };
 
 // Business/Domain types
