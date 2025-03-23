@@ -18,7 +18,6 @@ interface PlaceDetailsInformationProps {
   currentOpeningHours: PlaceDetails["currentOpeningHours"];
   googleMapsLinks: PlaceDetails["googleMapsLinks"];
   utcOffsetMinutes?: PlaceDetails["utcOffsetMinutes"];
-  nextCloseTime?: PlaceDetails["nextCloseTime"];
   displayName: PlaceDetails["displayName"];
   location?: { latitude: number; longitude: number } | null;
 }
