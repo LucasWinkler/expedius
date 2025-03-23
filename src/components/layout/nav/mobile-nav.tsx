@@ -17,7 +17,6 @@ import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { USER_NAV_ITEMS, MOBILE_NAV_ITEMS } from "@/constants";
 import { Separator } from "@/components/ui/separator";
-import { useRouter } from "next/navigation";
 import { NavSearchButton } from "@/components/search/NavSearchButton";
 
 type MobileNavProps = {
@@ -27,7 +26,6 @@ type MobileNavProps = {
 
 export const MobileNav = ({ session, isPending }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const handleResize = () => {

@@ -10,7 +10,7 @@ import {
   FormItem,
   FormMessage,
 } from "../ui/form";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useCallback } from "react";
 import { minQueryLength } from "@/constants";
 import { SearchInput } from "@/components/ui/search-input";
 import { useSearch } from "@/hooks/useSearch";
