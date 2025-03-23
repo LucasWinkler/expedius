@@ -30,6 +30,22 @@ const PLACE_DETAILS_FIELD_MASK = [
   "servesBrunch",
   "servesCoffee",
   "outdoorSeating",
+  "servesWine",
+  "servesBeer",
+  "servesVegetarianFood",
+  "types",
+  "primaryTypeDisplayName",
+  "location",
+  "goodForWatchingSports",
+  "menuForChildren",
+  "servesDessert",
+  "restroom",
+  "liveMusic",
+  "businessStatus",
+  "googleMapsLinks",
+  "accessibilityOptions",
+  "pureServiceAreaBusiness",
+  "utcOffsetMinutes",
 ].join(",");
 
 export const getPlaceDetails = cache(

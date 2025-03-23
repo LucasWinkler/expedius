@@ -12,12 +12,16 @@ interface LikeButtonProps {
   placeId: string;
   className?: string;
   username?: string;
+  variant?: "icon" | "outline";
+  size?: "sm" | "lg" | "default";
 }
 
 export const LikeButton = ({
   placeId,
   className,
   username,
+  variant = "icon",
+  size = "default",
 }: LikeButtonProps) => {
   const { data: session } = useSession();
   const { data: userData, like } = usePlaceInteractions();
@@ -53,6 +57,24 @@ export const LikeButton = ({
       },
     });
   };
+
+  if (variant === "outline") {
+    return (
+      <Button
+        variant="outline"
+        size={size}
+        className={className}
+        onClick={handleClick}
+        disabled={isPending}
+      >
+        <Heart
+          className={cn("size-4", isLiked && "fill-red-500 text-red-500")}
+          aria-hidden="true"
+        />
+        {isLiked ? "Liked" : "Like"}
+      </Button>
+    );
+  }
 
   return (
     <Button
