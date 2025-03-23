@@ -65,6 +65,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
             websiteUri={place.websiteUri}
             currentOpeningHours={place.currentOpeningHours}
             googleMapsLinks={place.googleMapsLinks}
+            utcOffsetMinutes={place.utcOffsetMinutes}
           />
         </div>
 

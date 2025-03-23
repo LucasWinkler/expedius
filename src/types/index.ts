@@ -136,6 +136,7 @@ export type PlaceDetails = Place & {
   };
   pureServiceAreaBusiness?: boolean;
   businessStatus: string;
+  utcOffsetMinutes?: number;
 };
 
 // Business/Domain types

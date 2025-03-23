@@ -45,6 +45,7 @@ const PLACE_DETAILS_FIELD_MASK = [
   "googleMapsLinks",
   "accessibilityOptions",
   "pureServiceAreaBusiness",
+  "utcOffsetMinutes",
 ].join(",");
 
 export const getPlaceDetails = cache(

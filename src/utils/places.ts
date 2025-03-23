@@ -34,3 +34,18 @@ export const formatBooleanFeatures = (
     })
     .map(({ label }) => label);
 };
+
+export const getCurrentDayAtLocation = (utcOffsetMinutes?: number) => {
+  if (!utcOffsetMinutes) return new Date().getDay();
+
+  const now = new Date();
+  const utcTime = now.getTime() + now.getTimezoneOffset() * 60000;
+  const locationTime = new Date(utcTime + utcOffsetMinutes * 60000);
+
+  // Convert from JavaScript day (0 = Sunday) to Google Places API day (0 = Monday)
+  // This transforms: Sun(0), Mon(1), Tue(2)... to Mon(0), Tue(1), Wed(2)...
+  const jsDay = locationTime.getDay();
+
+  // Sunday (0) becomes 6, others shift by -1
+  return jsDay === 0 ? 6 : jsDay - 1;
+};

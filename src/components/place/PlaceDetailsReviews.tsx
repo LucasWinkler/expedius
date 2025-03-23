@@ -89,6 +89,13 @@ export const PlaceDetailsReviews = ({
     return () => cleanup && cleanup();
   }, [checkTruncation, reviews]);
 
+  // Check truncation when showAllReviews changes
+  useEffect(() => {
+    if (!initialLoading) {
+      checkTruncation(false);
+    }
+  }, [checkTruncation, showAllReviews, initialLoading]);
+
   // Check truncation on window resize
   useEffect(() => {
     const handleResize = () => {
