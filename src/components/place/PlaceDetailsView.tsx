@@ -80,14 +80,6 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
                   lng={place.location.longitude}
                 />
               </div>
-              <a
-                href={place.googleMapsLinks.directionsUri}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                {place.formattedAddress}
-              </a>
             </section>
           )}
 
