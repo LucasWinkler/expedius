@@ -1,3 +1,5 @@
+"use client";
+
 import { ExternalLink, Star } from "lucide-react";
 import type { PlaceDetails } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";

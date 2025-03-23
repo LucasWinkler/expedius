@@ -1,3 +1,5 @@
+"use client";
+
 import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import { Card } from "../ui/card";
 import {

@@ -7,18 +7,28 @@ import { SaveToListDropdown } from "./SaveToListDropdown";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { usePlaceInteractions } from "@/hooks/usePlaceInteractions";
 
 interface SaveToListButtonProps {
   placeId: string;
   className?: string;
+  variant?: "icon" | "outline";
+  size?: "sm" | "lg" | "default";
 }
 
 export const SaveToListButton = ({
   placeId,
   className,
+  variant = "icon",
+  size = "default",
 }: SaveToListButtonProps) => {
   const { data: session } = useSession();
+  const { data: userData } = usePlaceInteractions();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const isSaved = userData?.lists.some((list) =>
+    list.savedPlaces?.some((place) => place.placeId === placeId),
+  );
 
   const handleOpenChange = (open: boolean) => {
     if (open && !session) {
@@ -27,6 +37,29 @@ export const SaveToListButton = ({
     }
     setIsDropdownOpen(open);
   };
+
+  if (variant === "outline") {
+    return (
+      <SaveToListDropdown
+        placeId={placeId}
+        open={isDropdownOpen}
+        onOpenChange={handleOpenChange}
+      >
+        <Button
+          variant="outline"
+          size={size}
+          className={className}
+          onClick={(e) => e.preventDefault()}
+        >
+          <Bookmark
+            className={cn("size-4", isSaved && "fill-blue-500 text-blue-500")}
+            aria-hidden="true"
+          />
+          {isSaved ? "Saved" : "Save"}
+        </Button>
+      </SaveToListDropdown>
+    );
+  }
 
   return (
     <SaveToListDropdown

@@ -1,83 +1,22 @@
 "use client";
 
-import {
-  Globe,
-  Phone,
-  Clock,
-  DollarSign,
-  Star,
-  Share2,
-  Navigation,
-  MapPin,
-  ChevronDown,
-  ChevronUp,
-  ExternalLink,
-  Dot,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
 import type { PlaceDetails } from "@/types";
-import { toast } from "sonner";
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ProxiedImage } from "../ui/ProxiedImage";
-import { LikeButton } from "../places/LikeButton";
 import { PlaceImageCarousel } from "./PlaceImageCarousel";
 import { PLACE_FEATURES } from "@/constants/places";
-import { formatBooleanFeatures, formatPlaceType } from "@/utils/places";
-import { getPriceLevelDisplayShort } from "@/lib/place";
+import { formatBooleanFeatures } from "@/utils/places";
 import { PlaceDetailsHeader } from "./PlaceDetailsHeader";
-import Link from "next/link";
 import { Card } from "../ui/card";
-import { Separator } from "../ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { PlaceDetailsInformation } from "./PlaceDetailsInformation";
 import { PlaceDetailsReviews } from "./PlaceDetailsReviews";
-
-const SaveToListButton = dynamic(
-  () =>
-    import("../places/SaveToListButton").then((mod) => mod.SaveToListButton),
-  { ssr: false },
-);
+import PlaceMap from "./PlaceMap";
+import { PlaceDetailsActions } from "./PlaceDetailsActions";
 
 interface PlaceDetailsViewProps {
   place: PlaceDetails;
 }
 
 export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
-  const [canShare, setCanShare] = useState(false);
-
-  useEffect(() => {
-    setCanShare(Boolean(navigator?.share));
-  }, []);
-
   const availableFeatures = formatBooleanFeatures(place, PLACE_FEATURES);
-
-  const handleShare = async () => {
-    const shareUrl = window.location.href;
-    const shareData = {
-      title: place.displayName.text,
-      text:
-        place.editorialSummary?.text ??
-        `Check out ${place.displayName.text} on Expedius`,
-      url: shareUrl,
-    };
-
-    try {
-      if (canShare) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success("Link copied to clipboard");
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name !== "AbortError") {
-        toast.error("Failed to share");
-      }
-    }
-  };
 
   return (
     <article className="container relative mx-auto space-y-6 px-4 py-8 sm:space-y-8 md:py-12 xl:max-w-7xl xl:space-y-12 xl:py-16">
@@ -89,14 +28,58 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
         types={place.types}
         googleMapsLinks={place.googleMapsLinks}
       />
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+        <div className="space-y-6 lg:col-span-2">
           {place.photos?.length && (
             <PlaceImageCarousel
               photos={place.photos}
               placeName={place.displayName.text}
             />
           )}
+          <div className="space-y-6">
+            <PlaceDetailsActions
+              id={place.id}
+              displayName={place.displayName}
+              editorialSummary={place.editorialSummary}
+              googleMapsLinks={place.googleMapsLinks}
+            />
+            {place.editorialSummary && (
+              <Card className="p-6">
+                <h2 className="mb-4 text-xl font-semibold">Overview</h2>
+                <p className="text-muted-foreground">
+                  {place.editorialSummary?.text}
+                </p>
+              </Card>
+            )}
+            {availableFeatures.length > 0 && (
+              <Card className="p-6">
+                <h2 className="mb-4 text-xl font-semibold">Amenities</h2>
+                <div className="grid grid-cols-2 gap-3">
+                  {availableFeatures.map((feature) => (
+                    <div key={feature} className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-primary" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+            {place.location && (
+              <Card className="p-6">
+                <h2 className="mb-4 text-xl font-semibold">Location</h2>
+                <div className="mb-4 aspect-video overflow-hidden rounded-lg">
+                  <PlaceMap
+                    lat={place.location.latitude}
+                    lng={place.location.longitude}
+                  />
+                </div>
+                <p className="text-muted-foreground">
+                  {place.formattedAddress}
+                </p>
+              </Card>
+            )}
+          </div>
         </div>
         <div className="lg:col-span-1">
           <PlaceDetailsInformation

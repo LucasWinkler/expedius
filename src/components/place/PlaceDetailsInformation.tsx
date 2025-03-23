@@ -1,3 +1,5 @@
+"use client";
+
 import { Card } from "../ui/card";
 import { MapPin, Phone, Globe, Clock } from "lucide-react";
 import { Separator } from "../ui/separator";
