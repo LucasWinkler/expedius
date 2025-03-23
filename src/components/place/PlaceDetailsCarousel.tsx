@@ -14,15 +14,15 @@ import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-interface PlaceImageCarouselProps {
+interface PlaceDetailsCarouselProps {
   photos?: PlacePhoto[];
   placeName: string;
 }
 
-export function PlaceImageCarousel({
+export function PlaceDetailsCarousel({
   photos,
   placeName,
-}: PlaceImageCarouselProps) {
+}: PlaceDetailsCarouselProps) {
   const { currentSnapPoint, snapPointCount, api, setApi } = useCarouselState();
   const [imagesLoaded, setImagesLoaded] = useState<Record<string, boolean>>({});
   const [thumbnailsLoaded, setThumbnailsLoaded] = useState<

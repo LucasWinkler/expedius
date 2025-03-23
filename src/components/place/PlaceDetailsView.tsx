@@ -1,7 +1,7 @@
 "use client";
 
 import type { PlaceDetails } from "@/types";
-import { PlaceImageCarousel } from "./PlaceImageCarousel";
+import { PlaceDetailsCarousel } from "./PlaceDetailsCarousel";
 import { PLACE_FEATURES } from "@/constants/places";
 import { formatBooleanFeatures } from "@/utils/places";
 import { PlaceDetailsHeader } from "./PlaceDetailsHeader";
@@ -32,7 +32,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
       <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
         <div className="flex flex-col gap-6 lg:w-2/3">
           {place.photos?.length ? (
-            <PlaceImageCarousel
+            <PlaceDetailsCarousel
               photos={place.photos}
               placeName={place.displayName.text}
             />
