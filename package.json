@@ -44,6 +44,7 @@
     "@upstash/redis": "^1.34.5",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
+    "@vis.gl/react-google-maps": "^1.5.2",
     "better-auth": "^1.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
