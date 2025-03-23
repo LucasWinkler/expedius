@@ -27,7 +27,7 @@ export const PlaceDetailsInformation = ({
   const [showAllHours, setShowAllHours] = useState(false);
 
   return (
-    <section className="mb-6 rounded-lg border border-border bg-card p-6">
+    <section className="rounded-lg border border-border bg-card p-6">
       <h2 className="mb-4 text-xl font-semibold">Information</h2>
       <div className="space-y-4">
         <div className="flex items-start gap-3">

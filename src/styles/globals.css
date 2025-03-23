@@ -222,3 +222,61 @@
 .bg-grid-white {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%239C92AC' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
 }
+
+.place-details-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "carousel"
+    "actions"
+    "overview"
+    "information"
+    "amenities"
+    "location"
+    "reviews";
+}
+
+@media (min-width: 1024px) {
+  .place-details-grid {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    grid-column-gap: 2rem;
+    grid-row-gap: 1.5rem;
+    grid-template-areas:
+      "carousel information"
+      "actions information"
+      "overview reviews"
+      "amenities reviews"
+      "location reviews";
+  }
+}
+
+.grid-area-carousel {
+  grid-area: carousel;
+  min-width: 0;
+}
+.grid-area-actions {
+  grid-area: actions;
+  min-width: 0;
+}
+.grid-area-overview {
+  grid-area: overview;
+  min-width: 0;
+}
+.grid-area-information {
+  grid-area: information;
+  min-width: 0;
+}
+.grid-area-amenities {
+  grid-area: amenities;
+  min-width: 0;
+}
+.grid-area-location {
+  grid-area: location;
+  min-width: 0;
+}
+.grid-area-reviews {
+  grid-area: reviews;
+  min-width: 0;
+  margin-bottom: 0;
+}
