@@ -76,15 +76,17 @@ export const PlaceReviewItem = ({
           ))}
       </div>
       <div className="relative">
-        <p
-          ref={onRef}
-          className={cn(
-            "text-sm text-muted-foreground",
-            !isExpanded && "line-clamp-3",
-          )}
-        >
-          {review.text?.text || "No review text provided."}
-        </p>
+        {review.text?.text ? (
+          <p
+            ref={onRef}
+            className={cn(
+              "text-sm text-muted-foreground",
+              !isExpanded && "line-clamp-3",
+            )}
+          >
+            {review.text.text}
+          </p>
+        ) : null}
         <div className="mt-1 flex items-center gap-1">
           {isLoading && review.text?.text ? (
             <>
