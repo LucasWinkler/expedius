@@ -25,13 +25,16 @@ export function PlaceDetailsSkeleton() {
         <div className="flex flex-col gap-6 lg:w-2/3">
           <Skeleton className="aspect-video w-full rounded-lg" />
 
-          <div className="flex gap-2 pb-2">
-            <Skeleton className="h-16 w-24" />
-            <Skeleton className="h-16 w-24" />
-            <Skeleton className="h-16 w-24" />
-            <Skeleton className="h-16 w-24" />
-            <Skeleton className="h-16 w-24" />
-            <Skeleton className="h-16 w-24" />
+          <div className="scrollbar-thin flex gap-2 overflow-x-auto pb-2">
+            <Skeleton className="aspect-video h-16 w-24" />
+            <Skeleton className="aspect-video h-16 w-24" />
+            <Skeleton className="aspect-video h-16 w-24" />
+            <Skeleton className="aspect-video h-16 w-24" />
+            <Skeleton className="aspect-video h-16 w-24" />
+            <Skeleton className="aspect-video h-16 w-24" />
+            <Skeleton className="aspect-video h-16 w-24" />
+            <Skeleton className="aspect-video h-16 w-24" />
+            <Skeleton className="aspect-video h-16 w-24" />
           </div>
 
           <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3 md:gap-4">
