@@ -9,6 +9,7 @@ import { PlaceDetailsInformation } from "./PlaceDetailsInformation";
 import { PlaceDetailsReviews } from "./PlaceDetailsReviews";
 import PlaceDetailsMap from "./PlaceDetailsMap";
 import { PlaceDetailsActions } from "./PlaceDetailsActions";
+import { PlaceDetailsAmenities } from "./PlaceDetailsAmenities";
 
 interface PlaceDetailsViewProps {
   place: PlaceDetails;
@@ -67,17 +68,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
           </div>
 
           {availableFeatures.length > 0 && (
-            <section className="rounded-lg border border-border bg-card p-6">
-              <h2 className="mb-4 text-xl font-semibold">Amenities</h2>
-              <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {availableFeatures.map((feature) => (
-                  <li key={feature} className="flex items-center gap-2">
-                    <span className="size-2 shrink-0 rounded-full bg-primary" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <PlaceDetailsAmenities features={availableFeatures} />
           )}
 
           {place.location && (
