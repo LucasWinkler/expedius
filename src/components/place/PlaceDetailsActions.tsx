@@ -71,10 +71,25 @@ export const PlaceDetailsActions = ({
         </Link>
       </Button>
 
-      <LikeButton placeId={id} variant="outline" size="sm" />
-      <SaveToListButton placeId={id} variant="outline" size="sm" />
+      <LikeButton
+        className="hover:bg-transparent hover:text-primary"
+        placeId={id}
+        variant="outline"
+        size="sm"
+      />
+      <SaveToListButton
+        className="hover:bg-transparent hover:text-primary"
+        placeId={id}
+        variant="outline"
+        size="sm"
+      />
 
-      <Button variant="outline" size="sm" onClick={handleShare}>
+      <Button
+        className="hover:bg-transparent hover:text-primary"
+        variant="outline"
+        size="sm"
+        onClick={handleShare}
+      >
         <Share2 className="mr-1.5 h-4 w-4" />
         Share
       </Button>
