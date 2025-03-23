@@ -1,8 +1,5 @@
-import { Suspense } from "react";
-import { notFound } from "next/navigation";
 import { getPlaceDetails } from "@/lib/api/places";
 import { PlaceDetailsView } from "@/components/place/PlaceDetailsView";
-import { PlaceDetailsSkeleton } from "@/components/place/PlaceDetailsSkeleton";
 import { createMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
 
@@ -34,17 +31,8 @@ export async function generateMetadata({
 export default async function PlaceDetailsPage({
   params,
 }: PlaceDetailsPageProps) {
-  try {
-    const { placeId } = await params;
-    const placeDetails = await getPlaceDetails(placeId);
+  const { placeId } = await params;
+  const placeDetails = await getPlaceDetails(placeId);
 
-    return (
-      <Suspense fallback={<PlaceDetailsSkeleton />}>
-        <PlaceDetailsView place={placeDetails} />
-      </Suspense>
-    );
-  } catch (error) {
-    console.error("Error fetching place details:", error);
-    notFound();
-  }
+  return <PlaceDetailsView place={placeDetails} />;
 }
