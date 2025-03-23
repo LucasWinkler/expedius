@@ -51,9 +51,14 @@ export const PlaceDetailsReviews = ({
           reviews.forEach((review) => {
             const element = reviewRefs.current[review.name];
             if (element) {
-              // If scrollHeight > clientHeight, the content is truncated
-              newTruncatedReviews[review.name] =
-                element.scrollHeight > element.clientHeight;
+              // Only check truncation for reviews that aren't already expanded
+              if (!expandedReviews[review.name]) {
+                // If scrollHeight > clientHeight, the content is truncated
+                newTruncatedReviews[review.name] =
+                  element.scrollHeight > element.clientHeight;
+              } else {
+                newTruncatedReviews[review.name] = true;
+              }
             }
           });
 
@@ -78,7 +83,7 @@ export const PlaceDetailsReviews = ({
         }
       };
     },
-    [reviews],
+    [reviews, expandedReviews],
   );
 
   // Check truncation on initial render and when reviews change
