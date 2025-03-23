@@ -59,40 +59,46 @@ export const PlaceDetailsActions = ({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-      <Button variant="default" size="sm" asChild>
+    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3 md:gap-4">
+      <Button
+        variant="default"
+        size="sm"
+        className="col-span-2 sm:col-span-1"
+        asChild
+      >
         <Link
           href={googleMapsLinks.directionsUri}
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Navigation className="h-4 w-4" />
+          <Navigation className="mr-1.5 h-4 w-4" />
           Directions
         </Link>
       </Button>
 
-      <LikeButton
-        className="hover:bg-transparent hover:text-primary"
-        placeId={id}
-        variant="outline"
-        size="sm"
-      />
-      <SaveToListButton
-        className="hover:bg-transparent hover:text-primary"
-        placeId={id}
-        variant="outline"
-        size="sm"
-      />
-
-      <Button
-        className="hover:bg-transparent hover:text-primary"
-        variant="outline"
-        size="sm"
-        onClick={handleShare}
-      >
-        <Share2 className="h-4 w-4" />
-        Share
-      </Button>
+      <div className="col-span-2 grid grid-cols-3 gap-2 sm:col-span-1 sm:flex sm:flex-wrap sm:items-center">
+        <LikeButton
+          className="hover:bg-transparent hover:text-primary"
+          placeId={id}
+          variant="outline"
+          size="sm"
+        />
+        <SaveToListButton
+          className="hover:bg-transparent hover:text-primary"
+          placeId={id}
+          variant="outline"
+          size="sm"
+        />
+        <Button
+          className="hover:bg-transparent hover:text-primary"
+          variant="outline"
+          size="sm"
+          onClick={handleShare}
+        >
+          <Share2 className="mr-1.5 h-4 w-4" />
+          Share
+        </Button>
+      </div>
     </div>
   );
 };
