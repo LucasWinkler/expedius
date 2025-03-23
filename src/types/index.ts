@@ -35,6 +35,10 @@ export type Place = {
     height: number;
     width: number;
   };
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
 };
 
 export type PlaceDetails = Place & {
@@ -120,10 +124,6 @@ export type PlaceDetails = Place & {
   servesWine?: boolean;
   primaryTypeDisplayName: string;
   types: string[];
-  location?: {
-    latitude: number;
-    longitude: number;
-  };
   googleMapsLinks: {
     directionsUri: string;
     placeUri: string;

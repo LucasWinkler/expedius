@@ -7,6 +7,9 @@ import { Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { getPriceLevelDisplayShort } from "@/lib/place";
 import placeImageFallback from "@/../public/place-image-fallback.webp";
+import { useLocation } from "@/contexts/LocationContext";
+import { useMemo, useEffect } from "react";
+import { calculateDistance } from "@/utils/places";
 
 interface PlaceCardProps {
   place: Place;
@@ -23,9 +26,57 @@ export const PlaceCard = ({
 }: PlaceCardProps) => {
   const Comp = isListItem ? "li" : "div";
 
+  const {
+    coords,
+    isLoading: isLoadingLocation,
+    permissionState,
+    requestLocation,
+    hasRequestedLocation,
+  } = useLocation();
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      !hasRequestedLocation &&
+      permissionState === "prompt"
+    ) {
+      requestLocation();
+    }
+  }, [requestLocation, hasRequestedLocation, permissionState]);
+
+  const distance = useMemo(() => {
+    if (
+      !place.location ||
+      permissionState !== "granted" ||
+      isLoadingLocation ||
+      coords.latitude === null ||
+      coords.longitude === null
+    ) {
+      return null;
+    }
+
+    const kmDistance = calculateDistance(
+      coords.latitude,
+      coords.longitude,
+      place.location.latitude,
+      place.location.longitude,
+      "km",
+    );
+
+    const miDistance = calculateDistance(
+      coords.latitude,
+      coords.longitude,
+      place.location.latitude,
+      place.location.longitude,
+      "mi",
+    );
+
+    return { km: kmDistance, mi: miDistance };
+  }, [coords, place.location, permissionState, isLoadingLocation]);
+
   return (
     <Comp className="group list-none">
-      <Card className="relative overflow-hidden bg-muted shadow-none transition-all hover:shadow-md">
+      <Card className="relative overflow-hidden bg-muted shadow-none">
         <Link href={`/place/${place.id}`} className="block">
           <div className="relative m-4 overflow-hidden rounded-lg">
             {place.image ? (
@@ -78,9 +129,35 @@ export const PlaceCard = ({
             )}
           </CardHeader>
           <CardContent className="px-4 pb-4 pt-0">
-            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <MapPin className="size-3.5 shrink-0" />
-              <span className="line-clamp-1">{place.formattedAddress}</span>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-start gap-1.5">
+                <MapPin className="mt-0.5 size-3.5 shrink-0" />
+                <div className="flex flex-col">
+                  <span className="line-clamp-1 text-sm text-muted-foreground">
+                    {place.formattedAddress}
+                  </span>
+
+                  {place.location && (
+                    <div className="mt-0.5 flex items-center text-xs">
+                      {distance &&
+                      distance.km !== null &&
+                      distance.mi !== null ? (
+                        <span className="text-muted-foreground">
+                          {distance.km} km / {distance.mi} mi
+                        </span>
+                      ) : isLoadingLocation ? (
+                        <span className="animate-pulse text-muted-foreground">
+                          Getting distance...
+                        </span>
+                      ) : permissionState === "denied" ? (
+                        <span className="text-muted-foreground/70">
+                          Distance unavailable
+                        </span>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Link>
