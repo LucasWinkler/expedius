@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
+import { NavSearchButton } from "@/components/search/NavSearchButton";
 
 type DesktopNavProps = {
   session: ClientSession | null;
@@ -41,6 +42,7 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
       </div>
 
       <div className="flex items-center gap-6 xl:gap-8">
+        <NavSearchButton />
         {isPending ? (
           <Skeleton className="h-10 w-10 rounded-full" />
         ) : session?.user ? (

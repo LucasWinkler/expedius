@@ -10,10 +10,11 @@ import {
   FormItem,
   FormMessage,
 } from "../ui/form";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { minQueryLength } from "@/constants";
 import { SearchInput } from "@/components/ui/search-input";
 import { useSearch } from "@/hooks/useSearch";
+import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -52,20 +53,19 @@ export const SearchBar = ({
 }: SearchBarProps) => {
   const { query: initialQuery, updateSearchParams } = useSearch();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
+  const { searchHistory, addToHistory, removeFromHistory, refreshHistory } =
+    useSearchHistory();
   const formRef = useRef<HTMLFormElement>(null);
 
   useClickOutside(formRef, () => {
     setIsPopupOpen(false);
   });
 
-  useEffect(() => {
-    const savedHistory = localStorage.getItem("searchHistory");
-    if (savedHistory) {
-      setSearchHistory(JSON.parse(savedHistory));
-    }
-  }, []);
+  const handleOpenPopup = useCallback(() => {
+    refreshHistory();
+    setIsPopupOpen(true);
+  }, [refreshHistory]);
 
   const form = useForm<SearchFormValues>({
     resolver: zodResolver(searchSchema),
@@ -87,11 +87,7 @@ export const SearchBar = ({
       },
     });
 
-    if (!searchHistory.includes(data.query)) {
-      const newHistory = [data.query, ...searchHistory.slice(0, 14)];
-      localStorage.setItem("searchHistory", JSON.stringify(newHistory));
-      setSearchHistory(newHistory);
-    }
+    addToHistory(data.query);
 
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -104,15 +100,6 @@ export const SearchBar = ({
     form.handleSubmit(onSubmit)();
     setIsPopupOpen(false);
   };
-
-  const handleRemoveHistoryItem =
-    (query: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
-      e.preventDefault();
-      const newHistory = searchHistory.filter((item) => item !== query);
-      localStorage.setItem("searchHistory", JSON.stringify(newHistory));
-      setSearchHistory(newHistory);
-    };
 
   const handleClear = () => {
     form.setFocus("query");
@@ -135,8 +122,8 @@ export const SearchBar = ({
                 <SearchInput
                   placeholder="Search for places..."
                   onClear={handleClear}
-                  onFocus={() => setIsPopupOpen(true)}
-                  onClick={() => setIsPopupOpen(true)}
+                  onFocus={handleOpenPopup}
+                  onClick={handleOpenPopup}
                   {...field}
                 />
               </FormControl>
@@ -167,7 +154,11 @@ export const SearchBar = ({
                     variant="ghost"
                     size="sm"
                     className="self-center rounded-full border-none p-2 hover:bg-gray-300"
-                    onClick={(e) => handleRemoveHistoryItem(item)(e)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      removeFromHistory(item);
+                    }}
                   >
                     <X className="size-4" />
                   </Button>

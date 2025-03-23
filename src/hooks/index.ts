@@ -7,4 +7,5 @@ export { useLists } from "./useLists";
 export { useCarouselState } from "./useCarouselState";
 export { useProfile } from "./useProfile";
 export { useSearch } from "./useSearch";
+export { useSearchHistory } from "./useSearchHistory";
 export * from "./categories";

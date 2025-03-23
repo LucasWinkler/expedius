@@ -17,6 +17,8 @@ import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { USER_NAV_ITEMS, MOBILE_NAV_ITEMS } from "@/constants";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
+import { NavSearchButton } from "@/components/search/NavSearchButton";
 
 type MobileNavProps = {
   session: ClientSession | null;
@@ -25,6 +27,7 @@ type MobileNavProps = {
 
 export const MobileNav = ({ session, isPending }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleResize = () => {
@@ -37,7 +40,8 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
   }, []);
 
   return (
-    <div className="flex w-full items-center justify-end md:hidden">
+    <div className="flex w-full items-center justify-end gap-2 md:hidden">
+      <NavSearchButton />
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="md:hidden">
@@ -45,7 +49,7 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
             <span className="sr-only">Toggle menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="flex w-80 flex-col p-6">
+        <SheetContent side="right" className="flex w-80 flex-col gap-4 p-6">
           <SheetTitle>
             <Link
               href="/"
@@ -61,7 +65,7 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
             world
           </SheetDescription>
 
-          <nav className="flex flex-1 shrink-0 flex-col overflow-y-auto py-4">
+          <nav className="flex-1">
             <ul className="flex flex-col gap-3">
               {MOBILE_NAV_ITEMS.map(({ href, icon, label }) => (
                 <li key={label}>

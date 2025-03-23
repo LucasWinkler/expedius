@@ -53,6 +53,7 @@ export const Nav = () => {
         >
           Expedius
         </Link>
+
         <DesktopNav session={data} isPending={isPending} />
         <MobileNav session={data} isPending={isPending} />
       </div>
