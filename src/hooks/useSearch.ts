@@ -212,6 +212,7 @@ export const useSearch = () => {
     enabled: shouldEnableSearch,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
+    retry: false,
   });
 
   const { data: paginationData, isPending: isPaginationPending } = useQuery({
@@ -271,6 +272,7 @@ export const useSearch = () => {
       shouldEnableSearch,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
+    retry: false, // Disable retries completely
   });
 
   useEffect(() => {
