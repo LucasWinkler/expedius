@@ -276,9 +276,17 @@ const CarouselDots = ({
       ? "bg-zinc-800 dark:bg-zinc-200"
       : "bg-white hover:bg-white/80";
 
+  // Use at least 1 to ensure layout is preserved even when count is 0
+  const dotsCount = Math.max(1, count);
+
   return (
-    <div className={cn("flex justify-center gap-1 py-2", className)}>
-      {Array.from({ length: count }).map((_, index) => (
+    <div
+      className={cn(
+        "my-1 flex h-6 items-center justify-center gap-1",
+        className,
+      )}
+    >
+      {Array.from({ length: dotsCount }).map((_, index) => (
         <button
           key={index}
           className={`h-2 rounded-full transition-all sm:h-3 ${
@@ -288,6 +296,7 @@ const CarouselDots = ({
           }`}
           onClick={() => onDotClick(index)}
           aria-label={`Go to slide ${index + 1}`}
+          disabled={count === 0}
         />
       ))}
     </div>
