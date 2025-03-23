@@ -28,49 +28,44 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
         googleMapsLinks={place.googleMapsLinks}
       />
 
-      <div className="place-details-grid">
-        {place.photos?.length ? (
-          <div className="grid-area-carousel">
+      <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+        <div className="flex flex-col gap-6 lg:w-2/3">
+          {place.photos?.length ? (
             <PlaceImageCarousel
               photos={place.photos}
               placeName={place.displayName.text}
             />
-          </div>
-        ) : null}
+          ) : null}
 
-        <div className="grid-area-actions">
           <PlaceDetailsActions
             id={place.id}
             displayName={place.displayName}
             editorialSummary={place.editorialSummary}
             googleMapsLinks={place.googleMapsLinks}
           />
-        </div>
 
-        {place.editorialSummary && (
-          <div className="grid-area-overview">
+          {place.editorialSummary && (
             <section className="rounded-lg border border-border bg-card p-6">
               <h2 className="mb-4 text-xl font-semibold">Overview</h2>
               <p className="text-muted-foreground">
                 {place.editorialSummary?.text}
               </p>
             </section>
+          )}
+
+          <div className="lg:hidden">
+            <PlaceDetailsInformation
+              formattedAddress={place.formattedAddress}
+              internationalPhoneNumber={place.internationalPhoneNumber}
+              websiteUri={place.websiteUri}
+              currentOpeningHours={place.currentOpeningHours}
+              googleMapsLinks={place.googleMapsLinks}
+              utcOffsetMinutes={place.utcOffsetMinutes}
+              nextCloseTime={place.nextCloseTime}
+            />
           </div>
-        )}
 
-        <div className="grid-area-information">
-          <PlaceDetailsInformation
-            formattedAddress={place.formattedAddress}
-            internationalPhoneNumber={place.internationalPhoneNumber}
-            websiteUri={place.websiteUri}
-            currentOpeningHours={place.currentOpeningHours}
-            googleMapsLinks={place.googleMapsLinks}
-            utcOffsetMinutes={place.utcOffsetMinutes}
-          />
-        </div>
-
-        {availableFeatures.length > 0 && (
-          <div className="grid-area-amenities">
+          {availableFeatures.length > 0 && (
             <section className="rounded-lg border border-border bg-card p-6">
               <h2 className="mb-4 text-xl font-semibold">Amenities</h2>
               <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -82,11 +77,9 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
                 ))}
               </ul>
             </section>
-          </div>
-        )}
+          )}
 
-        {place.location && (
-          <div className="grid-area-location">
+          {place.location && (
             <section className="rounded-lg border border-border bg-card p-6">
               <h2 className="mb-4 text-xl font-semibold">Location</h2>
               <div className="mb-4 aspect-video overflow-hidden rounded-lg">
@@ -104,10 +97,27 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
                 {place.formattedAddress}
               </a>
             </section>
-          </div>
-        )}
+          )}
 
-        <div className="grid-area-reviews">
+          <div className="lg:hidden">
+            <PlaceDetailsReviews
+              googleMapsLinks={place.googleMapsLinks}
+              reviews={place.reviews}
+            />
+          </div>
+        </div>
+
+        <div className="hidden lg:flex lg:w-1/3 lg:flex-col lg:gap-6">
+          <PlaceDetailsInformation
+            formattedAddress={place.formattedAddress}
+            internationalPhoneNumber={place.internationalPhoneNumber}
+            websiteUri={place.websiteUri}
+            currentOpeningHours={place.currentOpeningHours}
+            googleMapsLinks={place.googleMapsLinks}
+            utcOffsetMinutes={place.utcOffsetMinutes}
+            nextCloseTime={place.nextCloseTime}
+          />
+
           <PlaceDetailsReviews
             googleMapsLinks={place.googleMapsLinks}
             reviews={place.reviews}

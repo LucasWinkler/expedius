@@ -53,6 +53,7 @@ export type PlaceDetails = Place & {
       };
     }[];
     weekdayDescriptions?: string[];
+    nextCloseTime?: string;
   };
   websiteUri?: string;
   internationalPhoneNumber?: string;
@@ -137,6 +138,7 @@ export type PlaceDetails = Place & {
   pureServiceAreaBusiness?: boolean;
   businessStatus: string;
   utcOffsetMinutes?: number;
+  nextCloseTime?: string;
 };
 
 // Business/Domain types

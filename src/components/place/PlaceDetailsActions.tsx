@@ -66,7 +66,7 @@ export const PlaceDetailsActions = ({
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Navigation className="mr-1.5 h-4 w-4" />
+          <Navigation className="h-4 w-4" />
           Directions
         </Link>
       </Button>
@@ -90,7 +90,7 @@ export const PlaceDetailsActions = ({
         size="sm"
         onClick={handleShare}
       >
-        <Share2 className="mr-1.5 h-4 w-4" />
+        <Share2 className="h-4 w-4" />
         Share
       </Button>
     </div>
