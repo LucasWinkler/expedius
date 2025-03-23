@@ -149,8 +149,8 @@ export const PlaceDetailsReviews = ({
         rel="noopener noreferrer"
         className="mb-4 inline-flex items-center rounded-md bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/20 active:scale-95"
       >
-        View all reviews on Google Maps{" "}
-        <ExternalLink className="ml-1 h-3 w-3" />
+        View all reviews on Google
+        <ExternalLink className="ml-1 h-3 w-3 shrink-0" />
       </a>
       <div className="space-y-4">
         {reviews && reviews.length > 0 ? (
