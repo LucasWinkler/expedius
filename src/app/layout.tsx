@@ -15,7 +15,9 @@ const inter = Inter({
   fallback: ["system-ui", "Arial", "sans-serif"],
 });
 
-export const metadata = createMetadata({});
+export const metadata = createMetadata({
+  canonicalUrlRelative: "/",
+});
 
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
