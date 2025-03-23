@@ -5,16 +5,9 @@ import { Share2 } from "lucide-react";
 import { Navigation } from "lucide-react";
 import type { PlaceDetails } from "@/types";
 import { Button } from "../ui/button";
-import { LikeButton } from "../places";
+import { LikeButton, SaveToListButton } from "../places";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-
-const SaveToListButton = dynamic(
-  () =>
-    import("../places/SaveToListButton").then((mod) => mod.SaveToListButton),
-  { ssr: false },
-);
 
 interface PlaceDetailsActionsProps {
   id: PlaceDetails["id"];

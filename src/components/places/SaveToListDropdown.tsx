@@ -33,7 +33,11 @@ export const SaveToListDropdown = ({
   const { data: userData, places } = usePlaceInteractions();
   const { save: savePlaces, isPending } = places;
 
-  const isTouchDevice = "ontouchstart" in window;
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    setIsTouchDevice("ontouchstart" in window);
+  }, []);
 
   const lists = useMemo(() => userData?.lists ?? [], [userData?.lists]);
   const selectedListIds = useMemo(
