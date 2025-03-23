@@ -4,6 +4,8 @@ import "@/styles/globals.css";
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import { createMetadata } from "@/lib/metadata";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,7 +21,7 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} font-inter flex min-h-screen flex-col bg-background antialiased`}
+        className={`${inter.variable} flex min-h-screen flex-col bg-background font-inter antialiased`}
       >
         <QueryProvider>{children}</QueryProvider>
         <Toaster
@@ -29,6 +31,8 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
           closeButton={true}
           duration={3000}
         />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -79,7 +79,7 @@
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 18+ and pnpm
 
 - PostgreSQL database (or Neon.tech account for serverless PostgreSQL)
 - Google Places API key
@@ -92,16 +92,16 @@
    ```sh
    git clone https://github.com/lucaswinkler/expedius.git
    ```
-2. Install NPM packages
+2. Install packages
    ```sh
-   npm install
+   pnpm install
    ```
 3. Copy the `.env.example` file to `.env` and fill in the variables
 
 4. Run the development server
 
    ```sh
-   npm run dev
+   pnpm run dev
    ```
 
 5. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
