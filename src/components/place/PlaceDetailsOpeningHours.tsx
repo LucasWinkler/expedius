@@ -48,7 +48,7 @@ export const PlaceDetailsOpeningHours = ({
     <>
       <div className="flex items-start gap-3">
         <Clock className="mt-1 h-5 w-5 shrink-0 text-muted-foreground" />
-        <div>
+        <div className="w-full">
           <div className="flex items-center gap-2">
             <h3 className="font-medium">Hours</h3>
             <p
@@ -91,11 +91,11 @@ export const PlaceDetailsOpeningHours = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="mt-3 hover:bg-transparent hover:text-primary"
+                className="mt-3 w-full hover:bg-transparent hover:text-primary sm:w-auto"
                 onClick={() => setHoursDialogOpen(true)}
               >
                 View all hours
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="ml-1 h-4 w-4" />
               </Button>
             )}
         </div>

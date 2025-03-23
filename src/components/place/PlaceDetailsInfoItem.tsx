@@ -17,7 +17,7 @@ export const PlaceDetailsInfoItem = ({
   return (
     <div className="flex items-start gap-3">
       <Icon className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
-      <div>
+      <div className="w-full">
         <h3 className="font-medium">{title}</h3>
         {children}
       </div>

@@ -142,7 +142,7 @@ export const PlaceDetailsReviews = ({
         href={googleMapsLinks.reviewsUri}
         target="_blank"
         rel="noopener noreferrer"
-        className="mb-4 inline-flex justify-center rounded-md bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/20 active:scale-95"
+        className="mb-4 inline-flex items-center rounded-md bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/20 active:scale-95"
       >
         View all reviews on Google Maps{" "}
         <ExternalLink className="ml-1 h-3 w-3" />
@@ -172,18 +172,18 @@ export const PlaceDetailsReviews = ({
               ))}
             {reviews && reviews?.length > 2 && (
               <Button
-                variant="link"
+                variant="outline"
                 size="sm"
-                className="mt-2 flex h-auto items-center gap-1 p-0"
+                className="mt-3 w-full hover:bg-transparent hover:text-primary sm:w-auto"
                 onClick={() => setShowAllReviews(!showAllReviews)}
               >
                 {showAllReviews ? (
                   <>
-                    Show less <ChevronUp className="h-3 w-3" />
+                    Show less <ChevronUp className="h-4 w-4" />
                   </>
                 ) : (
                   <>
-                    See all reviews <ChevronDown className="h-3 w-3" />
+                    See all reviews <ChevronDown className="h-4 w-4" />
                   </>
                 )}
               </Button>
