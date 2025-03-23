@@ -55,6 +55,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
 
           <div className="lg:hidden">
             <PlaceDetailsInformation
+              displayName={place.displayName}
               formattedAddress={place.formattedAddress}
               internationalPhoneNumber={place.internationalPhoneNumber}
               websiteUri={place.websiteUri}
@@ -109,6 +110,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
 
         <div className="hidden lg:flex lg:w-1/3 lg:flex-col lg:gap-6">
           <PlaceDetailsInformation
+            displayName={place.displayName}
             formattedAddress={place.formattedAddress}
             internationalPhoneNumber={place.internationalPhoneNumber}
             websiteUri={place.websiteUri}

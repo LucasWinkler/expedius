@@ -2,7 +2,13 @@
 
 import { Clock, ChevronDown } from "lucide-react";
 import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 import { cn } from "@/lib/utils";
 import type { PlaceDetails } from "@/types";
 import { useState } from "react";
@@ -17,11 +23,13 @@ import {
 interface PlaceDetailsOpeningHoursProps {
   currentOpeningHours: PlaceDetails["currentOpeningHours"];
   utcOffsetMinutes?: PlaceDetails["utcOffsetMinutes"];
+  displayName: PlaceDetails["displayName"];
 }
 
 export const PlaceDetailsOpeningHours = ({
   currentOpeningHours,
   utcOffsetMinutes,
+  displayName,
 }: PlaceDetailsOpeningHoursProps) => {
   const [hoursDialogOpen, setHoursDialogOpen] = useState(false);
 
@@ -36,7 +44,6 @@ export const PlaceDetailsOpeningHours = ({
   const nextDayName = getDayName(nextDayAtLocation);
   const nextDayHours = getNextDayHours(nextDayAtLocation, currentOpeningHours);
 
-  // Helper to extract just the hours part from day description
   const extractHours = (dayString: string | null) => {
     if (!dayString) return "";
     return dayString.includes(": ") ? dayString.split(": ")[1] : dayString;
@@ -105,6 +112,9 @@ export const PlaceDetailsOpeningHours = ({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Opening Hours</DialogTitle>
+            <DialogDescription>
+              View the complete weekly schedule for {displayName.text}
+            </DialogDescription>
           </DialogHeader>
           {currentOpeningHours?.weekdayDescriptions && (
             <div className="mt-4 flex flex-col gap-2 text-sm">

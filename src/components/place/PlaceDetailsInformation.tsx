@@ -15,6 +15,7 @@ interface PlaceDetailsInformationProps {
   googleMapsLinks: PlaceDetails["googleMapsLinks"];
   utcOffsetMinutes?: PlaceDetails["utcOffsetMinutes"];
   nextCloseTime?: PlaceDetails["nextCloseTime"];
+  displayName: PlaceDetails["displayName"];
 }
 
 export const PlaceDetailsInformation = ({
@@ -24,6 +25,7 @@ export const PlaceDetailsInformation = ({
   currentOpeningHours,
   googleMapsLinks,
   utcOffsetMinutes,
+  displayName,
 }: PlaceDetailsInformationProps) => {
   return (
     <section className="rounded-lg border border-border bg-card p-6">
@@ -76,6 +78,7 @@ export const PlaceDetailsInformation = ({
             <PlaceDetailsOpeningHours
               currentOpeningHours={currentOpeningHours}
               utcOffsetMinutes={utcOffsetMinutes}
+              displayName={displayName}
             />
           </>
         )}
