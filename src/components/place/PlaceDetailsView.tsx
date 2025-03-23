@@ -64,6 +64,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
               googleMapsLinks={place.googleMapsLinks}
               utcOffsetMinutes={place.utcOffsetMinutes}
               nextCloseTime={place.nextCloseTime}
+              location={place.location}
             />
           </div>
 
@@ -101,6 +102,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
             googleMapsLinks={place.googleMapsLinks}
             utcOffsetMinutes={place.utcOffsetMinutes}
             nextCloseTime={place.nextCloseTime}
+            location={place.location}
           />
 
           <PlaceDetailsReviews
