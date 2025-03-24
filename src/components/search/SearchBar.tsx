@@ -84,8 +84,11 @@ export const SearchBar = ({
     },
   });
 
+  // Memoize the current query value to avoid complex expression in dependency array
+  const currentQueryValue = form.watch("query");
+
   useEffect(() => {
-    const currentValue = form.watch("query") || "";
+    const currentValue = currentQueryValue || "";
     if (!currentValue.trim()) {
       setFilteredHistory(searchHistory);
       return;
@@ -95,7 +98,7 @@ export const SearchBar = ({
       item.toLowerCase().includes(currentValue.toLowerCase()),
     );
     setFilteredHistory(filtered);
-  }, [form.watch("query"), searchHistory]);
+  }, [currentQueryValue, searchHistory, form]);
 
   function onSubmit(data: SearchFormValues) {
     updateSearchParams({
