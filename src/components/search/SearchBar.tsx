@@ -19,7 +19,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { PLACE_FILTERS, FILTER_LABELS } from "@/constants";
-import { ChevronDown, X, Clock } from "lucide-react";
+import { ChevronDown, X, Clock, Search, Trash2 } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -65,6 +65,13 @@ export const SearchBar = ({
   const handleOpenPopup = useCallback(() => {
     refreshHistory();
     setIsPopupOpen(true);
+  }, [refreshHistory]);
+
+  const clearAllHistory = useCallback(() => {
+    // Clear from localStorage directly
+    localStorage.removeItem("searchHistory");
+    // Refresh the history state
+    refreshHistory();
   }, [refreshHistory]);
 
   const form = useForm<SearchFormValues>({
@@ -133,37 +140,55 @@ export const SearchBar = ({
         />
 
         {isPopupOpen && searchHistory.length > 0 && (
-          <div className="absolute left-0 right-0 z-50 mt-2 rounded-lg border border-gray-200 bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b p-4">
-              <span className="text-sm font-medium">Recent Searches</span>
+          <div className="absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md transition-all duration-200 ease-in-out">
+            <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-4 py-3">
+              <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Clock className="size-4" />
+                Recent Searches
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                onClick={clearAllHistory}
+              >
+                <Trash2 className="mr-1 size-3.5" />
+                Clear All
+              </Button>
             </div>
-            <ScrollArea className="flex h-[var(--radix-popover-content-available-height)] max-h-60 flex-col overflow-y-auto">
-              {searchHistory.map((item, index) => (
-                <div
-                  key={index}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleHistoryItemClick(item)}
-                  className="flex select-none items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                >
-                  <div className="flex flex-auto items-center gap-4">
-                    <Clock className="size-4 shrink-0 text-muted-foreground" />
-                    <span className="[word-break:break-word]">{item}</span>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="self-center rounded-full border-none p-2 hover:bg-gray-300"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      removeFromHistory(item);
-                    }}
+            <ScrollArea className="h-[var(--radix-popover-content-available-height)] max-h-60">
+              <div className="flex flex-col">
+                {searchHistory.map((item, index) => (
+                  <div
+                    key={index}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => handleHistoryItemClick(item)}
+                    className="group flex select-none items-center border-b border-gray-100 bg-gray-50/40 px-4 py-2.5 transition-colors hover:bg-gray-100"
                   >
-                    <X className="size-4" />
-                  </Button>
-                </div>
-              ))}
+                    <div className="flex w-full items-center gap-3">
+                      <Search className="size-4 text-gray-500 group-hover:text-blue-500" />
+                      <span className="flex-1 truncate text-sm text-gray-700 group-hover:text-gray-900">
+                        {item}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="size-6 shrink-0 rounded-full p-0 opacity-0 transition-opacity hover:bg-gray-200 group-hover:opacity-100"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          removeFromHistory(item);
+                        }}
+                      >
+                        <X className="size-3.5 text-gray-500 hover:text-blue-500" />
+                        <span className="sr-only">Remove</span>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
               <ScrollBar orientation="vertical" />
             </ScrollArea>
           </div>
