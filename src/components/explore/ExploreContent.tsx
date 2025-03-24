@@ -18,11 +18,12 @@ export const ExploreContent = () => {
         filters: {
           radius: PLACE_FILTERS.RADIUS.DEFAULT,
           minRating: PLACE_FILTERS.RATING.MIN,
-          openNow: false,
+          openNow: PLACE_FILTERS.OPEN_NOW.DEFAULT,
         },
       });
     } else {
       const newFilters = { ...filters };
+
       switch (filterType) {
         case "radius":
           newFilters.radius = PLACE_FILTERS.RADIUS.DEFAULT;
@@ -31,9 +32,10 @@ export const ExploreContent = () => {
           newFilters.minRating = PLACE_FILTERS.RATING.MIN;
           break;
         case "openNow":
-          newFilters.openNow = false;
+          newFilters.openNow = PLACE_FILTERS.OPEN_NOW.DEFAULT;
           break;
       }
+
       updateSearchParams({
         query,
         filters: newFilters,

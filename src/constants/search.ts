@@ -25,6 +25,9 @@ export const PLACE_FILTERS = {
     STEP: 0.5,
     formatLabel: (value: number) => `${value}★`,
   },
+  OPEN_NOW: {
+    DEFAULT: false,
+  },
 } as const;
 
 export const FILTER_LABELS = {
