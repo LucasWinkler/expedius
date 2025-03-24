@@ -4,6 +4,8 @@ import { userTypePreferences } from "./userTypePreferences";
 import {
   getCategoryGroupsFromTypes,
   type CategoryGroup,
+  getSpecificTypeSuggestions,
+  getCategoryExplorationSuggestions,
 } from "@/constants/categoryGroups";
 import {
   getTimeBasedSuggestions,
@@ -43,8 +45,7 @@ export const suggestions = {
         explorationSuggestions?: CategoryGroup[];
       };
     }> {
-      const { MAX_SUGGESTIONS, getDynamicExploitationRatio } =
-        PERSONALIZATION_CONFIG;
+      const { MAX_SUGGESTIONS } = PERSONALIZATION_CONFIG;
 
       // For metadata tracking
       let result: SuggestionsWithMeta;
@@ -124,8 +125,13 @@ export const suggestions = {
           userPrefs.primaryTypes.length + userPrefs.allTypes.length;
 
         // Get dynamic exploitation ratio based on user preference count
-        const exploitationRatio =
-          getDynamicExploitationRatio(userPreferencesCount);
+        // More preferences = more exploitation, but with reasonable bounds
+        const minExploitationRatio = 0.5; // At least 50% personal suggestions
+        const maxExploitationRatio = 0.8; // At most 80% personal suggestions
+        const exploitationRatio = Math.min(
+          maxExploitationRatio,
+          Math.max(minExploitationRatio, 0.5 + userPreferencesCount * 0.01),
+        );
 
         console.log(
           `[SERVER INFO] Using exploitation ratio: ${exploitationRatio.toFixed(2)} for user with ${userPreferencesCount} preferences`,
@@ -137,30 +143,64 @@ export const suggestions = {
         );
         const explorationCount = MAX_SUGGESTIONS - exploitationCount;
 
-        // Get user's most engaged categories (exploitation)
-        const exploitationSuggestions = userCategoryGroups.slice(
-          0,
+        // Get specific type suggestions based on user preferences
+        const specificTypeSuggestions = getSpecificTypeSuggestions(
+          [...userPrefs.primaryTypes, ...userPrefs.allTypes],
           exploitationCount,
         );
 
-        // Create a set of already selected category IDs to avoid duplicates
-        const selectedIds = new Set(exploitationSuggestions.map((g) => g.id));
+        // Randomize the order of specific type suggestions while respecting weights
+        const randomizedSpecificSuggestions = specificTypeSuggestions
+          .sort(() => Math.random() - 0.5)
+          .sort((a, b) => (b.weight || 0) - (a.weight || 0));
 
-        // Get exploration suggestions (categories user hasn't engaged with much)
-        // Use time-based recommendations to influence exploration
-        const explorationSuggestions =
-          explorationCount > 0
+        // Get category group suggestions
+        const categoryGroupSuggestions = userCategoryGroups
+          .filter(
+            (group) =>
+              !randomizedSpecificSuggestions.some((s) =>
+                s.id.startsWith(group.id),
+              ),
+          )
+          .sort(() => Math.random() - 0.5)
+          .slice(0, exploitationCount - randomizedSpecificSuggestions.length);
+
+        // Combine specific type and category group suggestions
+        const exploitationSuggestions = [
+          ...randomizedSpecificSuggestions,
+          ...categoryGroupSuggestions,
+        ];
+
+        // Create a set of already selected category IDs to avoid duplicates
+        const selectedIds = new Set<string>(
+          exploitationSuggestions.map((g: CategoryGroup) => g.id),
+        );
+
+        // Get exploration suggestions within categories the user likes
+        const categoryExplorationSuggestions =
+          getCategoryExplorationSuggestions(
+            [...userPrefs.primaryTypes, ...userPrefs.allTypes],
+            selectedIds,
+            explorationCount,
+          );
+
+        // If we don't have enough category exploration suggestions, fill with general exploration
+        const remainingExplorationCount =
+          explorationCount - categoryExplorationSuggestions.length;
+        const generalExplorationSuggestions =
+          remainingExplorationCount > 0
             ? getExplorationSuggestions(
                 selectedIds,
-                explorationCount,
+                remainingExplorationCount,
                 clientHour,
               )
             : [];
 
-        // Combine exploitation and exploration suggestions
+        // Combine all suggestions
         const combinedSuggestions = [
           ...exploitationSuggestions,
-          ...explorationSuggestions,
+          ...categoryExplorationSuggestions,
+          ...generalExplorationSuggestions,
         ];
 
         // Fill up to MAX_SUGGESTIONS if we don't have enough
@@ -184,13 +224,14 @@ export const suggestions = {
             combinedSuggestions.push(...additionalSuggestions);
 
             // IMPORTANT: Also add them to the exploration suggestions list for proper tracking
-            explorationSuggestions.push(...additionalSuggestions);
+            generalExplorationSuggestions.push(...additionalSuggestions);
 
             console.log("[SERVER INFO] Updated exploration suggestions:", {
               original:
-                explorationSuggestions.length - additionalSuggestions.length,
+                generalExplorationSuggestions.length -
+                additionalSuggestions.length,
               additional: additionalSuggestions.length,
-              total: explorationSuggestions.length,
+              total: generalExplorationSuggestions.length,
             });
           }
         }
@@ -199,12 +240,7 @@ export const suggestions = {
         const finalSuggestions = combinedSuggestions.slice(0, MAX_SUGGESTIONS);
 
         // Determine source based on what was used
-        const source: SuggestionSource =
-          exploitationSuggestions.length === MAX_SUGGESTIONS
-            ? "user_preferences"
-            : explorationSuggestions.length === MAX_SUGGESTIONS
-              ? "exploration"
-              : "mixed";
+        const source: SuggestionSource = "user_preferences";
 
         result = {
           suggestions: finalSuggestions,
@@ -212,10 +248,15 @@ export const suggestions = {
           hasPreferences: true,
           userPreferencesCount:
             userPrefs.primaryTypes.length + userPrefs.allTypes.length,
-          defaultsUsed: explorationSuggestions.length > 0,
-          explorationUsed: explorationSuggestions.length > 0,
+          defaultsUsed: generalExplorationSuggestions.length > 0,
+          explorationUsed:
+            categoryExplorationSuggestions.length > 0 ||
+            generalExplorationSuggestions.length > 0,
           exploitationSuggestions,
-          explorationSuggestions,
+          explorationSuggestions: [
+            ...categoryExplorationSuggestions,
+            ...generalExplorationSuggestions,
+          ],
         };
 
         console.log(
