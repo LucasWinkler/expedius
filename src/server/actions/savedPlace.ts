@@ -35,12 +35,10 @@ export const updateSavedPlaces = withActionLimit(
       );
       const newListIds = new Set(selectedLists);
 
-      let wasRemoved = false;
       for (const list of currentLists) {
         if (currentListIds.has(list.id) && !newListIds.has(list.id)) {
           await savedPlaces.mutations.delete(list.id, placeId);
           revalidateTag(`list-${list.id}-places`);
-          wasRemoved = true;
         }
       }
 
