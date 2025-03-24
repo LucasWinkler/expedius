@@ -55,7 +55,12 @@ export const PersonalizedSearchSuggestions = () => {
                 data-exploration={isExploration}
               >
                 {isExploration && (
-                  <Sparkles className="mr-1.5 size-3.5 text-primary/70 sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
+                  <div className="relative">
+                    <Sparkles className="mr-1.5 size-3.5 animate-pulse text-primary sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
+                    <div className="absolute inset-0 animate-pulse blur-sm">
+                      <Sparkles className="mr-1.5 size-3.5 text-primary/50 sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
+                    </div>
+                  </div>
                 )}
                 {suggestion.title}
                 <ArrowRight className="ml-1.5 size-3.5 transition-transform duration-300 ease-out group-hover:translate-x-1 sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
