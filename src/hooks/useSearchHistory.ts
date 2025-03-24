@@ -67,10 +67,23 @@ export const useSearchHistory = (maxHistoryItems = 15) => {
     [searchHistory],
   );
 
+  const removeAllHistory = useCallback(
+    (refresh = false) => {
+      localStorage.removeItem(STORAGE_KEY);
+      setSearchHistory([]);
+
+      if (refresh) {
+        loadSearchHistory();
+      }
+    },
+    [loadSearchHistory],
+  );
+
   return {
     searchHistory,
     addToHistory,
     removeFromHistory,
     refreshHistory: loadSearchHistory,
+    removeAllHistory,
   };
 };

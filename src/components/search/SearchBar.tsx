@@ -41,8 +41,13 @@ export const SearchBar = ({
 }: SearchBarProps) => {
   const { query: initialQuery, updateSearchParams, filters } = useSearch();
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
-  const { searchHistory, addToHistory, removeFromHistory, refreshHistory } =
-    useSearchHistory();
+  const {
+    searchHistory,
+    addToHistory,
+    removeFromHistory,
+    refreshHistory,
+    removeAllHistory,
+  } = useSearchHistory();
   const formRef = useRef<HTMLFormElement>(null);
   const [filteredHistory, setFilteredHistory] = useState<string[]>([]);
 
@@ -56,9 +61,8 @@ export const SearchBar = ({
   }, [refreshHistory]);
 
   const clearAllHistory = useCallback(() => {
-    localStorage.removeItem("searchHistory");
-    refreshHistory();
-  }, [refreshHistory]);
+    removeAllHistory(true);
+  }, [removeAllHistory]);
 
   const form = useForm<SearchFormValues>({
     resolver: zodResolver(searchSchema),
