@@ -1,4 +1,4 @@
-"server-only";
+import "server-only";
 
 import type { DbUser } from "@/server/types/db";
 import { getServerSession } from "@/server/auth/session";
