@@ -34,7 +34,7 @@ export const PlaceDetailsReviews = ({
   const rafRef = useRef<number | null>(null);
 
   const checkTruncation = useCallback(
-    (isInitialCheck = false) => {
+    (isInitialCheck = false, specificReviewName?: string) => {
       if (!reviews) return;
 
       // Cancel any existing animation frame
@@ -46,23 +46,31 @@ export const PlaceDetailsReviews = ({
       // Then use requestAnimationFrame to ensure layout is complete
       const runCheck = () => {
         rafRef.current = requestAnimationFrame(() => {
-          const newTruncatedReviews: Record<string, boolean> = {};
+          // Use function form to get the latest truncatedReviews state
+          setTruncatedReviews((prevTruncated) => {
+            const newTruncatedReviews = { ...prevTruncated };
 
-          reviews.forEach((review) => {
-            const element = reviewRefs.current[review.name];
-            if (element) {
-              // Only check truncation for reviews that aren't already expanded
-              if (!expandedReviews[review.name]) {
-                // If scrollHeight > clientHeight, the content is truncated
-                newTruncatedReviews[review.name] =
-                  element.scrollHeight > element.clientHeight;
-              } else {
-                newTruncatedReviews[review.name] = true;
+            // If a specific review is provided, only check that one
+            const reviewsToCheck = specificReviewName
+              ? reviews.filter((review) => review.name === specificReviewName)
+              : reviews;
+
+            reviewsToCheck.forEach((review) => {
+              const element = reviewRefs.current[review.name];
+              if (element) {
+                // Only check truncation for reviews that aren't already expanded
+                if (!expandedReviews[review.name]) {
+                  // If scrollHeight > clientHeight, the content is truncated
+                  newTruncatedReviews[review.name] =
+                    element.scrollHeight > element.clientHeight;
+                } else {
+                  newTruncatedReviews[review.name] = true;
+                }
               }
-            }
-          });
+            });
 
-          setTruncatedReviews(newTruncatedReviews);
+            return newTruncatedReviews;
+          });
 
           if (isInitialCheck) {
             setInitialLoading(false);
@@ -88,18 +96,26 @@ export const PlaceDetailsReviews = ({
 
   // Check truncation on initial render and when reviews change
   useLayoutEffect(() => {
+    // Only set loading on initial mount or when reviews change
     setInitialLoading(true);
 
-    const cleanup = checkTruncation(true);
-    return () => cleanup && cleanup();
-  }, [checkTruncation, reviews]);
+    // Need to check truncation after the DOM has updated
+    const timer = setTimeout(() => {
+      const cleanup = checkTruncation(true);
+      if (cleanup) cleanup();
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [reviews]); // Only depend on reviews changing, not checkTruncation
 
   // Check truncation when showAllReviews changes
   useEffect(() => {
-    if (!initialLoading) {
-      checkTruncation(false);
-    }
-  }, [checkTruncation, showAllReviews, initialLoading]);
+    // When showing more/less reviews, we need to re-check truncation
+    // but don't need to show loading state
+    checkTruncation(false);
+  }, [checkTruncation, showAllReviews]);
 
   // Check truncation on window resize
   useEffect(() => {
@@ -131,6 +147,9 @@ export const PlaceDetailsReviews = ({
       ...prev,
       [reviewName]: expanded,
     }));
+
+    // Only check truncation for the specific review that changed
+    checkTruncation(false, reviewName);
   };
 
   const setReviewRef = (
