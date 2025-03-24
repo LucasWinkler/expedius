@@ -5,3 +5,4 @@ export * from "./saved-place";
 export * from "./like";
 export * from "./relations";
 export * from "./twoFactor";
+export * from "./userTypePreferences";
