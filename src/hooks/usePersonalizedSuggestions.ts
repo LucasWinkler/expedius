@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { type CategoryGroup } from "@/constants/categoryGroups";
+import type { CategoryGroup } from "@/types/categories";
 import { SEARCH_SUGGESTIONS } from "@/constants";
 import { PERSONALIZATION_CONFIG } from "@/lib/suggestions";
 import { getPersonalizedSuggestions } from "@/lib/api/suggestions";

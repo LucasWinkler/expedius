@@ -1,9 +1,7 @@
-import {
-  CATEGORY_GROUPS,
-  type CategoryGroup,
-  getSpecificTypeSuggestions,
-} from "@/constants/categoryGroups";
+import type { CategoryGroup } from "@/types/categories";
+import { CATEGORY_GROUPS } from "@/constants/categoryGroups";
 import { weightedRandomSelection } from "@/lib/utils/math";
+import { getSpecificTypeSuggestions } from "@/utils/categories";
 
 export const PERSONALIZATION_CONFIG = {
   MAX_SUGGESTIONS: 5,

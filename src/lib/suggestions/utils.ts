@@ -1,4 +1,4 @@
-import { type CategoryGroup } from "@/constants/categoryGroups";
+import type { CategoryGroup } from "@/types/categories";
 import { PERSONALIZATION_CONFIG } from "@/lib/suggestions";
 import type { SuggestionMeta } from "@/hooks/usePersonalizedSuggestions";
 

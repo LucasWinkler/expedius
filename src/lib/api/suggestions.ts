@@ -1,4 +1,4 @@
-import type { CategoryGroup } from "@/constants/categoryGroups";
+import type { CategoryGroup } from "@/types/categories";
 
 // Response type for personalized suggestions
 export interface PersonalizedSuggestionsResponse {

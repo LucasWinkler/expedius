@@ -3,10 +3,10 @@ import "server-only";
 import { userTypePreferences } from "./userTypePreferences";
 import {
   getCategoryGroupsFromTypes,
-  type CategoryGroup,
   getSpecificTypeSuggestions,
   getCategoryExplorationSuggestions,
-} from "@/constants/categoryGroups";
+} from "@/utils/categories";
+import type { CategoryGroup } from "@/types/categories";
 import {
   getTimeBasedSuggestions,
   getExplorationSuggestions,
