@@ -73,3 +73,35 @@ export const getPlaceDetails = cache(
     return res.json();
   },
 );
+
+interface PlaceTypesResponse {
+  id: string;
+  primaryType?: string;
+  types?: string[];
+}
+
+export async function getPlaceTypes(
+  placeId: string,
+): Promise<PlaceTypesResponse | null> {
+  try {
+    const response = await fetch(
+      `${env.GOOGLE_PLACES_API_BASE_URL}/places/${placeId}`,
+      {
+        headers: {
+          "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
+          "X-Goog-FieldMask": "id,primaryType,types",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      console.error(`Error fetching place types: ${response.status}`);
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to fetch place types:", error);
+    return null;
+  }
+}

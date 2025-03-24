@@ -1,4 +1,4 @@
-"server-only";
+import "server-only";
 
 import { auth } from "@/server/auth/auth";
 import { headers } from "next/headers";
