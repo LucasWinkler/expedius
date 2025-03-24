@@ -52,7 +52,7 @@ export const SaveToListButton = ({
           onClick={(e) => e.preventDefault()}
         >
           <Bookmark
-            className={cn("size-4", isSaved && "fill-blue-500 text-blue-500")}
+            className={cn("size-4", isSaved && "fill-primary text-primary")}
             aria-hidden="true"
           />
           {isSaved ? "Saved" : "Save"}
@@ -79,7 +79,7 @@ export const SaveToListButton = ({
         <Bookmark
           className={cn(
             "size-4",
-            isSaved && "fill-blue-500 text-blue-500",
+            isSaved && "fill-primary text-primary",
             className,
           )}
           aria-hidden="true"
