@@ -21,20 +21,30 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           ref={ref}
           value={value}
           className={cn(
-            "h-[52px] rounded-full border-muted-foreground/20 bg-white pl-11 shadow-sm transition-all duration-300 ease-out hover:border-muted-foreground/30 hover:shadow-md focus-visible:border-primary focus-visible:shadow-lg focus-visible:ring-2 focus-visible:ring-primary 2xl:h-[60px] 2xl:text-lg",
-            variant === "default" ? "bg-white/90 backdrop-blur-sm" : "bg-white",
-            showSearchButton ? "pr-[88px]" : "pr-10",
+            "h-[52px] rounded-full border-muted-foreground/20 bg-white pl-11 text-sm shadow-sm transition-all duration-300 ease-out hover:border-muted-foreground/30 hover:shadow-md focus-visible:border-primary focus-visible:shadow-lg focus-visible:ring-2 focus-visible:ring-primary 2xl:h-[60px] 2xl:text-lg",
+            value
+              ? showSearchButton
+                ? "pr-20 md:pr-24"
+                : "pr-12"
+              : showSearchButton
+                ? "pr-12"
+                : null,
             className,
           )}
           {...props}
         />
-        <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
+        <div
+          className={cn(
+            "absolute right-3 top-1/2 flex -translate-y-1/2 items-center",
+            showSearchButton ? "gap-2" : "gap-1",
+          )}
+        >
           {value && onClear && (
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="size-8 rounded-full p-0 hover:bg-accent/50"
+              className="size-8 rounded-full p-0 hover:bg-muted"
               onClick={onClear}
             >
               <X className="size-4 text-muted-foreground" />

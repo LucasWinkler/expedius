@@ -124,14 +124,13 @@ export const SearchBar = ({
                   <SearchInput
                     placeholder={
                       variant === "with-filters"
-                        ? "Search cafes, bars, shops..."
-                        : "Where to? Try cafes, bars, landmarks..."
+                        ? "Search for places..."
+                        : "What are you looking for?"
                     }
                     onClear={handleClear}
                     onFocus={handleOpenPopup}
                     onClick={handleOpenPopup}
                     variant={variant}
-                    className="pr-10"
                     {...field}
                   />
                 </FormControl>
