@@ -127,12 +127,12 @@ export const likes = {
       });
 
       if (existing) {
-        return {
-          liked: !!(await db.delete(like).where(eq(like.id, existing.id))),
-        };
+        await db.delete(like).where(eq(like.id, existing.id));
+        return { liked: false };
       }
 
-      return { liked: !!(await db.insert(like).values({ userId, placeId })) };
+      await db.insert(like).values({ userId, placeId });
+      return { liked: true };
     },
   },
 } as const;
