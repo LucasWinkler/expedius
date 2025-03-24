@@ -112,11 +112,15 @@
 
 ## Roadmap
 
-- [ ] Filtering, sorting, and searching for lists
-- [ ] Possibly add social features
-  - [ ] Followers
-  - [ ] Following
-  - [ ] Some type of social feed possibly?
+- Personalized place type recommendations
+  - Based on your likes and saved places
+  - Will need to store a count of place type preferences for each user
+- Filtering, sorting, and searching for lists
+- Discover page redesign
+- Social features?
+  - Followers
+  - Following
+  - Feed
 
 <!-- See the [open issues](https://github.com/lucaswinkler/expedius/issues) for a full list of proposed features (and known issues). -->
 
