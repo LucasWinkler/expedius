@@ -23,22 +23,22 @@ export default function ExplorePage() {
           Find specific places or browse popular categories. Use filters to
           refine your results.
         </p>
-        <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm text-muted-foreground">
+        <div className="mt-4 hidden flex-wrap justify-center gap-2 text-sm text-muted-foreground sm:flex">
           <span>Try:</span>
           <span className="font-medium text-foreground">
-            "Central Park New York"
+            &ldquo;Central Park New York&rdquo;
           </span>
           <span>•</span>
           <span className="font-medium text-foreground">
-            "Eiffel Tower Paris"
+            &ldquo;Eiffel Tower Paris&rdquo;
           </span>
           <span>•</span>
           <span className="font-medium text-foreground">
-            "Pike Place Market"
+            &ldquo;Pike Place Market&rdquo;
           </span>
           <span>•</span>
           <span className="font-medium text-foreground">
-            "Times Square restaurants"
+            &ldquo;Times Square restaurants&rdquo;
           </span>
         </div>
       </div>
