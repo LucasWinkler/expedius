@@ -42,7 +42,7 @@ export const DiscoverContent = () => {
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center gap-2">
           <SearchBar variant="with-filters" className="w-full" />
         </div>
@@ -50,15 +50,20 @@ export const DiscoverContent = () => {
         <FilterChips filters={filters} onClearFilters={handleClearFilters} />
       </div>
 
-      {query && (
-        <p className="mb-6 mt-6 text-sm text-muted-foreground">
-          Showing results for &quot;{query}&quot;
-        </p>
+      {query ? (
+        <>
+          <p className="mb-6 mt-12 text-sm text-muted-foreground">
+            Showing results for &quot;{query}&quot;
+          </p>
+          <div className="mt-4">
+            <SearchResults />
+          </div>
+        </>
+      ) : (
+        <div className="mt-12">
+          <DiscoverEmptyState />
+        </div>
       )}
-
-      <div className="mt-6">
-        {query ? <SearchResults /> : <DiscoverEmptyState />}
-      </div>
     </>
   );
 };
