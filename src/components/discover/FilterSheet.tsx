@@ -171,13 +171,27 @@ export const FilterSheet = ({
         <DrawerContent>
           <DrawerHeader className="flex items-center justify-between border-b px-4 pb-4">
             <DrawerTitle>Search Filters</DrawerTitle>
-            <Button
-              size="sm"
-              onClick={handleApplyFilters}
-              className="h-8 rounded-full px-3 text-xs font-medium"
-            >
-              Apply Filters
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setLocalRadius(PLACE_FILTERS.RADIUS.DEFAULT);
+                  setLocalMinRating(0);
+                  setLocalOpenNow(false);
+                }}
+                className="h-8 rounded-full px-3 text-xs font-medium"
+              >
+                Reset
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleApplyFilters}
+                className="h-8 rounded-full px-3 text-xs font-medium"
+              >
+                Apply Filters
+              </Button>
+            </div>
           </DrawerHeader>
           <div className="overflow-y-auto py-6">
             <FilterContent
@@ -219,10 +233,18 @@ export const FilterSheet = ({
             />
           </div>
         </div>
-        <SheetFooter className="mt-6 flex-row gap-2 sm:justify-between">
-          <Button className="flex-1 sm:flex-none" onClick={handleApplyFilters}>
-            Apply Filters
+        <SheetFooter className="mt-6 grid grid-cols-2 gap-4">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setLocalRadius(PLACE_FILTERS.RADIUS.DEFAULT);
+              setLocalMinRating(0);
+              setLocalOpenNow(false);
+            }}
+          >
+            Reset
           </Button>
+          <Button onClick={handleApplyFilters}>Apply Filters</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
