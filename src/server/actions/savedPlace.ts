@@ -6,6 +6,8 @@ import { getServerSession } from "../auth/session";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { withActionLimit } from "@/server/lib/rate-limit";
+import { userTypePreferences } from "@/server/data/userTypePreferences";
+import { getPlaceTypes } from "@/lib/api/places";
 
 const updateSavedPlacesSchema = z.object({
   placeId: z.string(),
@@ -33,23 +35,43 @@ export const updateSavedPlaces = withActionLimit(
       );
       const newListIds = new Set(selectedLists);
 
+      let wasRemoved = false;
       for (const list of currentLists) {
         if (currentListIds.has(list.id) && !newListIds.has(list.id)) {
           await savedPlaces.mutations.delete(list.id, placeId);
           revalidateTag(`list-${list.id}-places`);
+          wasRemoved = true;
         }
       }
 
+      let wasAdded = false;
       for (const listId of newListIds) {
         if (!currentListIds.has(listId)) {
           await savedPlaces.mutations.create({ listId, placeId });
           revalidateTag(`list-${listId}-places`);
+          wasAdded = true;
         }
       }
 
       revalidateTag(`user-${session.user.id}-lists`);
       revalidateTag("user-lists");
       revalidateTag("list-places");
+
+      if (wasAdded) {
+        try {
+          const placeTypes = await getPlaceTypes(placeId);
+
+          if (placeTypes) {
+            await userTypePreferences.mutations.trackPlaceTypes(
+              session.user.id,
+              placeTypes.primaryType || null,
+              placeTypes.types || [],
+            );
+          }
+        } catch (error) {
+          console.error("Failed to update type preferences:", error);
+        }
+      }
 
       return { success: true };
     } catch (error) {
