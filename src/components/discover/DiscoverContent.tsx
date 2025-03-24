@@ -4,20 +4,57 @@ import { useSearch } from "@/hooks/useSearch";
 import { SearchBar } from "@/components/search/SearchBar";
 import { SearchResults } from "@/components/search/SearchResults";
 import { DiscoverEmptyState } from "./DiscoverEmptyState";
+import { FilterChips } from "./FilterChips";
+import { PLACE_FILTERS } from "@/constants";
 
 export const DiscoverContent = () => {
-  const { query } = useSearch();
+  const { query, filters, updateSearchParams } = useSearch();
+
+  const handleClearFilters = (filterType?: "radius" | "rating" | "openNow") => {
+    if (!filterType) {
+      updateSearchParams({
+        query,
+        filters: {
+          radius: PLACE_FILTERS.RADIUS.DEFAULT,
+          minRating: PLACE_FILTERS.RATING.MIN,
+          openNow: false,
+        },
+      });
+    } else {
+      const newFilters = { ...filters };
+      switch (filterType) {
+        case "radius":
+          newFilters.radius = PLACE_FILTERS.RADIUS.DEFAULT;
+          break;
+        case "rating":
+          newFilters.minRating = PLACE_FILTERS.RATING.MIN;
+          break;
+        case "openNow":
+          newFilters.openNow = false;
+          break;
+      }
+      updateSearchParams({
+        query,
+        filters: newFilters,
+      });
+    }
+  };
 
   return (
     <>
-      <div className="mb-8 space-y-4">
-        <SearchBar variant="advanced" />
-        {query && (
-          <p className="text-sm text-muted-foreground">
-            Showing results for &quot;{query}&quot;
-          </p>
-        )}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <SearchBar variant="with-filters" className="w-full" />
+        </div>
+
+        <FilterChips filters={filters} onClearFilters={handleClearFilters} />
       </div>
+
+      {query && (
+        <p className="mb-6 mt-6 text-sm text-muted-foreground">
+          Showing results for &quot;{query}&quot;
+        </p>
+      )}
 
       <div className="mt-6">
         {query ? <SearchResults /> : <DiscoverEmptyState />}

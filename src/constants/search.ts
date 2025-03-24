@@ -13,10 +13,10 @@ export const PAGINATION = {
 
 export const PLACE_FILTERS = {
   RADIUS: {
-    DEFAULT: 5000, // 5km radius
+    DEFAULT: 10000, // 10km radius
     MIN: 0,
     MAX: 50000,
-    STEP: 1000,
+    STEP: 500,
     formatLabel: (value: number) => `${value / 1000}km`,
   },
   RATING: {
