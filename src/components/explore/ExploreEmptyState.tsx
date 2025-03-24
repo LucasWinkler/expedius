@@ -3,9 +3,10 @@
 import { cn } from "@/lib/utils";
 import { CategoryCard } from "./CategoryCard";
 import { usePersonalizedSuggestions } from "@/hooks/usePersonalizedSuggestions";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { ExploreCategoriesSkeleton } from "./ExploreCategoriesSkeleton";
 import type { SuggestionsContext } from "@/lib/suggestions";
+import Link from "next/link";
 
 interface ExploreEmptyStateProps {
   className?: string;
@@ -32,13 +33,23 @@ export const ExploreEmptyState = ({
             ? "Recommended for You"
             : "Popular Right Now"}
         </h2>
-        {metadata.hasPreferences && (
+        {metadata.hasPreferences ? (
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Sparkles className="size-3.5 text-primary/70" />
             Personalized
           </div>
+        ) : (
+          <Link
+            href="/auth/sign-up"
+            className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+          >
+            <Sparkles className="size-3.5" />
+            Get personalized recommendations
+            <ArrowRight className="size-3.5" />
+          </Link>
         )}
       </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         {suggestions.map((suggestion, index) => {
           return (
