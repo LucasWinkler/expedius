@@ -17,6 +17,7 @@ export const SearchButtonIcon = ({ onClick }: SearchButtonIconProps) => {
       aria-label="Search places"
     >
       <Search className="h-5 w-5" />
+      <span className="sr-only">Search</span>
     </Button>
   );
 };
