@@ -38,7 +38,7 @@ export const MobileNav = ({ session, isPending }: MobileNavProps) => {
   }, []);
 
   return (
-    <div className="flex w-full items-center justify-end gap-2 md:hidden">
+    <div className="flex w-full items-center justify-end gap-1 md:hidden">
       <NavSearchButton />
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
