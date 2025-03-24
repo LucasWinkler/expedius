@@ -586,7 +586,6 @@ export function getSpecificTypeSuggestions(
   const suggestions: CategoryGroup[] = [];
   const typeCounts = new Map<string, number>();
   const categoryInteractions = new Map<string, number>();
-  const userTypes = new Set(userPreferences.map((pref) => pref.placeType));
 
   // Count occurrences of each type and category
   userPreferences.forEach((pref) => {

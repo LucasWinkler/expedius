@@ -45,8 +45,7 @@ export const suggestions = {
         explorationSuggestions?: CategoryGroup[];
       };
     }> {
-      const { MAX_SUGGESTIONS, getDynamicExploitationRatio } =
-        PERSONALIZATION_CONFIG;
+      const { MAX_SUGGESTIONS } = PERSONALIZATION_CONFIG;
 
       // For metadata tracking
       let result: SuggestionsWithMeta;
@@ -172,14 +171,9 @@ export const suggestions = {
           ...categoryGroupSuggestions,
         ];
 
-        // Create a set of already selected category IDs and types to avoid duplicates
+        // Create a set of already selected category IDs to avoid duplicates
         const selectedIds = new Set<string>(
           exploitationSuggestions.map((g: CategoryGroup) => g.id),
-        );
-        const selectedTypes = new Set<string>(
-          exploitationSuggestions.flatMap((g: CategoryGroup) =>
-            g.types.map((t) => t.id),
-          ),
         );
 
         // Get exploration suggestions within categories the user likes
