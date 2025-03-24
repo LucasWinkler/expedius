@@ -29,6 +29,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  compiler: {
+    removeConsole:
+      env.NODE_ENV === "production" ? { exclude: ["error"] } : false,
+  },
 };
 
 const withBundleAnalyzer = nextBundleAnalyzer({

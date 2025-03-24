@@ -112,9 +112,6 @@
 
 ## Roadmap
 
-- Personalized place type recommendations
-  - Based on your likes and saved places
-  - Will need to store a count of place type preferences for each user
 - Filtering, sorting, and searching for lists
 - Discover page redesign
 - Social features?

@@ -1,4 +1,5 @@
-import { SearchSuggestions, SearchBar } from "@/components/search";
+import { SearchBar } from "@/components/search";
+import { PersonalizedSearchSuggestions } from "@/components/search/PersonalizedSearchSuggestions";
 import { ParallaxDestinationsWrapper } from "./ParallaxDestinationsWrapper";
 
 export const HomeHero = () => {
@@ -25,7 +26,7 @@ export const HomeHero = () => {
             <SearchBar />
           </div>
           <div className="mt-6">
-            <SearchSuggestions />
+            <PersonalizedSearchSuggestions />
           </div>
         </div>
       </div>
