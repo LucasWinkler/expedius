@@ -18,6 +18,13 @@ export const ParallaxDestinations = () => {
   const [parallaxOffsets, setParallaxOffsets] = useState<number[]>(() =>
     destinations.map(() => 0),
   );
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+
+  const allImagesLoaded = destinations.every((dest) => loadedImages[dest.id]);
+
+  const handleImageLoad = (id: string) => {
+    setLoadedImages((prev) => ({ ...prev, [id]: true }));
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -105,7 +112,7 @@ export const ParallaxDestinations = () => {
               >
                 <div
                   className={`destination-card ${
-                    isMounted ? "opacity-100" : "opacity-0"
+                    isMounted && allImagesLoaded ? "opacity-100" : "opacity-0"
                   } ${animationClass}`}
                   style={{
                     height: "100%",
@@ -122,9 +129,11 @@ export const ParallaxDestinations = () => {
                       fill
                       className="object-cover"
                       sizes={positionStyle.width?.toString()}
-                      priority={index === 0}
-                      loading={index === 0 ? undefined : "lazy"}
+                      priority={false}
+                      loading="lazy"
                       draggable={false}
+                      onLoad={() => handleImageLoad(dest.id)}
+                      aria-hidden="true"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/5" />
                     <div className="absolute bottom-0 left-0 p-3 text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.8)]">
