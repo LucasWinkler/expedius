@@ -122,7 +122,11 @@ export const SearchBar = ({
               <FormItem className="flex-1">
                 <FormControl>
                   <SearchInput
-                    placeholder="Search for places..."
+                    placeholder={
+                      variant === "with-filters"
+                        ? "Search cafes, bars, shops..."
+                        : "Where to? Try cafes, bars, landmarks..."
+                    }
                     onClear={handleClear}
                     onFocus={handleOpenPopup}
                     onClick={handleOpenPopup}

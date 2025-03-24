@@ -26,19 +26,19 @@ export default function ExplorePage() {
         <div className="mt-4 hidden flex-wrap justify-center gap-2 text-sm text-muted-foreground sm:flex">
           <span>Try:</span>
           <span className="font-medium text-foreground">
-            &ldquo;Central Park New York&rdquo;
+            &ldquo;Coffee shops Seattle&rdquo;
           </span>
           <span>•</span>
           <span className="font-medium text-foreground">
-            &ldquo;Eiffel Tower Paris&rdquo;
+            &ldquo;Sushi restaurants Tokyo&rdquo;
           </span>
           <span>•</span>
           <span className="font-medium text-foreground">
-            &ldquo;Pike Place Market&rdquo;
+            &ldquo;Art galleries Paris&rdquo;
           </span>
           <span>•</span>
           <span className="font-medium text-foreground">
-            &ldquo;Times Square restaurants&rdquo;
+            &ldquo;Rooftop bars Manhattan&rdquo;
           </span>
         </div>
       </div>
