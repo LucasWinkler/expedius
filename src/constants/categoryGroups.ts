@@ -3,6 +3,16 @@ export type CategoryGroup = {
   title: string;
   query: string;
   types: string[];
+  weight?: number; // Weight for exploration suggestions
+  metadata?: {
+    timeAppropriate?: {
+      morning?: boolean; // 6am-11am
+      lunch?: boolean; // 11am-3pm
+      afternoon?: boolean; // 3pm-5pm
+      evening?: boolean; // 5pm-10pm
+      lateNight?: boolean; // 10pm-6am
+    };
+  };
 };
 
 // Group place types into logical categories for better organization and discovery
@@ -40,6 +50,16 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "vietnamese_restaurant",
       "buffet_restaurant",
     ],
+    weight: 30,
+    metadata: {
+      timeAppropriate: {
+        morning: true,
+        lunch: true,
+        afternoon: true,
+        evening: true,
+        lateNight: true,
+      },
+    },
   },
   cafes: {
     id: "cafes",
@@ -55,6 +75,16 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "cat_cafe",
       "dog_cafe",
     ],
+    weight: 25,
+    metadata: {
+      timeAppropriate: {
+        morning: true,
+        lunch: true,
+        afternoon: true,
+        evening: true,
+        lateNight: true,
+      },
+    },
   },
   desserts: {
     id: "desserts",
@@ -72,12 +102,23 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "donut_shop",
       "acai_shop",
     ],
+    weight: 15,
   },
   bars: {
     id: "bars",
     title: "Bars",
     query: "bars",
     types: ["bar", "wine_bar", "pub", "night_club", "bar_and_grill"],
+    weight: 10,
+    metadata: {
+      timeAppropriate: {
+        morning: false,
+        lunch: true,
+        afternoon: true,
+        evening: true,
+        lateNight: true,
+      },
+    },
   },
 
   // Nature & Outdoors
@@ -96,18 +137,39 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "wildlife_park",
       "wildlife_refuge",
     ],
+    weight: 20,
+    metadata: {
+      timeAppropriate: {
+        morning: true,
+        lunch: true,
+        afternoon: true,
+        evening: true,
+        lateNight: false,
+      },
+    },
   },
   beaches: {
     id: "beaches",
     title: "Beaches",
     query: "beaches",
     types: ["beach", "marina"],
+    weight: 15,
   },
   hiking: {
     id: "hiking",
     title: "Hiking",
     query: "hiking trails",
     types: ["hiking_area", "off_roading_area"],
+    weight: 10,
+    metadata: {
+      timeAppropriate: {
+        morning: true,
+        lunch: true,
+        afternoon: true,
+        evening: false,
+        lateNight: false,
+      },
+    },
   },
 
   // Culture & Entertainment
@@ -124,6 +186,16 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "aquarium",
       "cultural_landmark",
     ],
+    weight: 20,
+    metadata: {
+      timeAppropriate: {
+        morning: true,
+        lunch: true,
+        afternoon: true,
+        evening: true,
+        lateNight: false,
+      },
+    },
   },
   landmarks: {
     id: "landmarks",
@@ -137,6 +209,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "tourist_attraction",
       "plaza",
     ],
+    weight: 15,
   },
   entertainment: {
     id: "entertainment",
@@ -155,6 +228,16 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "water_park",
       "zoo",
     ],
+    weight: 20,
+    metadata: {
+      timeAppropriate: {
+        morning: false,
+        lunch: true,
+        afternoon: true,
+        evening: true,
+        lateNight: true,
+      },
+    },
   },
 
   // Shopping
@@ -172,6 +255,16 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "gift_shop",
       "electronics_store",
     ],
+    weight: 15,
+    metadata: {
+      timeAppropriate: {
+        morning: true,
+        lunch: true,
+        afternoon: true,
+        evening: true,
+        lateNight: false,
+      },
+    },
   },
 
   // Accommodations
@@ -189,6 +282,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "hostel",
       "guest_house",
     ],
+    weight: 5,
   },
 
   // Sports & Recreation
@@ -207,6 +301,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "athletic_field",
       "skateboard_park",
     ],
+    weight: 10,
   },
 
   // Health & Wellness
@@ -215,6 +310,16 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     title: "Wellness",
     query: "wellness",
     types: ["spa", "wellness_center", "yoga_studio", "massage", "sauna"],
+    weight: 10,
+    metadata: {
+      timeAppropriate: {
+        morning: true,
+        lunch: true,
+        afternoon: true,
+        evening: true,
+        lateNight: false,
+      },
+    },
   },
 
   // Transport & Travel
@@ -230,6 +335,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       "transit_station",
       "subway_station",
     ],
+    weight: 5,
   },
 
   // Religious Places
@@ -238,6 +344,16 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     title: "Religious Sites",
     query: "religious sites",
     types: ["church", "hindu_temple", "mosque", "synagogue"],
+    weight: 5,
+    metadata: {
+      timeAppropriate: {
+        morning: true,
+        lunch: true,
+        afternoon: true,
+        evening: true,
+        lateNight: false,
+      },
+    },
   },
 };
 
@@ -245,7 +361,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
 export function findCategoryGroupForType(
   placeType: string,
 ): CategoryGroup | null {
-  for (const [_, group] of Object.entries(CATEGORY_GROUPS)) {
+  for (const [, group] of Object.entries(CATEGORY_GROUPS)) {
     if (group.types.includes(placeType)) {
       return group;
     }
@@ -269,11 +385,34 @@ export function getCategoryGroupsFromTypes(
   return Array.from(groupMap.values());
 }
 
-// Default suggestions to use when a user has no preferences
 export const DEFAULT_CATEGORY_GROUPS = [
   CATEGORY_GROUPS.restaurants,
   CATEGORY_GROUPS.cafes,
   CATEGORY_GROUPS.parks,
   CATEGORY_GROUPS.museums,
   CATEGORY_GROUPS.shopping,
+];
+
+export const MORNING_CATEGORY_GROUPS = [
+  CATEGORY_GROUPS.cafes,
+  CATEGORY_GROUPS.restaurants,
+  CATEGORY_GROUPS.parks,
+  CATEGORY_GROUPS.shopping,
+  CATEGORY_GROUPS.museums,
+];
+
+export const LUNCH_CATEGORY_GROUPS = [
+  CATEGORY_GROUPS.restaurants,
+  CATEGORY_GROUPS.cafes,
+  CATEGORY_GROUPS.shopping,
+  CATEGORY_GROUPS.parks,
+  CATEGORY_GROUPS.landmarks,
+];
+
+export const EVENING_CATEGORY_GROUPS = [
+  CATEGORY_GROUPS.restaurants,
+  CATEGORY_GROUPS.bars,
+  CATEGORY_GROUPS.entertainment,
+  CATEGORY_GROUPS.shopping,
+  CATEGORY_GROUPS.landmarks,
 ];
