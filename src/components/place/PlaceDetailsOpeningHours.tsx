@@ -102,7 +102,7 @@ export const PlaceDetailsOpeningHours = ({
                 onClick={() => setHoursDialogOpen(true)}
               >
                 View all hours
-                <ChevronDown className="ml-1 h-4 w-4" />
+                <ChevronDown className="size-4" />
               </Button>
             )}
         </div>

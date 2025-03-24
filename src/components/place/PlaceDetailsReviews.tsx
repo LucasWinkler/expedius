@@ -204,11 +204,11 @@ export const PlaceDetailsReviews = ({
               >
                 {showAllReviews ? (
                   <>
-                    Show less <ChevronUp className="h-4 w-4" />
+                    Show less <ChevronUp className="size-4" />
                   </>
                 ) : (
                   <>
-                    See all reviews <ChevronDown className="h-4 w-4" />
+                    See all reviews <ChevronDown className="size-4" />
                   </>
                 )}
               </Button>

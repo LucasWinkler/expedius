@@ -44,11 +44,11 @@ export const PlaceDetailsAmenities = ({
         >
           {showAllFeatures ? (
             <>
-              Show less <ChevronUp className="ml-1 h-4 w-4" />
+              Show less <ChevronUp className="size-4" />
             </>
           ) : (
             <>
-              See all amenities <ChevronDown className="ml-1 h-4 w-4" />
+              See all amenities <ChevronDown className="size-4" />
             </>
           )}
         </Button>

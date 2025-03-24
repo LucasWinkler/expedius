@@ -64,7 +64,7 @@ export const PlaceDetailsActions = ({
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Navigation className="mr-1.5 h-4 w-4" />
+          <Navigation className="h-4 w-4" />
           Directions
         </Link>
       </Button>
