@@ -65,7 +65,7 @@ export const LikeButton = ({
           "group/btn transition-all duration-100 ease-out hover:bg-muted/75",
           isLiked
             ? "fill-red-500 text-red-500 hover:fill-red-600 hover:text-red-600"
-            : "fill-transparent hover:fill-red-500 hover:text-red-500",
+            : "fill-transparent hover:fill-red-600 hover:text-red-600",
         )}
         onClick={handleClick}
         disabled={isPending}
@@ -90,7 +90,7 @@ export const LikeButton = ({
         "group/btn size-8 bg-background/80 backdrop-blur transition-all duration-100 ease-out hover:bg-background/90",
         isLiked
           ? "fill-red-500 text-red-500 hover:fill-red-600 hover:text-red-600"
-          : "fill-transparent hover:fill-red-500 hover:text-red-500",
+          : "fill-transparent hover:fill-red-600 hover:text-red-600",
       )}
       onClick={handleClick}
       disabled={isPending}

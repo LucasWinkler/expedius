@@ -50,7 +50,7 @@ export const SaveToListButton = ({
             "group/btn transition-all duration-100 ease-out hover:bg-muted/75",
             isSaved
               ? "fill-primary text-primary hover:fill-blue-700 hover:text-blue-700"
-              : "fill-transparent hover:fill-primary hover:text-primary",
+              : "fill-transparent hover:fill-blue-700 hover:text-blue-700",
           )}
           onClick={(e) => e.preventDefault()}
         >
@@ -80,7 +80,7 @@ export const SaveToListButton = ({
           "group/btn size-8 bg-background/80 backdrop-blur transition-all duration-100 ease-out hover:bg-background/90",
           isSaved
             ? "fill-primary text-primary hover:fill-blue-700 hover:text-blue-700"
-            : "fill-transparent hover:fill-primary hover:text-primary",
+            : "fill-transparent hover:fill-blue-700 hover:text-blue-700",
         )}
         onClick={(e) => e.preventDefault()}
       >
