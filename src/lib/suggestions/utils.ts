@@ -6,6 +6,7 @@ export function isExplorationSuggestion(
   suggestion: CategoryGroup,
   metadata: SuggestionMeta,
   suggestions: CategoryGroup[],
+  maxSuggestions: number,
 ): boolean {
   console.debug(`[DEBUG] Checking if ${suggestion.title} is exploration:`, {
     suggestionId: suggestion.id,
@@ -33,9 +34,7 @@ export function isExplorationSuggestion(
       ? PERSONALIZATION_CONFIG.getDynamicExploitationRatio(userPrefCount)
       : defaultRatio;
 
-    const exploitationCount = Math.ceil(
-      PERSONALIZATION_CONFIG.MAX_SUGGESTIONS * dynamicRatio,
-    );
+    const exploitationCount = Math.ceil(maxSuggestions * dynamicRatio);
 
     const index = suggestions.findIndex((s) => s.id === suggestion.id);
     const isExploration = index >= exploitationCount;

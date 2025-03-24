@@ -1,4 +1,5 @@
 import type { CategoryGroup } from "@/types/categories";
+import { SuggestionsContext } from "../suggestions";
 
 // Response type for personalized suggestions
 export interface PersonalizedSuggestionsResponse {
@@ -13,35 +14,40 @@ export interface PersonalizedSuggestionsResponse {
   };
 }
 
+interface GetPersonalizedSuggestionsOptions {
+  context?: SuggestionsContext;
+}
+
 /**
  * Fetch personalized suggestions from the server
  * @returns Object with suggestions array and metadata
  */
-export const getPersonalizedSuggestions =
-  async (): Promise<PersonalizedSuggestionsResponse> => {
-    try {
-      // Get client's timezone offset in minutes
-      const timezoneOffset = new Date().getTimezoneOffset();
+export const getPersonalizedSuggestions = async (
+  options: GetPersonalizedSuggestionsOptions = {},
+): Promise<PersonalizedSuggestionsResponse> => {
+  try {
+    const timezoneOffset = new Date().getTimezoneOffset();
+    const clientHour = new Date().getHours();
 
-      // Get current client-side hour (0-23)
-      const clientHour = new Date().getHours();
-
-      const response = await fetch("/api/suggestions", {
+    const response = await fetch(
+      `/api/suggestions?context=${options.context}`,
+      {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "X-Client-Timezone-Offset": timezoneOffset.toString(),
           "X-Client-Hour": clientHour.toString(),
         },
-      });
+      },
+    );
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch suggestions: ${response.status}`);
-      }
-
-      return response.json();
-    } catch (error) {
-      console.error("Error fetching personalized suggestions:", error);
-      throw error;
+    if (!response.ok) {
+      throw new Error(`Failed to fetch suggestions: ${response.status}`);
     }
-  };
+
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching personalized suggestions:", error);
+    throw error;
+  }
+};

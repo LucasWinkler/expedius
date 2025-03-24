@@ -43,9 +43,7 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      <div>
-        <ExploreContent />
-      </div>
+      <ExploreContent />
     </div>
   );
 }

@@ -90,6 +90,7 @@ export function getSpecificTypeSuggestions(
           purpose: "primary",
           types: [typeInfo],
           weight: typeInfo.baseWeight || group.weight || 10,
+          imageUrl: typeInfo.imageUrl || group.imageUrl,
         });
       }
     }
@@ -111,6 +112,7 @@ export function getSpecificTypeSuggestions(
             purpose: "primary",
             types: [type],
             weight: type.baseWeight || group.weight || 10,
+            imageUrl: type.imageUrl || group.imageUrl,
           });
         });
       }
@@ -178,6 +180,7 @@ export function getCategoryExplorationSuggestions(
           purpose: "primary",
           types: [type],
           weight: type.baseWeight || group.weight || 10,
+          imageUrl: type.imageUrl || group.imageUrl,
         });
       });
     }
@@ -204,6 +207,7 @@ export function getCategoryExplorationSuggestions(
         purpose: "primary",
         types: [randomType],
         weight: randomType.baseWeight || randomCategory.weight || 10,
+        imageUrl: randomType.imageUrl || randomCategory.imageUrl,
       });
     }
   }

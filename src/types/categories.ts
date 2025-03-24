@@ -4,6 +4,7 @@ export type PlaceType = {
   id: string;
   name: string;
   baseWeight?: number;
+  imageUrl?: string;
 };
 
 export type CategoryGroup = {
@@ -13,6 +14,7 @@ export type CategoryGroup = {
   types: PlaceType[];
   purpose: CategoryPurpose;
   weight?: number;
+  imageUrl?: string;
   metadata?: {
     timeAppropriate?: {
       morning?: boolean;

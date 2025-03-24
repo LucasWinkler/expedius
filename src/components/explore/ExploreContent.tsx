@@ -6,6 +6,7 @@ import { SearchResults } from "@/components/search/SearchResults";
 import { ExploreEmptyState } from "./ExploreEmptyState";
 import { FilterChips } from "./FilterChips";
 import { PLACE_FILTERS } from "@/constants";
+import { SUGGESTION_CONTEXTS } from "@/lib/suggestions";
 
 export const ExploreContent = () => {
   const { query, filters, updateSearchParams } = useSearch();
@@ -58,7 +59,10 @@ export const ExploreContent = () => {
           <SearchResults className="mt-4" />
         </>
       ) : (
-        <ExploreEmptyState className="mt-12" />
+        <ExploreEmptyState
+          className="mt-12"
+          context={SUGGESTION_CONTEXTS.EXPLORE}
+        />
       )}
     </>
   );

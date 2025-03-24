@@ -14,12 +14,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { SUGGESTION_CONTEXTS } from "@/lib/suggestions";
 
 export const PersonalizedSearchSuggestions = () => {
-  const { suggestions, isLoading, metadata } = usePersonalizedSuggestions();
+  const { suggestions, isLoading, metadata, suggestionsCount } =
+    usePersonalizedSuggestions({
+      context: SUGGESTION_CONTEXTS.HOME,
+    });
 
   if (isLoading) {
-    return <SuggestionSkeleton />;
+    return <SuggestionSkeleton context={SUGGESTION_CONTEXTS.HOME} />;
   }
 
   return (
@@ -29,6 +33,7 @@ export const PersonalizedSearchSuggestions = () => {
           suggestion,
           metadata,
           suggestions,
+          suggestionsCount,
         );
 
         return (

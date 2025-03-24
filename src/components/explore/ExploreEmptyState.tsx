@@ -2,61 +2,61 @@
 
 import { cn } from "@/lib/utils";
 import { CategoryCard } from "./CategoryCard";
-
-// Placeholder will replace with personalized categories
-const FEATURED_CATEGORIES = [
-  {
-    title: "Tourist Attractions",
-    query: "tourist attractions",
-    imageUrl: "/place-image-fallback.webp",
-  },
-  {
-    title: "Local Restaurants",
-    query: "restaurants",
-    imageUrl: "/place-image-fallback.webp",
-  },
-  {
-    title: "Coffee Shops",
-    query: "coffee shops",
-    imageUrl: "/place-image-fallback.webp",
-  },
-  {
-    title: "Parks & Recreation",
-    query: "parks",
-    imageUrl: "/place-image-fallback.webp",
-  },
-  {
-    title: "Museums & Galleries",
-    query: "museums",
-    imageUrl: "/place-image-fallback.webp",
-  },
-  {
-    title: "Shopping",
-    query: "shopping",
-    imageUrl: "/place-image-fallback.webp",
-  },
-];
+import { usePersonalizedSuggestions } from "@/hooks/usePersonalizedSuggestions";
+import { Sparkles } from "lucide-react";
+import { ExploreCategoriesSkeleton } from "./ExploreCategoriesSkeleton";
+import type { SuggestionsContext } from "@/lib/suggestions";
 
 interface ExploreEmptyStateProps {
   className?: string;
+  context: SuggestionsContext;
 }
 
-export const ExploreEmptyState = ({ className }: ExploreEmptyStateProps) => {
+export const ExploreEmptyState = ({
+  className,
+  context,
+}: ExploreEmptyStateProps) => {
+  const { suggestions, isLoading, metadata } = usePersonalizedSuggestions({
+    context,
+  });
+
+  if (isLoading) {
+    return <ExploreCategoriesSkeleton context={context} />;
+  }
+
   return (
     <div className={cn("space-y-6", className)}>
-      <h2 className="text-2xl font-semibold tracking-tight">
-        Popular Categories
-      </h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {metadata.hasPreferences
+            ? "Recommended for You"
+            : "Popular Right Now"}
+        </h2>
+        {metadata.hasPreferences && (
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Sparkles className="size-3.5 text-primary/70" />
+            Personalized
+          </div>
+        )}
+      </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {FEATURED_CATEGORIES.map((category, index) => (
-          <CategoryCard
-            key={category.title}
-            title={category.title}
-            query={category.query}
-            imageUrl={category.imageUrl}
-            index={index}
-          />
-        ))}
+        {suggestions.map((suggestion, index) => {
+          return (
+            <CategoryCard
+              key={suggestion.id}
+              title={suggestion.title}
+              query={suggestion.query}
+              imageUrl={suggestion.imageUrl || "/place-image-fallback.webp"}
+              index={index}
+              isExploration={
+                metadata.explorationUsed &&
+                metadata.explorationSuggestions?.some(
+                  (s) => s.id === suggestion.id,
+                )
+              }
+            />
+          );
+        })}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Sparkles } from "lucide-react";
 
 interface CategoryCardProps {
   title: string;
@@ -8,6 +9,7 @@ interface CategoryCardProps {
   imageUrl: string;
   className?: string;
   index?: number;
+  isExploration?: boolean;
 }
 
 export function CategoryCard({
@@ -16,6 +18,7 @@ export function CategoryCard({
   imageUrl,
   className,
   index = -1,
+  isExploration = false,
 }: CategoryCardProps) {
   return (
     <Link
@@ -23,6 +26,7 @@ export function CategoryCard({
       scroll={false}
       className={cn(
         "group relative block aspect-[4/3] overflow-hidden rounded-lg shadow-sm transition-all duration-300 hover:shadow-md active:scale-[0.98]",
+        isExploration && "border border-primary/30",
         className,
       )}
     >
@@ -36,9 +40,12 @@ export function CategoryCard({
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent transition-opacity duration-300 group-hover:opacity-[0.85]" />
       <div className="absolute inset-x-0 bottom-0 p-4 transition-transform duration-300 ease-out group-hover:-translate-y-1">
-        <h3 className="text-lg font-semibold text-white transition-opacity duration-300 group-hover:opacity-[0.95]">
-          {title}
-        </h3>
+        <div className="flex items-center gap-2">
+          {isExploration && <Sparkles className="size-3.5 text-primary/70" />}
+          <h3 className="text-lg font-semibold text-white transition-opacity duration-300 group-hover:opacity-[0.95]">
+            {title}
+          </h3>
+        </div>
       </div>
     </Link>
   );

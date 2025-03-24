@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { CategoryGroup } from "@/types/categories";
 import { SEARCH_SUGGESTIONS } from "@/constants";
-import { PERSONALIZATION_CONFIG } from "@/lib/suggestions";
+import { SuggestionsContext } from "@/lib/suggestions";
 import { getPersonalizedSuggestions } from "@/lib/api/suggestions";
 
 export type SuggestionMeta = {
@@ -13,7 +13,13 @@ export type SuggestionMeta = {
   userPreferencesCount?: number;
 };
 
-export function usePersonalizedSuggestions() {
+interface UsePersonalizedSuggestionsOptions {
+  context?: SuggestionsContext;
+}
+
+export function usePersonalizedSuggestions(
+  options: UsePersonalizedSuggestionsOptions = {},
+) {
   const [suggestions, setSuggestions] = useState<CategoryGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [metadata, setMetadata] = useState<SuggestionMeta>({
@@ -25,9 +31,11 @@ export function usePersonalizedSuggestions() {
     const loadSuggestions = async () => {
       try {
         setIsLoading(true);
-        const response = await getPersonalizedSuggestions();
+        const response = await getPersonalizedSuggestions({
+          context: options.context,
+        });
 
-        console.debug("[DEBUG] Raw suggestion response:", response);
+        console.log("[DEBUG] Raw suggestion response:", response);
 
         if (response && response.suggestions && response.metadata) {
           const suggestionsArray = response.suggestions;
@@ -41,7 +49,7 @@ export function usePersonalizedSuggestions() {
             userPreferencesCount: response.metadata.userPreferencesCount,
           };
 
-          console.debug("[DEBUG] Extracted metadata:", {
+          console.log("[DEBUG] Extracted metadata:", {
             source: meta.source,
             hasPreferences: meta.hasPreferences,
             explorationUsed: meta.explorationUsed,
@@ -68,22 +76,21 @@ export function usePersonalizedSuggestions() {
         }
       } catch (error) {
         console.error("Failed to load personalized suggestions:", error);
-        const fallbackSuggestions = SEARCH_SUGGESTIONS.slice(
-          0,
-          PERSONALIZATION_CONFIG.MAX_SUGGESTIONS,
-        ).map((suggestion) => ({
-          id: suggestion.query,
-          title: suggestion.title,
-          query: suggestion.query,
-          purpose: "primary" as const,
-          types: [
-            {
-              id: suggestion.query,
-              name: suggestion.title,
-              baseWeight: 10,
-            },
-          ],
-        }));
+        const fallbackSuggestions = SEARCH_SUGGESTIONS.slice(0).map(
+          (suggestion) => ({
+            id: suggestion.query,
+            title: suggestion.title,
+            query: suggestion.query,
+            purpose: "primary" as const,
+            types: [
+              {
+                id: suggestion.query,
+                name: suggestion.title,
+                baseWeight: 10,
+              },
+            ],
+          }),
+        );
 
         console.log("[INFO] Using client fallback suggestions");
         setSuggestions(fallbackSuggestions);
@@ -97,7 +104,12 @@ export function usePersonalizedSuggestions() {
     };
 
     loadSuggestions();
-  }, []);
+  }, [options.context]);
 
-  return { suggestions, isLoading, metadata };
+  return {
+    suggestions,
+    isLoading,
+    metadata,
+    suggestionsCount: suggestions.length,
+  };
 }

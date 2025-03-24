@@ -10,9 +10,10 @@ import type { CategoryGroup } from "@/types/categories";
 import {
   getTimeBasedSuggestions,
   getExplorationSuggestions,
-  PERSONALIZATION_CONFIG,
   type SuggestionsWithMeta,
   type SuggestionSource,
+  SuggestionsContext,
+  SUGGESTION_COUNTS,
 } from "@/lib/suggestions";
 
 interface ClientTimeInfo {
@@ -33,6 +34,7 @@ export const suggestions = {
      */
     async getPersonalizedSuggestions(
       userId: string | null,
+      context: SuggestionsContext,
       timeInfo?: ClientTimeInfo,
     ): Promise<{
       suggestions: CategoryGroup[];
@@ -45,9 +47,6 @@ export const suggestions = {
         explorationSuggestions?: CategoryGroup[];
       };
     }> {
-      const { MAX_SUGGESTIONS } = PERSONALIZATION_CONFIG;
-
-      // For metadata tracking
       let result: SuggestionsWithMeta;
 
       // Get the client's hour if provided, otherwise use server time
@@ -56,12 +55,14 @@ export const suggestions = {
           ? timeInfo.clientHour
           : new Date().getHours();
 
+      const maxSuggestions = SUGGESTION_COUNTS[context];
+
       // If user is not logged in, return time-based suggestions
       if (!userId) {
         const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
 
         result = {
-          suggestions: timeBasedSuggestions.slice(0, MAX_SUGGESTIONS),
+          suggestions: timeBasedSuggestions.slice(0, maxSuggestions),
           source: "default",
           hasPreferences: false,
           explorationUsed: true,
@@ -92,7 +93,7 @@ export const suggestions = {
           const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
 
           result = {
-            suggestions: timeBasedSuggestions.slice(0, MAX_SUGGESTIONS),
+            suggestions: timeBasedSuggestions.slice(0, maxSuggestions),
             source: "default",
             hasPreferences: false,
             explorationUsed: true,
@@ -138,10 +139,8 @@ export const suggestions = {
         );
 
         // Calculate exploitation vs exploration counts
-        const exploitationCount = Math.ceil(
-          MAX_SUGGESTIONS * exploitationRatio,
-        );
-        const explorationCount = MAX_SUGGESTIONS - exploitationCount;
+        const exploitationCount = Math.ceil(maxSuggestions * exploitationRatio);
+        const explorationCount = maxSuggestions - exploitationCount;
 
         // Get specific type suggestions based on user preferences
         const specificTypeSuggestions = getSpecificTypeSuggestions(
@@ -204,8 +203,8 @@ export const suggestions = {
         ];
 
         // Fill up to MAX_SUGGESTIONS if we don't have enough
-        if (combinedSuggestions.length < MAX_SUGGESTIONS) {
-          const additionalNeeded = MAX_SUGGESTIONS - combinedSuggestions.length;
+        if (combinedSuggestions.length < maxSuggestions) {
+          const additionalNeeded = maxSuggestions - combinedSuggestions.length;
 
           if (additionalNeeded > 0) {
             console.log(
@@ -237,7 +236,7 @@ export const suggestions = {
         }
 
         // Ensure we don't exceed MAX_SUGGESTIONS
-        const finalSuggestions = combinedSuggestions.slice(0, MAX_SUGGESTIONS);
+        const finalSuggestions = combinedSuggestions.slice(0, maxSuggestions);
 
         // Determine source based on what was used
         const source: SuggestionSource = "user_preferences";
@@ -281,7 +280,7 @@ export const suggestions = {
         const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
 
         result = {
-          suggestions: timeBasedSuggestions.slice(0, MAX_SUGGESTIONS),
+          suggestions: timeBasedSuggestions.slice(0, maxSuggestions),
           source: "default",
           hasPreferences: false,
           explorationUsed: true,
