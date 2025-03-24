@@ -11,7 +11,7 @@ export const HomeHero = () => {
       </div>
       <div className="container relative z-20 mx-auto px-4">
         <header className="mx-auto max-w-4xl rounded-3xl p-4 text-center sm:p-6 2xl:max-w-5xl">
-          <h1 className="mx-auto text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl 2xl:text-8xl">
+          <h1 className="mx-auto text-4xl font-bold tracking-tight text-foreground xs:text-5xl sm:text-6xl md:text-6xl lg:text-7xl 2xl:text-8xl">
             Discover your
             <br />
             next adventure.
@@ -21,7 +21,7 @@ export const HomeHero = () => {
             world.
           </p>
         </header>
-        <div className="mt-8 sm:mt-8 2xl:mt-10">
+        <div className="md mt-2 sm:mt-2 2xl:mt-8">
           <div className="mx-auto max-w-2xl 2xl:max-w-3xl">
             <SearchBar />
           </div>
