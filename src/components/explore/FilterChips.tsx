@@ -14,44 +14,47 @@ interface FilterChipsProps {
 }
 
 export function FilterChips({ filters, onClearFilters }: FilterChipsProps) {
-  if (
-    !filters ||
-    ((filters.radius === undefined ||
-      filters.radius === PLACE_FILTERS.RADIUS.DEFAULT) &&
-      (!filters.minRating || filters.minRating === PLACE_FILTERS.RATING.MIN) &&
-      !filters.openNow)
-  ) {
+  const clearFilter = ({
+    filterType,
+    event,
+  }: {
+    filterType: "radius" | "rating" | "openNow";
+    event: React.MouseEvent<HTMLButtonElement>;
+  }) => {
+    event.stopPropagation();
+    onClearFilters(filterType);
+  };
+
+  if (!filters || (!filters.radius && !filters.minRating && !filters.openNow)) {
     return null;
   }
 
   return (
     <div className="flex flex-wrap items-center gap-2 text-sm">
-      {filters.radius !== undefined &&
-        filters.radius !== PLACE_FILTERS.RADIUS.DEFAULT && (
-          <div className="group inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 pr-2 text-accent-foreground shadow-sm ring-1 ring-accent/50 transition-all hover:bg-accent/90 hover:shadow">
-            <span>
-              Within {filters.radius / 1000}km /{" "}
-              {Math.round(filters.radius / 1609.34)}mi
-            </span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-4 w-4 rounded-full p-0 opacity-70 transition-opacity hover:opacity-100"
-              onClick={(e) => {
-                e.stopPropagation();
-                onClearFilters("radius");
-              }}
-            >
-              <X className="h-3 w-3" />
-              <span className="sr-only">Clear radius filter</span>
-            </Button>
-          </div>
-        )}
+      {filters.radius && (
+        <div className="group inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 pr-2 text-accent-foreground shadow-sm ring-1 ring-accent/50 transition-all hover:bg-accent/90 hover:shadow">
+          <span>
+            Within {filters.radius / 1000}km /{" "}
+            {Math.round(filters.radius / 1609.34)}mi
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-4 w-4 rounded-full p-0 opacity-70 transition-opacity hover:opacity-100"
+            onClick={(e) => {
+              clearFilter({ filterType: "radius", event: e });
+            }}
+          >
+            <X className="h-3 w-3" />
+            <span className="sr-only">Clear radius filter</span>
+          </Button>
+        </div>
+      )}
 
       {filters.minRating && filters.minRating > PLACE_FILTERS.RATING.MIN && (
         <div className="group inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 pr-2 text-accent-foreground shadow-sm ring-1 ring-accent/50 transition-all hover:bg-accent/90 hover:shadow">
           <span className="flex items-center gap-1">
-            Min {filters.minRating}
+            {filters.minRating}
             {filters.minRating < 5 && "+"}
             <Star className="size-3.5 fill-yellow-400 text-yellow-400" />
           </span>
@@ -60,8 +63,7 @@ export function FilterChips({ filters, onClearFilters }: FilterChipsProps) {
             size="icon"
             className="h-4 w-4 rounded-full p-0 opacity-70 transition-opacity hover:opacity-100"
             onClick={(e) => {
-              e.stopPropagation();
-              onClearFilters("rating");
+              clearFilter({ filterType: "rating", event: e });
             }}
           >
             <X className="h-3 w-3" />
@@ -78,8 +80,7 @@ export function FilterChips({ filters, onClearFilters }: FilterChipsProps) {
             size="icon"
             className="h-4 w-4 rounded-full p-0 opacity-70 transition-opacity hover:opacity-100"
             onClick={(e) => {
-              e.stopPropagation();
-              onClearFilters("openNow");
+              clearFilter({ filterType: "openNow", event: e });
             }}
           >
             <X className="h-3 w-3" />
