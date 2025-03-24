@@ -19,7 +19,7 @@ import { Clock, Search, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useClickOutside } from "@/hooks";
-import { FilterSheet } from "@/components/discover/FilterSheet";
+import { FilterSheet } from "@/components/explore/FilterSheet";
 
 const searchSchema = z.object({
   query: z

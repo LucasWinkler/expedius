@@ -113,7 +113,6 @@
 ## Roadmap
 
 - Filtering, sorting, and searching for lists
-- Discover page redesign
 - Social features?
   - Followers
   - Following

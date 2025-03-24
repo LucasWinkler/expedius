@@ -11,9 +11,9 @@ import {
 
 export const NAV_ITEMS = [
   {
-    href: "/discover",
+    href: "/explore",
     icon: Search,
-    label: "Discover",
+    label: "Explore",
   },
   {
     href: "/categories",

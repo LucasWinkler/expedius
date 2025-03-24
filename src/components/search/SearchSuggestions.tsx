@@ -7,7 +7,7 @@ export const SearchSuggestions = () => (
     {SEARCH_SUGGESTIONS.map((suggestion) => (
       <Link
         key={suggestion.title}
-        href={`/discover?q=${encodeURIComponent(suggestion.query)}`}
+        href={`/explore?q=${encodeURIComponent(suggestion.query)}`}
         className="group inline-flex items-center rounded-full border border-border/30 bg-background/50 px-3.5 py-1.5 text-sm text-foreground/80 shadow-sm backdrop-blur-sm transition-all hover:border-border/50 hover:bg-background/80 hover:text-foreground hover:shadow sm:px-4 sm:py-2 sm:text-base 2xl:px-5 2xl:py-2.5 2xl:text-lg"
         aria-label={`Search for ${suggestion.title}`}
       >

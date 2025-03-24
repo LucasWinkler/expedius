@@ -19,7 +19,7 @@ export function CategoryCard({
 }: CategoryCardProps) {
   return (
     <Link
-      href={`/discover?q=${encodeURIComponent(query)}`}
+      href={`/explore?q=${encodeURIComponent(query)}`}
       scroll={false}
       className={cn(
         "group relative block aspect-[4/3] overflow-hidden rounded-lg shadow-sm transition-all duration-300 hover:shadow-md active:scale-[0.98]",

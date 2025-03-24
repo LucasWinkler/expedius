@@ -35,7 +35,7 @@ export const PersonalizedSearchSuggestions = () => {
           <Tooltip disableHoverableContent key={suggestion.id}>
             <TooltipTrigger asChild>
               <Link
-                href={`/discover?q=${encodeURIComponent(suggestion.query)}`}
+                href={`/explore?q=${encodeURIComponent(suggestion.query)}`}
                 className={cn(
                   "group inline-flex items-center rounded-full border shadow-sm backdrop-blur-sm transition-all hover:bg-background/80 hover:text-foreground hover:shadow",
                   "px-3.5 py-1.5 text-sm sm:px-4 sm:py-1.5 sm:text-sm md:px-4 md:py-2 md:text-sm",

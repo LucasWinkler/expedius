@@ -28,7 +28,7 @@ export const HomeCta = () => {
               className="border border-white/50 bg-transparent px-8 font-medium text-white shadow-sm transition-all hover:text-white"
               asChild
             >
-              <Link href="/discover">Explore Places</Link>
+              <Link href="/explore">Explore Places</Link>
             </Button>
           </div>
         </div>

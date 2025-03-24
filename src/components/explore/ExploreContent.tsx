@@ -3,11 +3,11 @@
 import { useSearch } from "@/hooks/useSearch";
 import { SearchBar } from "@/components/search/SearchBar";
 import { SearchResults } from "@/components/search/SearchResults";
-import { DiscoverEmptyState } from "./DiscoverEmptyState";
+import { ExploreEmptyState } from "./ExploreEmptyState";
 import { FilterChips } from "./FilterChips";
 import { PLACE_FILTERS } from "@/constants";
 
-export const DiscoverContent = () => {
+export const ExploreContent = () => {
   const { query, filters, updateSearchParams } = useSearch();
 
   const handleClearFilters = (filterType?: "radius" | "rating" | "openNow") => {
@@ -55,14 +55,10 @@ export const DiscoverContent = () => {
           <p className="mb-6 mt-12 text-sm text-muted-foreground">
             Showing results for &quot;{query}&quot;
           </p>
-          <div className="mt-4">
-            <SearchResults />
-          </div>
+          <SearchResults className="mt-4" />
         </>
       ) : (
-        <div className="mt-12">
-          <DiscoverEmptyState />
-        </div>
+        <ExploreEmptyState className="mt-12" />
       )}
     </>
   );

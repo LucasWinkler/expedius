@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { CategoryCard } from "./CategoryCard";
 
 // Placeholder will replace with personalized categories
@@ -36,9 +37,13 @@ const FEATURED_CATEGORIES = [
   },
 ];
 
-export const DiscoverEmptyState = () => {
+interface ExploreEmptyStateProps {
+  className?: string;
+}
+
+export const ExploreEmptyState = ({ className }: ExploreEmptyStateProps) => {
   return (
-    <div className="space-y-6">
+    <div className={cn("space-y-6", className)}>
       <h2 className="text-2xl font-semibold tracking-tight">
         Popular Categories
       </h2>
