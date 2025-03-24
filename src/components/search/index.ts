@@ -5,4 +5,8 @@ export { SearchButton } from "./SearchButton";
 export { SearchIcon } from "./SearchIcon";
 export { SearchSkeleton } from "./SearchSkeleton";
 export { SearchSuggestions } from "./SearchSuggestions";
+export { PersonalizedSearchSuggestions } from "./PersonalizedSearchSuggestions";
 export { NavSearchButton } from "./NavSearchButton";
+export { SearchButtonIcon } from "./SearchButtonIcon";
+export { SearchHistoryItem } from "./SearchItems";
+export { SearchSuggestionItem } from "./SearchSuggestionItem";
