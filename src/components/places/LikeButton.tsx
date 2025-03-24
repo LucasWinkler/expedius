@@ -62,7 +62,7 @@ export const LikeButton = ({
         variant="outline"
         size={size}
         className={cn(
-          "group/btn transition-all duration-100 ease-out",
+          "group/btn transition-all duration-100 ease-out hover:bg-muted/40",
           isLiked
             ? "fill-red-500 text-red-500 hover:fill-red-600 hover:text-red-600"
             : "fill-transparent hover:fill-red-500 hover:text-red-500",

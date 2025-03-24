@@ -47,7 +47,7 @@ export const SaveToListButton = ({
           variant="outline"
           size={size}
           className={cn(
-            "group/btn transition-all duration-100 ease-out",
+            "group/btn transition-all duration-100 ease-out hover:bg-muted/40",
             isSaved
               ? "fill-primary text-primary hover:fill-blue-700 hover:text-blue-700"
               : "fill-transparent hover:fill-primary hover:text-primary",
