@@ -16,7 +16,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
 
     return (
       <div className="relative w-full">
-        <Search className="absolute left-3 top-1/2 size-[18px] -translate-y-1/2 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 z-[1] size-[18px] -translate-y-1/2 text-muted-foreground" />
         <Input
           ref={ref}
           value={value}
