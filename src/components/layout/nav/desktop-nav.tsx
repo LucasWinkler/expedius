@@ -29,7 +29,7 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="flex items-center gap-2 xl:gap-4">
+      <div className="flex items-center gap-3 xl:gap-5">
         {NAV_ITEMS.map(({ href, label }) => (
           <Link
             key={href}
@@ -41,7 +41,7 @@ export const DesktopNav = ({ session, isPending }: DesktopNavProps) => {
         ))}
       </div>
 
-      <div className="flex items-center gap-2 xl:gap-3">
+      <div className="flex items-center gap-3 xl:gap-4">
         <NavSearchButton />
         {isPending ? (
           <Skeleton className="h-10 w-10 rounded-full" />
