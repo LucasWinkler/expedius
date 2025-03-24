@@ -5,6 +5,7 @@ export const metadata = createMetadata({
   title: "Start discovering",
   description:
     "Search near you or anywhere in the world. Find the perfect spots for your next adventure.",
+  canonicalUrlRelative: "/discover",
 });
 
 const DiscoverPage = () => {

@@ -18,6 +18,7 @@ const CategoryCarousels = dynamicImport(
 
 export const metadata = createMetadata({
   title: "Discover your next adventure",
+  canonicalUrlRelative: "/",
 });
 
 const Home = () => {

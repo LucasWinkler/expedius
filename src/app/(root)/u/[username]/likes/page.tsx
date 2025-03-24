@@ -31,6 +31,7 @@ export const generateMetadata = async ({
     return createMetadata({
       title: "Profile not found",
       description: "The Expedius profile you are looking for does not exist.",
+      robots: { index: false, follow: false },
     });
   }
 
@@ -41,23 +42,34 @@ export const generateMetadata = async ({
     return createMetadata({
       title: "Profile not found",
       description: "The Expedius profile you are looking for does not exist.",
+      robots: { index: false, follow: false },
     });
   }
 
-  const { name, isPublic, isOwner } = profile;
+  const { name, username, isPublic, isOwner } = profile;
+
+  const metadata = {
+    title: isOwner
+      ? `Your Likes (@${username})`
+      : isPublic
+        ? `${name}'s Likes (@${username})`
+        : `Private Likes (@${username})`,
+    alternates: {
+      canonical: `/u/${username}/likes`,
+    },
+  };
 
   if (!isPublic && !isOwner) {
     return createMetadata({
-      title: "Private Profile",
-      description: "This profile is private",
+      ...metadata,
+      description: "This user's likes are private",
+      robots: { index: false, follow: true },
     });
   }
 
-  const title = isOwner ? "My Liked Places" : `${name}'s Liked Places`;
-
   return createMetadata({
-    title,
-    description: `View ${name}'s liked places on Expedius`,
+    ...metadata,
+    description: `Explore places and lists liked by ${name} on Expedius`,
   });
 };
 

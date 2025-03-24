@@ -23,6 +23,7 @@ export const generateMetadata = async ({
     return createMetadata({
       title: "Profile not found",
       description: "The Expedius profile you are looking for does not exist.",
+      robots: { index: false, follow: false },
     });
   }
 
@@ -33,6 +34,7 @@ export const generateMetadata = async ({
     return createMetadata({
       title: "Profile not found",
       description: "The Expedius profile you are looking for does not exist.",
+      robots: { index: false, follow: false },
     });
   }
 
@@ -49,9 +51,11 @@ export const generateMetadata = async ({
 
   return createMetadata({
     title,
+    canonicalUrlRelative: `/u/${username}`,
     description: isPublic
       ? `Check out ${name}'s curated lists and favourite places on Expedius`
       : "This profile is private",
+    robots: !isPublic && !isOwner ? { index: false, follow: true } : undefined,
   });
 };
 

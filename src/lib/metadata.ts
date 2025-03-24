@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { env } from "@/env";
 
-interface OpenGraphConfig {
+interface OpenGraphConfig extends Metadata {
   title?: string;
   description?: string;
   canonicalUrlRelative?: string;
@@ -11,6 +11,7 @@ export const createMetadata = ({
   title,
   description,
   canonicalUrlRelative,
+  robots,
 }: OpenGraphConfig): Metadata => {
   const baseTitle = title
     ? `${title} - Expedius`
@@ -59,5 +60,6 @@ export const createMetadata = ({
     other: {
       thumbnail: `${baseUrl.origin}/og.png`,
     },
+    robots,
   };
 };

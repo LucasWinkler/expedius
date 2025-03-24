@@ -14,16 +14,26 @@ export async function generateMetadata({
     const { placeId } = await params;
     const place = await getPlaceDetails(placeId);
 
+    if (!place) {
+      return createMetadata({
+        title: "Place not found",
+        description: "The place you are looking for does not exist.",
+        robots: { index: false, follow: false },
+      });
+    }
+
     return createMetadata({
       title: place.displayName.text,
       description:
         place.editorialSummary?.text ??
         `Discover ${place.displayName.text} on Expedius. ${place.formattedAddress}`,
+      canonicalUrlRelative: `/place/${placeId}`,
     });
   } catch {
     return createMetadata({
-      title: "Place Details",
-      description: "Discover amazing places on Expedius",
+      title: "Place not found",
+      description: "The place you are looking for does not exist.",
+      robots: { index: false, follow: false },
     });
   }
 }

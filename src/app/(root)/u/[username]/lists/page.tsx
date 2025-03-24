@@ -30,6 +30,7 @@ export const generateMetadata = async ({
     return createMetadata({
       title: "Profile not found",
       description: "The Expedius profile you are looking for does not exist.",
+      robots: { index: false, follow: false },
     });
   }
 
@@ -40,23 +41,36 @@ export const generateMetadata = async ({
     return createMetadata({
       title: "Profile not found",
       description: "The Expedius profile you are looking for does not exist.",
+      robots: { index: false, follow: false },
     });
   }
 
-  const { name, isPublic, isOwner } = profile;
+  const { name, username, isPublic, isOwner } = profile;
+  const privateProfileTitle = `Private Profile (@${username})`;
+  const publicProfileTitle = `${name} (@${username})`;
+
+  const title = isOwner
+    ? `${name} (@${username})`
+    : isPublic
+      ? publicProfileTitle
+      : privateProfileTitle;
+
+  const metadata = {
+    title,
+    canonicalUrlRelative: `/u/${username}/lists`,
+  };
 
   if (!isPublic && !isOwner) {
     return createMetadata({
-      title: "Private Profile",
+      ...metadata,
       description: "This profile is private",
+      robots: { index: false, follow: true },
     });
   }
 
-  const title = isOwner ? "My Lists" : `${name}'s Lists`;
-
   return createMetadata({
-    title,
-    description: `View ${name}'s lists on Expedius`,
+    ...metadata,
+    description: `Check out ${name}'s curated lists and favourite places on Expedius`,
   });
 };
 

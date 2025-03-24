@@ -9,6 +9,7 @@ export const metadata = createMetadata({
   title: "Two-factor authentication",
   description:
     "Verify your identity with two-factor authentication to access your account.",
+  canonicalUrlRelative: "/auth/two-factor",
 });
 
 const TwoFactorPage = async ({

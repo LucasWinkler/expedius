@@ -6,6 +6,7 @@ export const metadata = createMetadata({
   title: "Browse Categories",
   description:
     "Explore places by category - restaurants, cafes, bars, and more. Find the perfect spots in your area.",
+  canonicalUrlRelative: "/categories",
 });
 
 export default function CategoriesPage() {

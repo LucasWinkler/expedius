@@ -7,6 +7,7 @@ export const metadata = createMetadata({
   title: "Sign up",
   description:
     "Create a Expedius account to start saving your favorite places and creating custom lists.",
+  canonicalUrlRelative: "/auth/sign-up",
 });
 
 const SignUpPage = async () => {

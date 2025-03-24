@@ -1,3 +1,11 @@
+import { createMetadata } from "@/lib/metadata";
+
+export const metadata = createMetadata({
+  title: "Privacy Policy",
+  description: "Expedius's privacy policy",
+  canonicalUrlRelative: "/privacy",
+});
+
 export default function PrivacyPage() {
   return (
     <div className="container mx-auto space-y-6 px-4 py-8 md:py-12">

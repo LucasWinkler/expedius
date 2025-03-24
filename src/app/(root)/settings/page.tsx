@@ -13,6 +13,7 @@ import { redirect } from "next/navigation";
 export const metadata: Metadata = createMetadata({
   title: "Account Settings",
   description: "Manage your account settings and preferences",
+  canonicalUrlRelative: "/settings",
 });
 
 export default async function Settings() {
