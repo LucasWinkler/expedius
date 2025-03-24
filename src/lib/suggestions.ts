@@ -31,7 +31,6 @@ export const PERSONALIZATION_CONFIG = {
 };
 
 // Late night category groups that make sense for after-hours browsing (10pm-6am)
-// Now using metadata to determine appropriateness
 export const getLateNightCategoryGroups = (): CategoryGroup[] => {
   // Filter categories that are explicitly marked as appropriate for late night
   const lateNightAppropriate = Object.values(CATEGORY_GROUPS)
@@ -57,18 +56,12 @@ export const getLateNightCategoryGroups = (): CategoryGroup[] => {
   return lateNightAppropriate;
 };
 
-/**
- * Types of suggestion sources
- */
 export type SuggestionSource =
   | "default"
   | "user_preferences"
   | "mixed"
   | "exploration";
 
-/**
- * Metadata about suggestions for debugging and client rendering
- */
 export type SuggestionsWithMeta = {
   suggestions: CategoryGroup[];
   source: SuggestionSource;
@@ -85,7 +78,7 @@ export type SuggestionsWithMeta = {
  * @param clientHour The hour (0-23) to use for time-based suggestions, defaults to current server hour
  */
 export function getTimeBasedSuggestions(clientHour?: number): CategoryGroup[] {
-  // Use provided hour or current hour if not provided
+  // Use provided hour or current server hour if not provided
   const hour = clientHour !== undefined ? clientHour : new Date().getHours();
 
   if (hour >= 6 && hour < 11) {
@@ -101,7 +94,6 @@ export function getTimeBasedSuggestions(clientHour?: number): CategoryGroup[] {
     // Late Night (10pm-6am)
     return getLateNightCategoryGroups();
   } else {
-    // Default time
     return DEFAULT_CATEGORY_GROUPS;
   }
 }
@@ -127,14 +119,12 @@ export function getExplorationSuggestions(
     const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
     const timeBasedIds = new Set(timeBasedSuggestions.map((group) => group.id));
 
-    // Determine current time period
     const isLateNight = clientHour >= 22 || clientHour < 6;
     const isMorning = clientHour >= 6 && clientHour < 11;
     const isLunch = clientHour >= 11 && clientHour < 15;
     const isAfternoon = clientHour >= 15 && clientHour < 17;
     const isEvening = clientHour >= 17 && clientHour < 22;
 
-    // Determine time period explicitly using all variables
     let currentTimePeriod:
       | "morning"
       | "lunch"
@@ -153,8 +143,7 @@ export function getExplorationSuggestions(
     } else if (isEvening) {
       currentTimePeriod = "evening";
     } else {
-      // This should never happen if our time periods are exhaustive,
-      // but we'll default to evening as a fallback
+      // This should never happen but we'll default to evening as a fallback
       console.warn(`Unhandled time period for hour: ${clientHour}`);
       currentTimePeriod = "evening";
     }

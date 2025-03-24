@@ -13,7 +13,6 @@ import {
   type SuggestionSource,
 } from "@/lib/suggestions";
 
-// Time information type
 interface ClientTimeInfo {
   timezoneOffset: number;
   clientHour: number;
@@ -69,7 +68,6 @@ export const suggestions = {
 
         console.log("[SERVER INFO] Using time-based suggestions (no session)");
 
-        // Return properly structured response
         return {
           suggestions: result.suggestions,
           metadata: {

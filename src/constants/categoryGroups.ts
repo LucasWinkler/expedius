@@ -17,7 +17,6 @@ export type CategoryGroup = {
 
 // Group place types into logical categories for better organization and discovery
 export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
-  // Dining & Food
   restaurants: {
     id: "restaurants",
     title: "Restaurants",
@@ -61,6 +60,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       },
     },
   },
+
   cafes: {
     id: "cafes",
     title: "Cafes",
@@ -86,6 +86,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       },
     },
   },
+
   desserts: {
     id: "desserts",
     title: "Desserts",
@@ -104,6 +105,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     ],
     weight: 15,
   },
+
   bars: {
     id: "bars",
     title: "Bars",
@@ -121,7 +123,6 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     },
   },
 
-  // Nature & Outdoors
   parks: {
     id: "parks",
     title: "Parks",
@@ -148,6 +149,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       },
     },
   },
+
   beaches: {
     id: "beaches",
     title: "Beaches",
@@ -155,6 +157,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     types: ["beach", "marina"],
     weight: 15,
   },
+
   hiking: {
     id: "hiking",
     title: "Hiking",
@@ -172,7 +175,6 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     },
   },
 
-  // Culture & Entertainment
   museums: {
     id: "museums",
     title: "Museums",
@@ -197,6 +199,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
       },
     },
   },
+
   landmarks: {
     id: "landmarks",
     title: "Landmarks",
@@ -211,6 +214,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     ],
     weight: 15,
   },
+
   entertainment: {
     id: "entertainment",
     title: "Entertainment",
@@ -240,7 +244,6 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     },
   },
 
-  // Shopping
   shopping: {
     id: "shopping",
     title: "Shopping",
@@ -267,7 +270,6 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     },
   },
 
-  // Accommodations
   hotels: {
     id: "hotels",
     title: "Hotels",
@@ -285,7 +287,6 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     weight: 5,
   },
 
-  // Sports & Recreation
   sports: {
     id: "sports",
     title: "Sports",
@@ -304,7 +305,6 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     weight: 10,
   },
 
-  // Health & Wellness
   wellness: {
     id: "wellness",
     title: "Wellness",
@@ -322,7 +322,6 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     },
   },
 
-  // Transport & Travel
   transport: {
     id: "transport",
     title: "Transport",
@@ -338,7 +337,6 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     weight: 5,
   },
 
-  // Religious Places
   religious: {
     id: "religious",
     title: "Religious Sites",
