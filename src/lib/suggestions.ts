@@ -1,32 +1,25 @@
 import {
   CATEGORY_GROUPS,
-  DEFAULT_CATEGORY_GROUPS,
-  MORNING_CATEGORY_GROUPS,
-  LUNCH_CATEGORY_GROUPS,
-  EVENING_CATEGORY_GROUPS,
   type CategoryGroup,
+  getSpecificTypeSuggestions,
 } from "@/constants/categoryGroups";
 import { weightedRandomSelection } from "@/lib/utils/math";
 
 export const PERSONALIZATION_CONFIG = {
   MAX_SUGGESTIONS: 5,
-  DEFAULT_EXPLOITATION_RATIO: 0.7, // 70% familiar, 30% exploration as default
-
-  // Get dynamic exploitation ratio based on user preference count
-  // - New users (few preferences): More exploration
-  // - Experienced users (many preferences): More exploitation
-  getDynamicExploitationRatio(userPreferencesCount: number = 0): number {
-    if (userPreferencesCount <= 3) {
-      // New users: 60% exploitation / 40% exploration
-      return 0.6;
-    } else if (userPreferencesCount >= 15) {
-      // Experienced users: 80% exploitation / 20% exploration
-      return 0.8;
-    } else {
-      // Scale between 60-80% based on preference count
-      // Linear interpolation between 0.6 and 0.8
-      return 0.6 + (userPreferencesCount - 3) * (0.2 / 12);
-    }
+  DEFAULT_EXPLOITATION_RATIO: 0.7,
+  MIN_EXPLOITATION_RATIO: 0.5,
+  MAX_EXPLOITATION_RATIO: 0.8,
+  getDynamicExploitationRatio: (userPreferencesCount: number): number => {
+    // As user preferences increase, we gradually increase exploitation ratio
+    const baseRatio = 0.7;
+    const maxIncrease = 0.1;
+    const increaseRate = 0.01;
+    const increase = Math.min(userPreferencesCount * increaseRate, maxIncrease);
+    return Math.min(
+      baseRatio + increase,
+      PERSONALIZATION_CONFIG.MAX_EXPLOITATION_RATIO,
+    );
   },
 };
 
@@ -60,153 +53,168 @@ export type SuggestionSource =
   | "default"
   | "user_preferences"
   | "mixed"
-  | "exploration";
+  | "exploration"
+  | "time_based";
+
+type TimeOfDay = "morning" | "lunch" | "afternoon" | "evening" | "lateNight";
 
 export type SuggestionsWithMeta = {
   suggestions: CategoryGroup[];
   source: SuggestionSource;
   hasPreferences: boolean;
+  explorationUsed: boolean;
   userPreferencesCount?: number;
   defaultsUsed?: boolean;
-  explorationUsed?: boolean;
   exploitationSuggestions?: CategoryGroup[];
   explorationSuggestions?: CategoryGroup[];
+  metadata?: {
+    timeInfo?: {
+      clientHour?: number;
+      timezoneOffset?: number;
+    };
+    userPreferences?: {
+      primaryTypes?: { placeType: string; count: number }[];
+      allTypes?: { placeType: string; count: number }[];
+    };
+  };
 };
 
 /**
- * Get time-appropriate default suggestions based on the provided hour
- * @param clientHour The hour (0-23) to use for time-based suggestions, defaults to current server hour
+ * Get time-based suggestions based on the current hour
  */
-export function getTimeBasedSuggestions(clientHour?: number): CategoryGroup[] {
-  // Use provided hour or current server hour if not provided
-  const hour = clientHour !== undefined ? clientHour : new Date().getHours();
+export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
+  const suggestions: CategoryGroup[] = [];
 
-  if (hour >= 6 && hour < 11) {
-    // Morning (6am-11am)
-    return MORNING_CATEGORY_GROUPS;
-  } else if (hour >= 11 && hour < 15) {
-    // Lunch time (11am-3pm)
-    return LUNCH_CATEGORY_GROUPS;
-  } else if (hour >= 17 && hour < 22) {
-    // Evening (5pm-10pm)
-    return EVENING_CATEGORY_GROUPS;
-  } else if (hour >= 22 || hour < 6) {
-    // Late Night (10pm-6am)
-    return getLateNightCategoryGroups();
-  } else {
-    return DEFAULT_CATEGORY_GROUPS;
-  }
+  // Helper to check if a category is appropriate for the current time
+  const isTimeAppropriate = (group: CategoryGroup) => {
+    const timeAppropriate = group.metadata?.timeAppropriate;
+    if (!timeAppropriate) return true;
+
+    if (hour >= 5 && hour < 12) return timeAppropriate.morning;
+    if (hour >= 12 && hour < 15) return timeAppropriate.lunch;
+    if (hour >= 15 && hour < 18) return timeAppropriate.afternoon;
+    if (hour >= 18 && hour < 22) return timeAppropriate.evening;
+    return timeAppropriate.lateNight;
+  };
+
+  // Add appropriate categories based on time
+  Object.values(CATEGORY_GROUPS).forEach((group) => {
+    if (isTimeAppropriate(group)) {
+      suggestions.push(group);
+    }
+  });
+
+  return suggestions;
 }
 
-/**
- * Select categories for exploration based on weighted random selection
- * @param excludedIds Set of category IDs to exclude from selection
- * @param count Number of categories to select
- * @param clientHour Optional client hour (0-23) to influence time-appropriate suggestions
- */
 export function getExplorationSuggestions(
-  excludedIds: Set<string>,
+  excludeIds: Set<string>,
   count: number,
-  clientHour?: number,
+  hour: number,
 ): CategoryGroup[] {
-  // Filter out excluded categories and get all categories with weights
-  const availableCategories = Object.values(CATEGORY_GROUPS).filter(
-    (category) => !excludedIds.has(category.id),
+  const timeOfDay: TimeOfDay =
+    hour >= 5 && hour < 11
+      ? "morning"
+      : hour >= 11 && hour < 14
+        ? "lunch"
+        : hour >= 14 && hour < 17
+          ? "afternoon"
+          : hour >= 17 && hour < 22
+            ? "evening"
+            : "lateNight";
+
+  // Get all category groups that are appropriate for the current time
+  const timeAppropriateGroups = Object.values(CATEGORY_GROUPS).filter(
+    (group) =>
+      !excludeIds.has(group.id) &&
+      group.metadata?.timeAppropriate?.[timeOfDay] !== false,
   );
 
-  // If client hour is provided, adjust weights based on time appropriateness
-  if (clientHour !== undefined) {
-    const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
-    const timeBasedIds = new Set(timeBasedSuggestions.map((group) => group.id));
-
-    const isLateNight = clientHour >= 22 || clientHour < 6;
-    const isMorning = clientHour >= 6 && clientHour < 11;
-    const isLunch = clientHour >= 11 && clientHour < 15;
-    const isAfternoon = clientHour >= 15 && clientHour < 17;
-    const isEvening = clientHour >= 17 && clientHour < 22;
-
-    let currentTimePeriod:
-      | "morning"
-      | "lunch"
-      | "afternoon"
-      | "evening"
-      | "lateNight";
-
-    if (isLateNight) {
-      currentTimePeriod = "lateNight";
-    } else if (isMorning) {
-      currentTimePeriod = "morning";
-    } else if (isLunch) {
-      currentTimePeriod = "lunch";
-    } else if (isAfternoon) {
-      currentTimePeriod = "afternoon";
-    } else if (isEvening) {
-      currentTimePeriod = "evening";
-    } else {
-      // This should never happen but we'll default to evening as a fallback
-      console.warn(`Unhandled time period for hour: ${clientHour}`);
-      currentTimePeriod = "evening";
-    }
-
-    // Create a copy of available categories with boosted or reduced weights based on time appropriateness
-    const boostedCategories = availableCategories.map((category) => {
-      // First, check if this category is in the time-based suggestions
-      // If it is, boost its weight significantly (3x)
-      if (timeBasedIds.has(category.id)) {
-        return {
-          ...category,
-          weight: (category.weight || 1) * 3,
-        };
-      }
-
-      // Check time appropriateness from category metadata
-      const timeAppropriate = category.metadata?.timeAppropriate;
-
-      if (timeAppropriate) {
-        // If the category is explicitly marked as not appropriate for current time
-        // Reduce its weight significantly
-        if (timeAppropriate[currentTimePeriod] === false) {
-          return {
-            ...category,
-            weight: (category.weight || 1) * 0.2, // 80% reduction
-          };
-        }
-
-        // If time appropriate, give it a slight boost
-        if (timeAppropriate[currentTimePeriod] === true) {
-          return {
-            ...category,
-            weight: (category.weight || 1) * 1.2, // 20% boost
-          };
-        }
-      }
-
-      // Default case - no change to weight
-      return category;
-    });
-
-    // Apply weighted random selection with adjusted weights
-    return weightedRandomSelection(boostedCategories, count);
-  }
-
-  // Apply regular weighted random selection
-  return weightedRandomSelection(availableCategories, count);
+  // Use weighted random selection to get suggestions
+  return weightedRandomSelection(timeAppropriateGroups, count);
 }
 
-/**
- * Add metadata to suggestions for client-side usage
- */
-export function enhanceSuggestionsWithMetadata(
-  suggestions: CategoryGroup[],
-  metadata: SuggestionsWithMeta,
+export function getPersonalizedSuggestions(
+  userPreferences: { placeType: string; count: number }[] = [],
 ): CategoryGroup[] {
-  return Object.assign([...suggestions], {
-    source: metadata.source,
-    hasPreferences: metadata.hasPreferences,
-    userPreferencesCount: metadata.userPreferencesCount,
-    defaultsUsed: metadata.defaultsUsed,
-    explorationUsed: metadata.explorationUsed,
-    exploitationSuggestions: metadata.exploitationSuggestions,
-    explorationSuggestions: metadata.explorationSuggestions,
-  });
+  const { MAX_SUGGESTIONS, getDynamicExploitationRatio } =
+    PERSONALIZATION_CONFIG;
+
+  // If no user preferences, return time-based suggestions
+  if (userPreferences.length === 0) {
+    return getTimeBasedSuggestions(new Date().getHours());
+  }
+
+  // Get specific type suggestions based on user preferences
+  const specificSuggestions = getSpecificTypeSuggestions(
+    userPreferences,
+    MAX_SUGGESTIONS,
+  );
+
+  // Calculate user preference count for dynamic ratio adjustment
+  const userPreferencesCount = userPreferences.length;
+
+  // Get dynamic exploitation ratio based on user preference count
+  const exploitationRatio = getDynamicExploitationRatio(userPreferencesCount);
+
+  // Calculate exploitation vs exploration counts
+  const exploitationCount = Math.ceil(MAX_SUGGESTIONS * exploitationRatio);
+  const explorationCount = MAX_SUGGESTIONS - exploitationCount;
+
+  // Get user's most engaged categories (exploitation)
+  const exploitationSuggestions = specificSuggestions.slice(
+    0,
+    exploitationCount,
+  );
+
+  // Create a set of already selected category IDs to avoid duplicates
+  const selectedIds = new Set(exploitationSuggestions.map((g) => g.id));
+
+  // Get exploration suggestions (categories user hasn't engaged with much)
+  // Use time-based recommendations to influence exploration
+  const explorationSuggestions =
+    explorationCount > 0
+      ? getExplorationSuggestions(
+          selectedIds,
+          explorationCount,
+          new Date().getHours(),
+        )
+      : [];
+
+  // Combine exploitation and exploration suggestions
+  const combinedSuggestions = [
+    ...exploitationSuggestions,
+    ...explorationSuggestions,
+  ];
+
+  // Fill up to MAX_SUGGESTIONS if we don't have enough
+  if (combinedSuggestions.length < MAX_SUGGESTIONS) {
+    const additionalNeeded = MAX_SUGGESTIONS - combinedSuggestions.length;
+
+    if (additionalNeeded > 0) {
+      // Get additional exploration suggestions, excluding all current ones
+      const currentIds = new Set(combinedSuggestions.map((g) => g.id));
+      const additionalSuggestions = getExplorationSuggestions(
+        currentIds,
+        additionalNeeded,
+        new Date().getHours(),
+      );
+
+      // Add the additional suggestions to the combined list
+      combinedSuggestions.push(...additionalSuggestions);
+    }
+  }
+
+  // Ensure we don't exceed MAX_SUGGESTIONS
+  return combinedSuggestions.slice(0, MAX_SUGGESTIONS);
+}
+
+export function getDefaultSuggestions(): SuggestionsWithMeta {
+  const suggestions = getTimeBasedSuggestions(new Date().getHours());
+  return {
+    suggestions,
+    source: "default",
+    hasPreferences: false,
+    explorationUsed: true,
+  };
 }

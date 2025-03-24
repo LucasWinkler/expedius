@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "@/server/auth/session";
-import { suggestions } from "@/server/data/suggestions";
+import { db } from "@/server/db";
+import { getPlaceTypes } from "@/lib/api/places";
 import { headers } from "next/headers";
+import { suggestions } from "@/server/data/suggestions";
 
 /**
  * GET /api/suggestions
@@ -9,28 +11,51 @@ import { headers } from "next/headers";
  */
 export async function GET() {
   try {
-    // Get client timezone information from headers
-    const requestHeaders = await headers();
-    const clientTimezoneOffset = parseInt(
-      requestHeaders.get("X-Client-Timezone-Offset") || "0",
-    );
-    const clientHour = parseInt(requestHeaders.get("X-Client-Hour") || "-1");
+    const headersList = await headers();
+    const clientHour = headersList.get("x-client-hour");
+    const timezoneOffset = headersList.get("x-client-timezone-offset");
 
+    // Create time info object with client's time if available, otherwise use server time
     const timeInfo = {
-      timezoneOffset: clientTimezoneOffset,
-      clientHour: clientHour,
+      clientHour: clientHour ? parseInt(clientHour, 10) : new Date().getHours(),
+      timezoneOffset: timezoneOffset ? parseInt(timezoneOffset, 10) : 0,
     };
 
     const session = await getServerSession();
-    const personalizedSuggestions =
-      await suggestions.queries.getPersonalizedSuggestions(
-        session?.user?.id || null,
-        timeInfo,
+    if (!session) {
+      return NextResponse.json(
+        await suggestions.queries.getPersonalizedSuggestions(null, timeInfo),
+        { status: 200 },
       );
+    }
 
-    return NextResponse.json(personalizedSuggestions);
+    // Get user's liked places
+    const userLikes = await db.query.like.findMany({
+      where: (like, { eq }) => eq(like.userId, session.user.id),
+    });
+
+    // Get place types for each liked place
+    const placeTypes = await Promise.all(
+      userLikes.map(async (like) => {
+        const types = await getPlaceTypes(like.placeId);
+        return types ? { placeId: like.placeId, ...types } : null;
+      }),
+    );
+
+    // Filter out nulls
+    placeTypes.filter(
+      (types): types is NonNullable<typeof types> => types !== null,
+    );
+
+    return NextResponse.json(
+      await suggestions.queries.getPersonalizedSuggestions(
+        session.user.id,
+        timeInfo,
+      ),
+      { status: 200 },
+    );
   } catch (error) {
-    console.error("Error in suggestions API:", error);
+    console.error("Error fetching suggestions:", error);
     return NextResponse.json(
       { error: "Failed to fetch suggestions" },
       { status: 500 },
