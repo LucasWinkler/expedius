@@ -108,6 +108,7 @@ export const PlaceDetailsReviews = ({
     return () => {
       clearTimeout(timer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reviews]); // Only depend on reviews changing, not checkTruncation
 
   // Check truncation when showAllReviews changes
