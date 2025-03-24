@@ -126,6 +126,8 @@ export const SearchBar = ({
                     onClear={handleClear}
                     onFocus={handleOpenPopup}
                     onClick={handleOpenPopup}
+                    variant={variant}
+                    className="pr-10"
                     {...field}
                   />
                 </FormControl>
@@ -135,6 +137,7 @@ export const SearchBar = ({
           />
           {variant === "with-filters" && (
             <FilterSheet
+              className="shrink-0"
               radius={Number(filters?.radius ?? PLACE_FILTERS.RADIUS.DEFAULT)}
               minRating={Number(filters?.minRating ?? 0)}
               openNow={Boolean(filters?.openNow)}

@@ -35,6 +35,7 @@ interface FilterSheetProps {
     minRating: number;
     openNow: boolean;
   }) => void;
+  className?: string;
 }
 
 const FilterContent = ({
@@ -115,6 +116,7 @@ export const FilterSheet = ({
   minRating,
   openNow,
   onApplyFilters,
+  className,
 }: FilterSheetProps) => {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [isOpen, setIsOpen] = useState(false);
@@ -122,7 +124,6 @@ export const FilterSheet = ({
   const [localMinRating, setLocalMinRating] = useState(minRating);
   const [localOpenNow, setLocalOpenNow] = useState(openNow);
 
-  // Reset local state when props change
   useEffect(() => {
     setLocalRadius(radius);
     setLocalMinRating(minRating);
@@ -132,7 +133,6 @@ export const FilterSheet = ({
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (!open) {
-      // Reset local state after close animation
       setTimeout(() => {
         setLocalRadius(radius);
         setLocalMinRating(minRating);
@@ -154,7 +154,10 @@ export const FilterSheet = ({
     <Button
       variant="ghost"
       size="icon"
-      className="h-[52px] w-[52px] shrink-0 rounded-full p-0 text-muted-foreground transition-all duration-300 ease-out hover:bg-accent hover:text-accent-foreground 2xl:h-[60px] 2xl:w-[60px]"
+      className={cn(
+        "h-[52px] w-[52px] shrink-0 rounded-full bg-accent/50 p-0 text-accent-foreground transition-all duration-300 ease-out hover:bg-accent hover:text-accent-foreground 2xl:h-[60px] 2xl:w-[60px]",
+        className,
+      )}
     >
       <SlidersHorizontal className="size-5 2xl:size-6" />
       <span className="sr-only">Open filters</span>
