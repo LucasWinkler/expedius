@@ -10,7 +10,7 @@ import {
   FormItem,
   FormMessage,
 } from "../ui/form";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { minQueryLength } from "@/constants";
 import { SearchInput } from "@/components/ui/search-input";
 import { useSearch } from "@/hooks/useSearch";
@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useClickOutside } from "@/hooks";
 
 const searchSchema = z.object({
@@ -57,6 +56,7 @@ export const SearchBar = ({
   const { searchHistory, addToHistory, removeFromHistory, refreshHistory } =
     useSearchHistory();
   const formRef = useRef<HTMLFormElement>(null);
+  const [filteredHistory, setFilteredHistory] = useState<string[]>([]);
 
   useClickOutside(formRef, () => {
     setIsPopupOpen(false);
@@ -83,6 +83,19 @@ export const SearchBar = ({
       openNow: false,
     },
   });
+
+  useEffect(() => {
+    const currentValue = form.watch("query") || "";
+    if (!currentValue.trim()) {
+      setFilteredHistory(searchHistory);
+      return;
+    }
+
+    const filtered = searchHistory.filter((item) =>
+      item.toLowerCase().includes(currentValue.toLowerCase()),
+    );
+    setFilteredHistory(filtered);
+  }, [form.watch("query"), searchHistory]);
 
   function onSubmit(data: SearchFormValues) {
     updateSearchParams({
@@ -157,9 +170,9 @@ export const SearchBar = ({
                 Clear All
               </Button>
             </div>
-            <ScrollArea className="h-[var(--radix-popover-content-available-height)] max-h-60">
-              <div className="flex flex-col">
-                {searchHistory.map((item, index) => (
+            <div className="scrollbar-thin max-h-60 overflow-y-auto">
+              {filteredHistory.length > 0 ? (
+                filteredHistory.map((item, index) => (
                   <div
                     key={index}
                     onMouseDown={(e) => e.preventDefault()}
@@ -187,10 +200,15 @@ export const SearchBar = ({
                       </Button>
                     </div>
                   </div>
-                ))}
-              </div>
-              <ScrollBar orientation="vertical" />
-            </ScrollArea>
+                ))
+              ) : (
+                <div className="flex items-center justify-center py-6">
+                  <p className="text-sm text-gray-500">
+                    No matching searches found
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
