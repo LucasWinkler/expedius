@@ -155,9 +155,9 @@ export const SearchBar = ({
         </div>
 
         {isPopupOpen && searchHistory.length > 0 && (
-          <div className="absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md transition-all duration-200 ease-in-out">
-            <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-4 py-3">
-              <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <div className="absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out">
+            <div className="flex items-center justify-between border-b border-gray-200 bg-gray-100 px-4 py-3">
+              <span className="flex items-center gap-2 text-sm font-medium text-gray-800">
                 <Clock className="size-4" />
                 Recent Searches
               </span>
@@ -165,7 +165,7 @@ export const SearchBar = ({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-7 px-2 text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                className="h-7 px-2 text-xs text-gray-600 hover:bg-gray-200 hover:text-gray-900"
                 onClick={clearAllHistory}
               >
                 <Trash2 className="mr-1 size-3.5" />
@@ -179,10 +179,10 @@ export const SearchBar = ({
                     key={index}
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleHistoryItemClick(item)}
-                    className="group flex select-none items-center border-b border-gray-100 bg-gray-50/40 px-4 py-2.5 transition-colors hover:bg-gray-100"
+                    className="group flex select-none items-center border-b border-gray-100 bg-white px-4 py-2.5 transition-colors hover:bg-gray-50/90"
                   >
                     <div className="flex w-full items-center gap-3">
-                      <Search className="size-4 text-gray-500 group-hover:text-blue-500" />
+                      <Search className="size-4 text-gray-500 group-hover:text-gray-700" />
                       <span className="flex-1 truncate text-sm text-gray-700 group-hover:text-gray-900">
                         {item}
                       </span>
@@ -190,21 +190,21 @@ export const SearchBar = ({
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="size-6 shrink-0 rounded-full p-0 opacity-0 transition-opacity hover:bg-gray-200 group-hover:opacity-100"
+                        className="size-6 shrink-0 rounded-full p-0 opacity-70 transition-opacity hover:bg-gray-100 group-hover:opacity-100"
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
                           removeFromHistory(item);
                         }}
                       >
-                        <X className="size-3.5 text-gray-500 hover:text-blue-500" />
+                        <X className="size-3.5 text-gray-600 hover:text-red-500" />
                         <span className="sr-only">Remove</span>
                       </Button>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="flex items-center justify-center py-6">
+                <div className="flex items-center justify-center bg-white py-6">
                   <p className="text-sm text-gray-500">
                     No matching searches found
                   </p>
