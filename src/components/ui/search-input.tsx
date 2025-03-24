@@ -21,7 +21,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           ref={ref}
           value={value}
           className={cn(
-            "h-[52px] rounded-full border-muted-foreground/20 bg-white pl-11 shadow-sm transition-all duration-300 ease-out hover:border-muted-foreground/30 hover:shadow-md focus-visible:border-primary focus-visible:shadow-lg focus-visible:ring-2 focus-visible:ring-primary 2xl:h-[60px] 2xl:text-lg",
+            "h-[52px] rounded-full border-muted-foreground/20 bg-white/90 pl-11 shadow-sm backdrop-blur-sm transition-all duration-300 ease-out hover:border-muted-foreground/30 hover:shadow-md focus-visible:border-primary focus-visible:shadow-lg focus-visible:ring-2 focus-visible:ring-primary 2xl:h-[60px] 2xl:text-lg",
             showSearchButton ? "pr-[88px]" : "pr-10",
             className,
           )}
