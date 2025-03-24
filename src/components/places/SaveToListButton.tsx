@@ -11,14 +11,12 @@ import { usePlaceInteractions } from "@/hooks/usePlaceInteractions";
 
 interface SaveToListButtonProps {
   placeId: string;
-  className?: string;
   variant?: "icon" | "outline";
   size?: "sm" | "lg" | "default";
 }
 
 export const SaveToListButton = ({
   placeId,
-  className,
   variant = "icon",
   size = "default",
 }: SaveToListButtonProps) => {
@@ -48,11 +46,19 @@ export const SaveToListButton = ({
         <Button
           variant="outline"
           size={size}
-          className={className}
+          className={cn(
+            "group/btn transition-all duration-100 ease-out hover:bg-muted/75",
+            isSaved
+              ? "fill-primary text-primary hover:fill-blue-700 hover:text-blue-700"
+              : "fill-transparent hover:fill-blue-700 hover:text-blue-700",
+          )}
           onClick={(e) => e.preventDefault()}
         >
           <Bookmark
-            className={cn("size-4", isSaved && "fill-blue-500 text-blue-500")}
+            className={cn(
+              "size-4 fill-transparent transition-all duration-100 ease-out group-hover/btn:fill-current",
+              isSaved && "fill-current",
+            )}
             aria-hidden="true"
           />
           {isSaved ? "Saved" : "Save"}
@@ -71,16 +77,17 @@ export const SaveToListButton = ({
         variant="secondary"
         size="icon"
         className={cn(
-          "size-8 bg-background/80 backdrop-blur hover:bg-background/90",
-          className,
+          "group/btn size-8 bg-background/80 backdrop-blur transition-all duration-100 ease-out hover:bg-background/90",
+          isSaved
+            ? "fill-primary text-primary hover:fill-blue-700 hover:text-blue-700"
+            : "fill-transparent hover:fill-blue-700 hover:text-blue-700",
         )}
         onClick={(e) => e.preventDefault()}
       >
         <Bookmark
           className={cn(
-            "size-4",
-            isSaved && "fill-blue-500 text-blue-500",
-            className,
+            "size-4 fill-transparent transition-all duration-100 ease-out group-hover/btn:fill-current",
+            isSaved && "fill-current",
           )}
           aria-hidden="true"
         />

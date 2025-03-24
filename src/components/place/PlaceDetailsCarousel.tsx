@@ -58,7 +58,7 @@ export function PlaceDetailsCarousel({
                 </div>
               )}
               <Image
-                src={`/api/places/photo/${encodeURIComponent(photo.name)}?maxHeightPx=1080&maxWidthPx=1920`}
+                src={`/api/places/photo/${encodeURIComponent(photo.name)}?maxHeightPx=480&maxWidthPx=850`}
                 alt={`${placeName} photo ${index + 1}`}
                 className="object-cover"
                 fill
@@ -125,7 +125,7 @@ export function PlaceDetailsCarousel({
                   </div>
                 )}
                 <Image
-                  src={`/api/places/photo/${encodeURIComponent(photo.name)}?maxHeightPx=160&maxWidthPx=240`}
+                  src={`/api/places/photo/${encodeURIComponent(photo.name)}?maxHeightPx=80&maxWidthPx=120`}
                   alt={`${placeName} thumbnail ${index + 1}`}
                   className="object-cover"
                   fill

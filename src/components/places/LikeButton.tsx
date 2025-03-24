@@ -10,7 +10,6 @@ import { useLikesInfinite } from "@/hooks/useLikes";
 
 interface LikeButtonProps {
   placeId: string;
-  className?: string;
   username?: string;
   variant?: "icon" | "outline";
   size?: "sm" | "lg" | "default";
@@ -18,7 +17,6 @@ interface LikeButtonProps {
 
 export const LikeButton = ({
   placeId,
-  className,
   username,
   variant = "icon",
   size = "default",
@@ -63,12 +61,20 @@ export const LikeButton = ({
       <Button
         variant="outline"
         size={size}
-        className={className}
+        className={cn(
+          "group/btn transition-all duration-100 ease-out hover:bg-muted/75",
+          isLiked
+            ? "fill-red-500 text-red-500 hover:fill-red-600 hover:text-red-600"
+            : "fill-transparent hover:fill-red-600 hover:text-red-600",
+        )}
         onClick={handleClick}
         disabled={isPending}
       >
         <Heart
-          className={cn("size-4", isLiked && "fill-red-500 text-red-500")}
+          className={cn(
+            "size-4 fill-transparent transition-all duration-100 ease-out group-hover/btn:fill-current",
+            isLiked && "fill-current",
+          )}
           aria-hidden="true"
         />
         {isLiked ? "Liked" : "Like"}
@@ -81,15 +87,19 @@ export const LikeButton = ({
       variant="secondary"
       size="icon"
       className={cn(
-        "size-8 bg-background/80 backdrop-blur hover:bg-background/90",
-        isLiked && "text-red-500 hover:text-red-600",
-        className,
+        "group/btn size-8 bg-background/80 backdrop-blur transition-all duration-100 ease-out hover:bg-background/90",
+        isLiked
+          ? "fill-red-500 text-red-500 hover:fill-red-600 hover:text-red-600"
+          : "fill-transparent hover:fill-red-600 hover:text-red-600",
       )}
       onClick={handleClick}
       disabled={isPending}
     >
       <Heart
-        className={cn("size-4", isLiked && "fill-current")}
+        className={cn(
+          "size-4 fill-transparent transition-all duration-100 ease-out group-hover/btn:fill-current",
+          isLiked && "fill-current",
+        )}
         aria-hidden="true"
       />
       <span className="sr-only">{isLiked ? "Unlike place" : "Like place"}</span>

@@ -70,25 +70,15 @@ export const PlaceDetailsActions = ({
       </Button>
 
       <div className="col-span-2 grid grid-cols-3 gap-2 sm:col-span-1 sm:flex sm:flex-wrap sm:items-center">
-        <LikeButton
-          className="hover:bg-transparent hover:text-primary"
-          placeId={id}
-          variant="outline"
-          size="sm"
-        />
-        <SaveToListButton
-          className="hover:bg-transparent hover:text-primary"
-          placeId={id}
-          variant="outline"
-          size="sm"
-        />
+        <LikeButton placeId={id} variant="outline" size="sm" />
+        <SaveToListButton placeId={id} variant="outline" size="sm" />
         <Button
-          className="hover:bg-transparent hover:text-primary"
+          className="hover:bg-muted/75"
           variant="outline"
           size="sm"
           onClick={handleShare}
         >
-          <Share2 className="mr-1.5 h-4 w-4" />
+          <Share2 className="h-4 w-4" />
           Share
         </Button>
       </div>
