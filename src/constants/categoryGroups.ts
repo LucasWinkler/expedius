@@ -149,7 +149,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
         id: "tea_house",
         name: "Tea Houses",
         baseWeight: 10,
-        imageUrl: undefined,
+        imageUrl: "/categories/tea.jpg",
       },
       { id: "bakery", name: "Bakeries", baseWeight: 10, imageUrl: undefined },
       {
