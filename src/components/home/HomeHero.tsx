@@ -11,12 +11,12 @@ export const HomeHero = () => {
       </div>
       <div className="container relative z-20 mx-auto px-5 sm:px-6">
         <header className="mx-auto max-w-3xl rounded-3xl p-4 text-center sm:p-8 lg:max-w-4xl 2xl:max-w-5xl">
-          <h1 className="mx-auto text-3xl font-bold tracking-tight text-foreground [text-shadow:_0_1px_2px_rgb(0_0_0_/_0.1)] xs:text-4xl sm:text-[3.25rem] md:text-6xl lg:text-7xl 2xl:text-7xl">
+          <h1 className="mx-auto text-4xl font-bold tracking-tight text-foreground [text-shadow:_0_1px_2px_rgb(0_0_0_/_0.1)] xs:text-5xl sm:text-[3.25rem] md:text-6xl lg:text-7xl 2xl:text-8xl">
             Discover your
             <br />
             next adventure.
           </h1>
-          <p className="mx-auto mt-3 max-w-[35ch] text-base text-muted-foreground sm:mt-6 sm:max-w-[40ch] sm:text-lg md:max-w-[45ch] md:text-xl 2xl:mt-8 2xl:text-2xl">
+          <p className="mx-auto mt-3 max-w-[35ch] text-lg text-muted-foreground sm:mt-6 sm:max-w-[40ch] sm:text-xl md:max-w-[45ch] md:text-xl lg:text-2xl 2xl:mt-8 2xl:text-2xl">
             Find, organize, and share your favourite places from around the
             world with personalized recommendations.
           </p>
