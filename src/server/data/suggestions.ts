@@ -14,7 +14,10 @@ import {
   type SuggestionSource,
   SuggestionsContext,
   SUGGESTION_COUNTS,
+  SUGGESTION_CONTEXTS,
 } from "@/lib/suggestions";
+import { CATEGORY_GROUPS } from "@/constants/categoryGroups";
+import { weightedRandomSelection } from "@/lib/utils/math";
 
 interface ClientTimeInfo {
   timezoneOffset: number;
@@ -56,10 +59,34 @@ export const suggestions = {
           : new Date().getHours();
 
       const maxSuggestions = SUGGESTION_COUNTS[context];
+      const isLateNight = clientHour < 5 || clientHour >= 22;
+
+      // Special handling for explore page during late night
+      const isExploreContext = context === SUGGESTION_CONTEXTS.EXPLORE;
 
       // If user is not logged in, return time-based suggestions
       if (!userId) {
-        const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
+        let timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
+
+        // For explore page at night, ensure we have more variety
+        if (
+          isExploreContext &&
+          isLateNight &&
+          timeBasedSuggestions.length < maxSuggestions
+        ) {
+          // Add some exploration suggestions to compensate
+          const selectedIds = new Set(timeBasedSuggestions.map((s) => s.id));
+          const additionalSuggestions = getExplorationSuggestions(
+            selectedIds,
+            maxSuggestions - timeBasedSuggestions.length,
+            clientHour,
+          );
+
+          timeBasedSuggestions = [
+            ...timeBasedSuggestions,
+            ...additionalSuggestions,
+          ];
+        }
 
         result = {
           suggestions: timeBasedSuggestions.slice(0, maxSuggestions),
@@ -68,7 +95,9 @@ export const suggestions = {
           explorationUsed: true,
         };
 
-        console.log("[SERVER INFO] Using time-based suggestions (no session)");
+        console.log(
+          `[SERVER INFO] Using time-based suggestions (no session, count: ${timeBasedSuggestions.length})`,
+        );
 
         return {
           suggestions: result.suggestions,
@@ -243,9 +272,113 @@ export const suggestions = {
             timeAdjustedExplorationCount,
           );
 
+        // If we're in late night hours, ensure some night-appropriate exploration
+        let nightSpecificSuggestions: CategoryGroup[] = [];
+
+        if (isLateNight && timeAdjustedExplorationCount > 0) {
+          // Identify strong night categories that user might not have interacted with
+          const nightCategories = ["bars", "entertainment", "arts"];
+          const userCategoryIds = new Set([
+            ...userPrefs.primaryTypes.map(
+              (p) => getCategoryGroupsFromTypes([p.placeType])?.[0]?.id || "",
+            ),
+            ...userPrefs.allTypes.map(
+              (p) => getCategoryGroupsFromTypes([p.placeType])?.[0]?.id || "",
+            ),
+          ]);
+
+          // Find night categories the user hasn't engaged with much
+          const unexploredNightCategories = nightCategories.filter(
+            (id) =>
+              !selectedIds.has(id) &&
+              (!userCategoryIds.has(id) || Math.random() < 0.3), // Allow small chance even if they've engaged
+          );
+
+          if (unexploredNightCategories.length > 0) {
+            // Add 1-2 night-specific categories if available
+            const potentialNightSuggestions = unexploredNightCategories
+              .map((id) => CATEGORY_GROUPS[id])
+              .filter(Boolean);
+
+            // For bar category, sometimes show specific subtypes instead
+            const useBarsSubtypes =
+              unexploredNightCategories.includes("bars") && Math.random() < 0.4;
+
+            if (useBarsSubtypes) {
+              // Replace 'bars' with specific bar subtypes
+              const barsGroup = CATEGORY_GROUPS.bars;
+              const barSubtypes: CategoryGroup[] = barsGroup.types
+                .filter((type) =>
+                  ["bar", "wine_bar", "pub", "night_club"].includes(type.id),
+                )
+                .map((type) => ({
+                  id: `bars_${type.id}`,
+                  title: type.name,
+                  query: type.name.toLowerCase(),
+                  purpose: "primary" as const,
+                  imageUrl: type.imageUrl || barsGroup.imageUrl,
+                  types: [type],
+                  weight: 15,
+                }));
+
+              // Select one random bar subtype
+              const selectedBarSubtype = weightedRandomSelection(
+                barSubtypes,
+                1,
+              );
+
+              // Filter out the general bars category and add the specific subtype
+              const filteredNightSuggestions = potentialNightSuggestions.filter(
+                (g) => g.id !== "bars",
+              );
+
+              // Take 1 night category, or 2 if we have enough exploration slots
+              const nightCategoriesCount = Math.min(
+                timeAdjustedExplorationCount > 1 ? 2 : 1,
+                filteredNightSuggestions.length,
+              );
+
+              // Select from other night categories
+              const otherNightCategories = weightedRandomSelection(
+                filteredNightSuggestions,
+                nightCategoriesCount,
+              );
+
+              nightSpecificSuggestions = [
+                ...selectedBarSubtype,
+                ...otherNightCategories,
+              ];
+            } else {
+              // Regular selection of night categories
+              // Take 1 night category, or 2 if we have enough exploration slots
+              const nightCategoriesCount = Math.min(
+                timeAdjustedExplorationCount > 1 ? 2 : 1,
+                potentialNightSuggestions.length,
+              );
+
+              nightSpecificSuggestions = weightedRandomSelection(
+                potentialNightSuggestions,
+                nightCategoriesCount,
+              );
+            }
+
+            // Add selected night categories to the selectedIds set
+            nightSpecificSuggestions.forEach((cat) => selectedIds.add(cat.id));
+
+            // Either use these as part of exploration or add them directly
+            if (nightSpecificSuggestions.length > 0) {
+              console.log(
+                `[SERVER INFO] Added ${nightSpecificSuggestions.length} night-specific exploration options`,
+              );
+            }
+          }
+        }
+
         // If we don't have enough category exploration suggestions, fill with general exploration
         const remainingExplorationCount =
-          timeAdjustedExplorationCount - categoryExplorationSuggestions.length;
+          timeAdjustedExplorationCount -
+          categoryExplorationSuggestions.length -
+          nightSpecificSuggestions.length;
         const generalExplorationSuggestions =
           remainingExplorationCount > 0
             ? getExplorationSuggestions(
@@ -258,6 +391,14 @@ export const suggestions = {
         // Combine all suggestions
         const combinedSuggestions = [
           ...exploitationSuggestions,
+          ...nightSpecificSuggestions, // Add night categories with priority
+          ...categoryExplorationSuggestions,
+          ...generalExplorationSuggestions,
+        ];
+
+        // For metadata tracking, ensure night suggestions are properly marked as exploration
+        const allExplorationSuggestions = [
+          ...nightSpecificSuggestions,
           ...categoryExplorationSuggestions,
           ...generalExplorationSuggestions,
         ];
@@ -283,14 +424,13 @@ export const suggestions = {
             combinedSuggestions.push(...additionalSuggestions);
 
             // IMPORTANT: Also add them to the exploration suggestions list for proper tracking
-            generalExplorationSuggestions.push(...additionalSuggestions);
+            allExplorationSuggestions.push(...additionalSuggestions);
 
             console.log("[SERVER INFO] Updated exploration suggestions:", {
               original:
-                generalExplorationSuggestions.length -
-                additionalSuggestions.length,
+                allExplorationSuggestions.length - additionalSuggestions.length,
               additional: additionalSuggestions.length,
-              total: generalExplorationSuggestions.length,
+              total: allExplorationSuggestions.length,
             });
           }
         }
@@ -309,13 +449,11 @@ export const suggestions = {
             userPrefs.primaryTypes.length + userPrefs.allTypes.length,
           defaultsUsed: generalExplorationSuggestions.length > 0,
           explorationUsed:
+            nightSpecificSuggestions.length > 0 ||
             categoryExplorationSuggestions.length > 0 ||
             generalExplorationSuggestions.length > 0,
           exploitationSuggestions,
-          explorationSuggestions: [
-            ...categoryExplorationSuggestions,
-            ...generalExplorationSuggestions,
-          ],
+          explorationSuggestions: allExplorationSuggestions,
         };
 
         console.log(

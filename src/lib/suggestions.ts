@@ -44,8 +44,8 @@ export const getLateNightCategoryGroups = (): CategoryGroup[] => {
     )
     // Sort by weight descending to prioritize most relevant categories
     .sort((a, b) => (b.weight || 0) - (a.weight || 0))
-    // Take top 5
-    .slice(0, 5);
+    // Take top 8 instead of 5 to ensure we have more options
+    .slice(0, 8);
 
   // Fallback if not enough categories have metadata
   if (lateNightAppropriate.length < 5) {
@@ -56,6 +56,7 @@ export const getLateNightCategoryGroups = (): CategoryGroup[] => {
       CATEGORY_GROUPS.entertainment, // Entertainment options like movie theaters, arcades
       CATEGORY_GROUPS.desserts, // Late night dessert spots
       CATEGORY_GROUPS.markets, // 24-hour convenience stores
+      CATEGORY_GROUPS.arts, // Late night shows
     ];
   }
 
@@ -101,8 +102,6 @@ export type SuggestionsWithMeta = {
  * Get time-based suggestions based on the current hour
  */
 export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
-  const suggestions: CategoryGroup[] = [];
-
   // Helper to check if a category is appropriate for the current time
   const isTimeAppropriate = (group: CategoryGroup) => {
     const timeAppropriate = group.metadata?.timeAppropriate;
@@ -116,18 +115,121 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
     return timeAppropriate.lateNight; // 10pm-5am
   };
 
-  // Add appropriate categories based on time
-  Object.values(CATEGORY_GROUPS).forEach((group) => {
-    if (isTimeAppropriate(group)) {
-      // Create a new category group with the same properties but with imageUrl
-      suggestions.push({
-        ...group,
-        imageUrl: group.imageUrl || "/place-image-fallback.webp",
-      });
-    }
-  });
+  // Collect all appropriate categories for the current time
+  const timeAppropriateGroups = Object.values(CATEGORY_GROUPS)
+    .filter(isTimeAppropriate)
+    .map((group) => ({
+      ...group,
+      imageUrl: group.imageUrl || "/place-image-fallback.webp",
+    }));
 
-  return suggestions;
+  // For late night, ensure we add some variety through weighted random selection
+  const isLateNight = hour < 5 || hour >= 22;
+  if (isLateNight) {
+    // Create entertainment subtype direct categories (50% chance of using these)
+    const useEntertainmentSubtypes = Math.random() < 0.5;
+
+    if (useEntertainmentSubtypes) {
+      // Use subtypes directly from entertainment category
+      const entertainmentGroup = CATEGORY_GROUPS.entertainment;
+
+      // Create night-appropriate entertainment subtypes as standalone categories
+      const nightSubtypes: CategoryGroup[] = entertainmentGroup.types
+        .filter((type) =>
+          [
+            "bowling_alley",
+            "karaoke",
+            "arcade",
+            "pool_hall",
+            "billiards",
+            "movie_theater",
+          ].includes(type.id),
+        )
+        .map((type) => ({
+          id: type.id,
+          title: type.name,
+          query: type.name.toLowerCase(),
+          purpose: "primary" as const,
+          imageUrl: type.imageUrl || entertainmentGroup.imageUrl,
+          types: [type],
+          weight: 12,
+        }));
+
+      // Remove "entertainment" from the main categories to avoid duplication
+      const highRelevanceWithoutEntertainment = timeAppropriateGroups.filter(
+        (group) =>
+          [
+            "restaurants",
+            "bars",
+            "desserts",
+            "arts",
+            "sports",
+            "markets",
+          ].includes(group.id),
+      );
+
+      // Randomly select 1-3 entertainment subtypes to showcase specific night activities
+      const selectedSubtypes = weightedRandomSelection(
+        nightSubtypes,
+        Math.min(3, nightSubtypes.length),
+      );
+
+      // Select from main categories to fill the remaining spots
+      const mainCategoriesCount = 6 - selectedSubtypes.length;
+      const selectedMainCategories = weightedRandomSelection(
+        highRelevanceWithoutEntertainment,
+        Math.min(mainCategoriesCount, highRelevanceWithoutEntertainment.length),
+      );
+
+      return [...selectedMainCategories, ...selectedSubtypes];
+    }
+
+    // Regular behavior (50% of the time)
+    // Split into two groups: highly relevant and somewhat relevant
+    const highRelevance = timeAppropriateGroups.filter((group) =>
+      [
+        "restaurants",
+        "bars",
+        "entertainment",
+        "desserts",
+        "arts",
+        "sports",
+        "markets",
+      ].includes(group.id),
+    );
+
+    const otherRelevant = timeAppropriateGroups.filter(
+      (group) =>
+        ![
+          "restaurants",
+          "bars",
+          "entertainment",
+          "desserts",
+          "arts",
+          "sports",
+          "markets",
+        ].includes(group.id),
+    );
+
+    // Ensure we return a mix of both groups with weighted random selection
+    // This ensures variety but still prioritizes nighttime-appropriate categories
+    return [
+      ...weightedRandomSelection(
+        highRelevance,
+        Math.min(highRelevance.length, 5),
+      ),
+      ...weightedRandomSelection(
+        otherRelevant,
+        Math.max(0, 6 - Math.min(highRelevance.length, 5)),
+      ),
+    ];
+  }
+
+  // For daytime, just use weighted random selection directly
+  return weightedRandomSelection(
+    timeAppropriateGroups,
+    timeAppropriateGroups.length,
+  );
 }
 
 export function getExplorationSuggestions(

@@ -9,7 +9,12 @@ import type { SuggestionsContext } from "@/lib/suggestions";
 import Link from "next/link";
 import { TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Tooltip } from "../ui/tooltip";
-import { getSuggestionTooltipText } from "@/lib/suggestions/utils";
+import {
+  getSuggestionTooltipText,
+  isNightSpecificSuggestion,
+  isLateNightHour,
+  isNightSuggestionForDisplay,
+} from "@/lib/suggestions/utils";
 
 interface ExploreEmptyStateProps {
   className?: string;
@@ -82,6 +87,18 @@ export const ExploreEmptyState = ({
               )) ||
             false;
 
+          // Use the utility function to determine if it's a night-specific suggestion
+          const isNightSpecific = isNightSpecificSuggestion(suggestion);
+
+          // Use the utility function to determine if it's late night hours
+          const isLateNight = isLateNightHour();
+
+          // Use the combined utility to determine if this should get night styling
+          const isNightSuggestion = isNightSuggestionForDisplay(
+            suggestion,
+            isExploration,
+          );
+
           return (
             <Tooltip key={suggestion.id}>
               <TooltipTrigger asChild>
@@ -95,11 +112,18 @@ export const ExploreEmptyState = ({
                     }
                     index={index}
                     isExploration={isExploration}
+                    isNightSuggestion={isNightSuggestion}
                   />
                 </div>
               </TooltipTrigger>
               <TooltipContent className="max-w-[16rem] text-sm">
-                {getSuggestionTooltipText(isExploration, suggestion, metadata)}
+                {isNightSuggestion
+                  ? "Popular night activity to explore"
+                  : getSuggestionTooltipText(
+                      isExploration,
+                      suggestion,
+                      metadata,
+                    )}
               </TooltipContent>
             </Tooltip>
           );
