@@ -73,6 +73,15 @@ export const SearchBar = ({
 
   const currentQueryValue = form.watch("query");
 
+  const lastUrlQueryRef = useRef(initialQuery);
+
+  useEffect(() => {
+    if (initialQuery !== lastUrlQueryRef.current) {
+      lastUrlQueryRef.current = initialQuery;
+      form.setValue("query", initialQuery);
+    }
+  }, [initialQuery, form]);
+
   useEffect(() => {
     const currentValue = currentQueryValue || "";
     if (!currentValue.trim()) {
