@@ -18,6 +18,7 @@ import {
 } from "@/lib/suggestions";
 import { CATEGORY_GROUPS } from "@/constants/categoryGroups";
 import { weightedRandomSelection } from "@/lib/utils/math";
+import { deduplicateSuggestions } from "@/utils/suggestions";
 
 interface ClientTimeInfo {
   timezoneOffset: number;
@@ -88,15 +89,20 @@ export const suggestions = {
           ];
         }
 
+        // Deduplicate suggestions before returning
+        const dedupedSuggestions = deduplicateSuggestions(
+          timeBasedSuggestions,
+        ).slice(0, maxSuggestions);
+
         result = {
-          suggestions: timeBasedSuggestions.slice(0, maxSuggestions),
+          suggestions: dedupedSuggestions,
           source: "default",
           hasPreferences: false,
           explorationUsed: true,
         };
 
         console.log(
-          `[SERVER INFO] Using time-based suggestions (no session, count: ${timeBasedSuggestions.length})`,
+          `[SERVER INFO] Using time-based suggestions (no session, count: ${dedupedSuggestions.length})`,
         );
 
         return {
@@ -121,8 +127,13 @@ export const suggestions = {
         ) {
           const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
 
+          // Deduplicate suggestions before returning
+          const dedupedSuggestions = deduplicateSuggestions(
+            timeBasedSuggestions,
+          ).slice(0, maxSuggestions);
+
           result = {
-            suggestions: timeBasedSuggestions.slice(0, maxSuggestions),
+            suggestions: dedupedSuggestions,
             source: "default",
             hasPreferences: false,
             explorationUsed: true,
@@ -435,11 +446,43 @@ export const suggestions = {
           }
         }
 
+        // Final deduplication step to ensure no duplicates
+        const dedupedSuggestions = deduplicateSuggestions(combinedSuggestions);
+
+        // If deduplication reduced suggestions below maxSuggestions, add additional ones
+        if (dedupedSuggestions.length < maxSuggestions) {
+          const currentIds = new Set(dedupedSuggestions.map((g) => g.id));
+          const additionalNeeded = maxSuggestions - dedupedSuggestions.length;
+
+          console.log(
+            `[SERVER INFO] After deduplication, need ${additionalNeeded} more suggestions`,
+          );
+
+          const extraSuggestions = getExplorationSuggestions(
+            currentIds,
+            additionalNeeded,
+            clientHour,
+          );
+
+          dedupedSuggestions.push(...extraSuggestions);
+
+          // Update exploration suggestions list for tracking
+          allExplorationSuggestions.push(...extraSuggestions);
+        }
+
         // Ensure we don't exceed MAX_SUGGESTIONS
-        const finalSuggestions = combinedSuggestions.slice(0, maxSuggestions);
+        const finalSuggestions = dedupedSuggestions.slice(0, maxSuggestions);
 
         // Determine source based on what was used
         const source: SuggestionSource = "user_preferences";
+
+        // Deduplicate metadata suggestions as well
+        const dedupedExploitationSuggestions = deduplicateSuggestions(
+          exploitationSuggestions,
+        );
+        const dedupedExplorationSuggestions = deduplicateSuggestions(
+          allExplorationSuggestions,
+        );
 
         result = {
           suggestions: finalSuggestions,
@@ -452,8 +495,8 @@ export const suggestions = {
             nightSpecificSuggestions.length > 0 ||
             categoryExplorationSuggestions.length > 0 ||
             generalExplorationSuggestions.length > 0,
-          exploitationSuggestions,
-          explorationSuggestions: allExplorationSuggestions,
+          exploitationSuggestions: dedupedExploitationSuggestions,
+          explorationSuggestions: dedupedExplorationSuggestions,
         };
 
         console.log(
@@ -477,8 +520,13 @@ export const suggestions = {
         // Fallback to time-based suggestions on error
         const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
 
+        // Deduplicate suggestions before returning
+        const dedupedSuggestions = deduplicateSuggestions(
+          timeBasedSuggestions,
+        ).slice(0, maxSuggestions);
+
         result = {
-          suggestions: timeBasedSuggestions.slice(0, maxSuggestions),
+          suggestions: dedupedSuggestions,
           source: "default",
           hasPreferences: false,
           explorationUsed: true,

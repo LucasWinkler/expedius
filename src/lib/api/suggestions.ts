@@ -1,5 +1,6 @@
 import type { CategoryGroup } from "@/types/categories";
 import { SuggestionsContext } from "../suggestions";
+import { validateSuggestions } from "@/utils/suggestions";
 
 // Response type for personalized suggestions
 export interface PersonalizedSuggestionsResponse {
@@ -45,7 +46,17 @@ export const getPersonalizedSuggestions = async (
       throw new Error(`Failed to fetch suggestions: ${response.status}`);
     }
 
-    return response.json();
+    const data = await response.json();
+
+    // Validate response for duplicates (this is just for debugging)
+    if (data.suggestions && Array.isArray(data.suggestions)) {
+      validateSuggestions(data.suggestions, {
+        exploitationSuggestions: data.metadata?.exploitationSuggestions,
+        explorationSuggestions: data.metadata?.explorationSuggestions,
+      });
+    }
+
+    return data;
   } catch (error) {
     console.error("Error fetching personalized suggestions:", error);
     throw error;

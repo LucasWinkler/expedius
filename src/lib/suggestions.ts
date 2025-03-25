@@ -2,6 +2,7 @@ import type { CategoryGroup } from "@/types/categories";
 import { CATEGORY_GROUPS } from "@/constants/categoryGroups";
 import { weightedRandomSelection } from "@/lib/utils/math";
 import { getSpecificTypeSuggestions } from "@/utils/categories";
+import { deduplicateSuggestions } from "@/utils/suggestions";
 
 export const SUGGESTION_CONTEXTS = {
   HOME: "home",
@@ -269,7 +270,8 @@ export function getPersonalizedSuggestions(
 
   // If no user preferences, return time-based suggestions
   if (userPreferences.length === 0) {
-    return getTimeBasedSuggestions(new Date().getHours()).slice(0, targetCount);
+    const timeSuggestions = getTimeBasedSuggestions(new Date().getHours());
+    return deduplicateSuggestions(timeSuggestions).slice(0, targetCount);
   }
 
   // Get specific type suggestions based on user preferences
@@ -311,12 +313,15 @@ export function getPersonalizedSuggestions(
     ...explorationSuggestions,
   ];
 
-  // Fill up to targetCount if we don't have enough
-  if (combinedSuggestions.length < targetCount) {
-    const additionalNeeded = targetCount - combinedSuggestions.length;
+  // Deduplicate to ensure no duplicates across categories
+  const dedupedSuggestions = deduplicateSuggestions(combinedSuggestions);
+
+  // Fill up to targetCount if deduplication reduced the count
+  if (dedupedSuggestions.length < targetCount) {
+    const additionalNeeded = targetCount - dedupedSuggestions.length;
 
     if (additionalNeeded > 0) {
-      const currentIds = new Set(combinedSuggestions.map((g) => g.id));
+      const currentIds = new Set(dedupedSuggestions.map((g) => g.id));
       const additionalSuggestions = getExplorationSuggestions(
         currentIds,
         additionalNeeded,
@@ -324,18 +329,20 @@ export function getPersonalizedSuggestions(
       );
 
       // Add the additional suggestions to the combined list
-      combinedSuggestions.push(...additionalSuggestions);
+      dedupedSuggestions.push(...additionalSuggestions);
     }
   }
 
   // Ensure we don't exceed maxSuggestions
-  return combinedSuggestions.slice(0, targetCount);
+  return dedupedSuggestions.slice(0, targetCount);
 }
 
 export function getDefaultSuggestions(): SuggestionsWithMeta {
   const suggestions = getTimeBasedSuggestions(new Date().getHours());
+  const dedupedSuggestions = deduplicateSuggestions(suggestions);
+
   return {
-    suggestions,
+    suggestions: dedupedSuggestions,
     source: "default",
     hasPreferences: false,
     explorationUsed: true,

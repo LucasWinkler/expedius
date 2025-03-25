@@ -3,6 +3,7 @@ import type { CategoryGroup } from "@/types/categories";
 import { SEARCH_SUGGESTIONS } from "@/constants";
 import { SuggestionsContext } from "@/lib/suggestions";
 import { getPersonalizedSuggestions } from "@/lib/api/suggestions";
+import { deduplicateSuggestions } from "@/utils/suggestions";
 
 export type SuggestionMeta = {
   source: string;
@@ -38,14 +39,20 @@ export function usePersonalizedSuggestions(
         console.log("[DEBUG] Raw suggestion response:", response);
 
         if (response && response.suggestions && response.metadata) {
-          const suggestionsArray = response.suggestions;
+          const suggestionsArray = deduplicateSuggestions(response.suggestions);
 
           const meta: SuggestionMeta = {
             source: response.metadata.source || "default",
             hasPreferences: response.metadata.hasPreferences || false,
             explorationUsed: response.metadata.explorationUsed || false,
-            exploitationSuggestions: response.metadata.exploitationSuggestions,
-            explorationSuggestions: response.metadata.explorationSuggestions,
+            exploitationSuggestions: response.metadata.exploitationSuggestions
+              ? deduplicateSuggestions(
+                  response.metadata.exploitationSuggestions,
+                )
+              : undefined,
+            explorationSuggestions: response.metadata.explorationSuggestions
+              ? deduplicateSuggestions(response.metadata.explorationSuggestions)
+              : undefined,
             userPreferencesCount: response.metadata.userPreferencesCount,
           };
 
@@ -63,12 +70,14 @@ export function usePersonalizedSuggestions(
             "[WARN] Unexpected response format from suggestions API:",
             response,
           );
-          setSuggestions(
-            Array.isArray(response)
-              ? response
-              : (response as unknown as { suggestions?: CategoryGroup[] })
-                  .suggestions || [],
-          );
+          const rawSuggestions = Array.isArray(response)
+            ? response
+            : (response as unknown as { suggestions?: CategoryGroup[] })
+                .suggestions || [];
+
+          const uniqueSuggestions = deduplicateSuggestions(rawSuggestions);
+
+          setSuggestions(uniqueSuggestions);
           setMetadata({
             source: "default",
             hasPreferences: false,
@@ -93,7 +102,7 @@ export function usePersonalizedSuggestions(
         );
 
         console.log("[INFO] Using client fallback suggestions");
-        setSuggestions(fallbackSuggestions);
+        setSuggestions(deduplicateSuggestions(fallbackSuggestions));
         setMetadata({
           source: "default",
           hasPreferences: false,
