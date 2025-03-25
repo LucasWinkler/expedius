@@ -30,7 +30,7 @@ export const ListsViewSkeleton = () => {
           <Skeleton className="h-10 w-28" />
         </div>
 
-        <ul className="mb-8 space-y-8">
+        <ul className="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
           {Array.from({ length: 3 }).map((_, i) => (
             <ListCardSkeleton key={i} />
           ))}

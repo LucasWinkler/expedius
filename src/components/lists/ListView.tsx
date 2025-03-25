@@ -15,7 +15,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useSavedPlaces } from "@/hooks/useSavedPlaces";
-import { Loader2 } from "lucide-react";
+import { PlaceCardSkeleton } from "../skeletons/PlaceCardSkeleton";
 
 const LikeButton = dynamic(
   () => import("@/components/places/LikeButton").then((mod) => mod.LikeButton),
@@ -165,8 +165,10 @@ export const ListView = ({
 
       <section>
         {isLoading ? (
-          <div className="flex justify-center py-8">
-            <Loader2 className="size-6 animate-spin text-muted-foreground" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <PlaceCardSkeleton key={i} showActions />
+            ))}
           </div>
         ) : error ? (
           <div className="py-8 text-center text-muted-foreground">
