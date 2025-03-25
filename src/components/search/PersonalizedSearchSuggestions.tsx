@@ -42,28 +42,24 @@ export const PersonalizedSearchSuggestions = () => {
               <Link
                 href={`/explore?q=${encodeURIComponent(suggestion.query)}`}
                 className={cn(
-                  "group inline-flex items-center rounded-full border shadow-sm backdrop-blur-sm transition-all hover:bg-background/80 hover:text-foreground hover:shadow",
+                  "group relative inline-flex items-center rounded-full shadow-sm backdrop-blur-sm transition-all",
                   "px-3.5 py-1.5 text-sm sm:px-4 sm:py-1.5 sm:text-sm md:px-4 md:py-2 md:text-sm",
                   "lg:px-4 lg:py-2 lg:text-sm xl:px-4 xl:py-2 xl:text-sm 2xl:px-4 2xl:py-2 2xl:text-base",
                   isExploration ? "text-foreground" : "text-foreground/90",
-                  isExploration
-                    ? "border-primary/30 bg-background/65 hover:border-primary/50"
-                    : "border-border/40 bg-background/75 shadow hover:border-border/60",
+                  isExploration &&
+                    "before:animate-border-shimmer bg-background/80 shadow-[0_2px_8px_rgba(var(--primary),0.15)] before:absolute before:inset-0 before:rounded-full before:bg-[linear-gradient(90deg,hsl(var(--primary)/0.15)_0%,hsl(var(--primary)/0.2)_20%,hsl(var(--primary)/0.35)_50%,hsl(var(--primary)/0.2)_80%,hsl(var(--primary)/0.15)_100%)] before:bg-[length:200%_100%] after:absolute after:inset-[2px] after:rounded-full after:bg-background/95 hover:shadow-[0_2px_12px_rgba(var(--primary),0.25)] hover:before:bg-[linear-gradient(90deg,hsl(var(--primary)/0.2)_0%,hsl(var(--primary)/0.25)_20%,hsl(var(--primary)/0.4)_50%,hsl(var(--primary)/0.25)_80%,hsl(var(--primary)/0.2)_100%)]",
+                  !isExploration &&
+                    "border border-border/40 bg-background/75 shadow hover:border-border/60 hover:bg-background/80 hover:shadow-md",
                 )}
                 aria-label={`Search for ${suggestion.title}`}
                 data-personalized={metadata.hasPreferences}
                 data-exploration={isExploration}
               >
                 {isExploration && (
-                  <div className="relative">
-                    <Sparkles className="mr-1.5 size-3.5 animate-pulse text-primary sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
-                    <div className="absolute inset-0 animate-pulse blur-sm">
-                      <Sparkles className="mr-1.5 size-3.5 text-primary/50 sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
-                    </div>
-                  </div>
+                  <Sparkles className="z-10 mr-1.5 size-3.5 animate-pulse text-primary sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
                 )}
-                {suggestion.title}
-                <ArrowRight className="ml-1.5 size-3.5 transition-transform duration-300 ease-out group-hover:translate-x-1 sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
+                <span className="relative z-10">{suggestion.title}</span>
+                <ArrowRight className="relative z-10 ml-1.5 size-3.5 transition-transform duration-300 ease-out group-hover:translate-x-1 sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
               </Link>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="mt-2 text-xs">

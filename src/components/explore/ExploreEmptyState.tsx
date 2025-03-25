@@ -7,6 +7,8 @@ import { Sparkles, ArrowRight } from "lucide-react";
 import { ExploreCategoriesSkeleton } from "./ExploreCategoriesSkeleton";
 import type { SuggestionsContext } from "@/lib/suggestions";
 import Link from "next/link";
+import { TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Tooltip } from "../ui/tooltip";
 
 interface ExploreEmptyStateProps {
   className?: string;
@@ -27,30 +29,48 @@ export const ExploreEmptyState = ({
 
   return (
     <div className={cn("space-y-6", className)}>
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold tracking-tight">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="min-w-0 text-2xl font-semibold tracking-tight">
           {metadata.hasPreferences
             ? "Recommended for You"
             : "Popular Right Now"}
         </h2>
         {metadata.hasPreferences ? (
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Sparkles className="size-3.5 text-primary/70" />
-            Personalized
-          </div>
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="flex shrink-0 items-center gap-1.5 text-sm text-primary">
+                <Sparkles className="size-3.5 shrink-0 text-primary" />
+                Personalized
+              </div>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[16rem] text-sm">
+              Smart suggestions based on your likes and saves, plus daily
+              discoveries
+            </TooltipContent>
+          </Tooltip>
         ) : (
-          <Link
-            href="/auth/sign-up"
-            className="flex items-center gap-1.5 text-sm text-primary hover:underline"
-          >
-            <Sparkles className="size-3.5" />
-            Get personalized recommendations
-            <ArrowRight className="size-3.5" />
-          </Link>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/auth/sign-up"
+                className="inline-flex w-fit shrink-0 items-center gap-1.5 text-sm text-primary hover:underline"
+              >
+                <Sparkles className="size-3.5 shrink-0" />
+                <span className="flex items-center gap-1.5">
+                  Get recommendations
+                  <ArrowRight className="size-3.5 shrink-0" />
+                </span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[16rem] text-sm">
+              Sign up to receive personalized suggestions based on your
+              interests
+            </TooltipContent>
+          </Tooltip>
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
         {suggestions.map((suggestion, index) => {
           return (
             <CategoryCard
