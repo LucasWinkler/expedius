@@ -46,8 +46,8 @@ export const ExploreEmptyState = ({
               </div>
             </TooltipTrigger>
             <TooltipContent className="max-w-[16rem] text-sm">
-              Smart suggestions based on your likes and saves, plus daily
-              discoveries
+              Suggestions based on your interests, time of day, and exploration
+              of new places
             </TooltipContent>
           </Tooltip>
         ) : (

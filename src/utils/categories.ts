@@ -1,5 +1,7 @@
 import type { CategoryGroup, PlaceType } from "@/types/categories";
 import { CATEGORY_GROUPS } from "@/constants/categoryGroups";
+import { isTypeAppropriateForTime } from "@/utils/timeAppropriate";
+import type { TimeOfDay } from "@/lib/suggestions";
 
 // Helper function to find which category group a place type belongs to
 export function findCategoryGroupForType(
@@ -56,13 +58,21 @@ export function getRelatedTypesInCategory(
 export function getSpecificTypeSuggestions(
   userPreferences: { placeType: string; count: number }[],
   maxSuggestions: number = 5,
+  timeOfDay?: TimeOfDay,
 ): CategoryGroup[] {
   const suggestions: CategoryGroup[] = [];
   const typeCounts = new Map<string, number>();
   const categoryInteractions = new Map<string, number>();
 
+  // Filter user preferences by time appropriateness at the type level
+  const timeAppropriatePreferences = timeOfDay
+    ? userPreferences.filter((pref) =>
+        isTypeAppropriateForTime(pref.placeType, timeOfDay),
+      )
+    : userPreferences;
+
   // Count occurrences of each type and category
-  userPreferences.forEach((pref) => {
+  timeAppropriatePreferences.forEach((pref) => {
     typeCounts.set(
       pref.placeType,
       (typeCounts.get(pref.placeType) || 0) + pref.count,
@@ -101,10 +111,21 @@ export function getSpecificTypeSuggestions(
     const group = CATEGORY_GROUPS[categoryId];
     if (group && count >= 2) {
       // Lower threshold to 2 interactions
-      const relatedTypes = getRelatedTypesInCategory(group, userPreferences);
-      if (relatedTypes.length > 0) {
+      const relatedTypes = getRelatedTypesInCategory(
+        group,
+        timeAppropriatePreferences,
+      );
+
+      // Filter related types by time appropriateness
+      const appropriateRelatedTypes = timeOfDay
+        ? relatedTypes.filter((type) =>
+            isTypeAppropriateForTime(type.id, timeOfDay),
+          )
+        : relatedTypes;
+
+      if (appropriateRelatedTypes.length > 0) {
         // Create a suggestion for each related type
-        relatedTypes.forEach((type) => {
+        appropriateRelatedTypes.forEach((type) => {
           suggestions.push({
             id: `${group.id}_${type.id}`,
             title: type.name,
@@ -150,6 +171,18 @@ export function getCategoryExplorationSuggestions(
       .filter((id): id is string => id !== null),
   );
 
+  // Determine time of day for time-appropriate filtering
+  const timeOfDay: TimeOfDay =
+    currentHour >= 5 && currentHour < 11
+      ? "morning"
+      : currentHour >= 11 && currentHour < 15
+        ? "lunch"
+        : currentHour >= 15 && currentHour < 17
+          ? "afternoon"
+          : currentHour >= 17 && currentHour < 22
+            ? "evening"
+            : "lateNight";
+
   // Check if we should include random exploration (10% chance during non-critical times)
   const shouldIncludeRandom =
     !isTimeCritical(currentHour) &&
@@ -162,8 +195,11 @@ export function getCategoryExplorationSuggestions(
     if (!group || excludeIds.has(group.id)) continue;
 
     // Get types the user hasn't interacted with in this category
-    const unexploredTypes = group.types.filter(
-      (type) => !userTypes.has(type.id),
+    let unexploredTypes = group.types.filter((type) => !userTypes.has(type.id));
+
+    // Apply type-level time appropriateness filtering
+    unexploredTypes = unexploredTypes.filter((type) =>
+      isTypeAppropriateForTime(type.id, timeOfDay),
     );
 
     if (unexploredTypes.length > 0) {
@@ -195,20 +231,28 @@ export function getCategoryExplorationSuggestions(
     if (allCategories.length > 0) {
       const randomCategory =
         allCategories[Math.floor(Math.random() * allCategories.length)];
-      const randomType =
-        randomCategory.types[
-          Math.floor(Math.random() * randomCategory.types.length)
-        ];
 
-      suggestions.push({
-        id: `${randomCategory.id}_${randomType.id}`,
-        title: randomType.name,
-        query: randomType.name.toLowerCase(),
-        purpose: "primary",
-        types: [randomType],
-        weight: randomType.baseWeight || randomCategory.weight || 10,
-        imageUrl: randomType.imageUrl || randomCategory.imageUrl,
-      });
+      // Filter types by time appropriateness
+      const timeAppropriateTypes = randomCategory.types.filter((type) =>
+        isTypeAppropriateForTime(type.id, timeOfDay),
+      );
+
+      if (timeAppropriateTypes.length > 0) {
+        const randomType =
+          timeAppropriateTypes[
+            Math.floor(Math.random() * timeAppropriateTypes.length)
+          ];
+
+        suggestions.push({
+          id: `${randomCategory.id}_${randomType.id}`,
+          title: randomType.name,
+          query: randomType.name.toLowerCase(),
+          purpose: "primary",
+          types: [randomType],
+          weight: randomType.baseWeight || randomCategory.weight || 10,
+          imageUrl: randomType.imageUrl || randomCategory.imageUrl,
+        });
+      }
     }
   }
 

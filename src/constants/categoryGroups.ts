@@ -1005,7 +1005,7 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
         lunch: true,
         afternoon: true,
         evening: true,
-        lateNight: true,
+        lateNight: false,
       },
     },
   },

@@ -8,7 +8,7 @@ export function isExplorationSuggestion(
   suggestions: CategoryGroup[],
   maxSuggestions: number,
 ): boolean {
-  console.debug(`[DEBUG] Checking if ${suggestion.title} is exploration:`, {
+  console.log(`[DEBUG] Checking if ${suggestion.title} is exploration:`, {
     suggestionId: suggestion.id,
     hasExplorationSuggestions: !!metadata.explorationSuggestions,
     explorationSuggestionsCount: metadata.explorationSuggestions?.length || 0,
@@ -39,7 +39,7 @@ export function isExplorationSuggestion(
     const index = suggestions.findIndex((s) => s.id === suggestion.id);
     const isExploration = index >= exploitationCount;
 
-    console.debug(`[DEBUG] Using position-based detection:`, {
+    console.log(`[DEBUG] Using position-based detection:`, {
       index,
       exploitationCount,
       isExploration,
@@ -52,7 +52,7 @@ export function isExplorationSuggestion(
   const isExploration = metadata.explorationSuggestions.some(
     (s) => s.id === suggestion.id,
   );
-  console.debug(
+  console.log(
     `[DEBUG] Using explorationSuggestions array, isExploration:`,
     isExploration,
   );
@@ -68,7 +68,7 @@ export function getSuggestionTooltipText(
     metadata.hasPreferences &&
     (metadata.source === "user_preferences" || metadata.source === "mixed");
 
-  console.debug(`[DEBUG] Tooltip for ${suggestion.title}:`, {
+  console.log(`[DEBUG] Tooltip for ${suggestion.title}:`, {
     isExploration,
     suggestionId: suggestion.id,
     metadata: {
@@ -80,7 +80,7 @@ export function getSuggestionTooltipText(
       ? "Discover something new"
       : isPersonalized
         ? "Based on your interactions"
-        : "Popular suggestion",
+        : "Based on the time of day",
   });
 
   if (isExploration) {
@@ -88,6 +88,6 @@ export function getSuggestionTooltipText(
   } else if (isPersonalized) {
     return "Based on your interactions";
   } else {
-    return "Popular suggestion";
+    return "Based on the time of day";
   }
 }

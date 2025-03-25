@@ -69,7 +69,12 @@ export type SuggestionSource =
   | "exploration"
   | "time_based";
 
-type TimeOfDay = "morning" | "lunch" | "afternoon" | "evening" | "lateNight";
+export type TimeOfDay =
+  | "morning"
+  | "lunch"
+  | "afternoon"
+  | "evening"
+  | "lateNight";
 
 export type SuggestionsWithMeta = {
   suggestions: CategoryGroup[];

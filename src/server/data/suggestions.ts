@@ -138,10 +138,6 @@ export const suggestions = {
           `[SERVER INFO] Using exploitation ratio: ${exploitationRatio.toFixed(2)} for user with ${userPreferencesCount} preferences`,
         );
 
-        // Calculate exploitation vs exploration counts
-        const exploitationCount = Math.ceil(maxSuggestions * exploitationRatio);
-        const explorationCount = maxSuggestions - exploitationCount;
-
         // Determine time of day for time-appropriate filtering
         const timeOfDay =
           clientHour >= 5 && clientHour < 11
@@ -173,10 +169,39 @@ export const suggestions = {
           `[SERVER INFO] Time-based filtering for ${timeOfDay}: ${timeAppropriatePreferences.length} of ${userPreferencesCount} preferences are appropriate`,
         );
 
+        // Adjust exploitation ratio based on how many preferences are appropriate for current time
+        const timeAppropriateRatio = Math.min(
+          1,
+          timeAppropriatePreferences.length / userPreferencesCount,
+        );
+
+        // Only adjust ratio if we have a significant number of time-inappropriate preferences
+        // This dynamically increases exploration and reduces exploitation when most user preferences
+        // are inappropriate for the current time (e.g., cafes at night)
+        const timeAdjustedExploitationRatio =
+          timeAppropriateRatio < 0.8
+            ? Math.max(
+                minExploitationRatio,
+                exploitationRatio * timeAppropriateRatio,
+              )
+            : exploitationRatio;
+
+        // Recalculate counts with adjusted ratio
+        const timeAdjustedExploitationCount = Math.ceil(
+          maxSuggestions * timeAdjustedExploitationRatio,
+        );
+        const timeAdjustedExplorationCount =
+          maxSuggestions - timeAdjustedExploitationCount;
+
+        console.log(
+          `[SERVER INFO] Time-adjusted exploitation ratio: ${timeAdjustedExploitationRatio.toFixed(2)} (original: ${exploitationRatio.toFixed(2)}, appropriate ratio: ${timeAppropriateRatio.toFixed(2)})`,
+        );
+
         // Get specific type suggestions based on time-appropriate user preferences
         const specificTypeSuggestions = getSpecificTypeSuggestions(
           timeAppropriatePreferences,
-          exploitationCount,
+          timeAdjustedExploitationCount,
+          timeOfDay,
         );
 
         // Randomize the order of specific type suggestions while respecting weights
@@ -193,7 +218,11 @@ export const suggestions = {
               ) && group.metadata?.timeAppropriate?.[timeOfDay] !== false,
           )
           .sort(() => Math.random() - 0.5)
-          .slice(0, exploitationCount - randomizedSpecificSuggestions.length);
+          .slice(
+            0,
+            timeAdjustedExploitationCount -
+              randomizedSpecificSuggestions.length,
+          );
 
         // Combine specific type and category group suggestions
         const exploitationSuggestions = [
@@ -211,12 +240,12 @@ export const suggestions = {
           getCategoryExplorationSuggestions(
             [...userPrefs.primaryTypes, ...userPrefs.allTypes],
             selectedIds,
-            explorationCount,
+            timeAdjustedExplorationCount,
           );
 
         // If we don't have enough category exploration suggestions, fill with general exploration
         const remainingExplorationCount =
-          explorationCount - categoryExplorationSuggestions.length;
+          timeAdjustedExplorationCount - categoryExplorationSuggestions.length;
         const generalExplorationSuggestions =
           remainingExplorationCount > 0
             ? getExplorationSuggestions(
