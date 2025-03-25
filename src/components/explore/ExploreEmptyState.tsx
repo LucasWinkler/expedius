@@ -9,6 +9,7 @@ import type { SuggestionsContext } from "@/lib/suggestions";
 import Link from "next/link";
 import { TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Tooltip } from "../ui/tooltip";
+import { getSuggestionTooltipText } from "@/lib/suggestions/utils";
 
 interface ExploreEmptyStateProps {
   className?: string;
@@ -46,8 +47,8 @@ export const ExploreEmptyState = ({
               </div>
             </TooltipTrigger>
             <TooltipContent className="max-w-[16rem] text-sm">
-              Suggestions based on your interests, time of day, and exploration
-              of new places
+              All recommendations are based on your interests. Items with
+              sparkles ✨ are suggested to help you discover new places.
             </TooltipContent>
           </Tooltip>
         ) : (
@@ -74,20 +75,33 @@ export const ExploreEmptyState = ({
 
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
         {suggestions.map((suggestion, index) => {
+          const isExploration =
+            (metadata.explorationUsed &&
+              metadata.explorationSuggestions?.some(
+                (s) => s.id === suggestion.id,
+              )) ||
+            false;
+
           return (
-            <CategoryCard
-              key={suggestion.id}
-              title={suggestion.title}
-              query={suggestion.query}
-              imageUrl={suggestion.imageUrl || "/place-image-fallback.webp"}
-              index={index}
-              isExploration={
-                metadata.explorationUsed &&
-                metadata.explorationSuggestions?.some(
-                  (s) => s.id === suggestion.id,
-                )
-              }
-            />
+            <Tooltip key={suggestion.id}>
+              <TooltipTrigger asChild>
+                {/* Needed for the tooltip to work */}
+                <div>
+                  <CategoryCard
+                    title={suggestion.title}
+                    query={suggestion.query}
+                    imageUrl={
+                      suggestion.imageUrl || "/place-image-fallback.webp"
+                    }
+                    index={index}
+                    isExploration={isExploration}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[16rem] text-sm">
+                {getSuggestionTooltipText(isExploration, suggestion, metadata)}
+              </TooltipContent>
+            </Tooltip>
           );
         })}
       </div>
