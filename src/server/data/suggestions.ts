@@ -126,12 +126,12 @@ export const suggestions = {
           userPrefs.primaryTypes.length + userPrefs.allTypes.length;
 
         // Get dynamic exploitation ratio based on user preference count
-        // More preferences = more exploitation, but with reasonable bounds
-        const minExploitationRatio = 0.5; // At least 50% personal suggestions
-        const maxExploitationRatio = 0.8; // At most 80% personal suggestions
+        // Less exploitation = more exploration
+        const minExploitationRatio = 0.2;
+        const maxExploitationRatio = 0.6;
         const exploitationRatio = Math.min(
           maxExploitationRatio,
-          Math.max(minExploitationRatio, 0.5 + userPreferencesCount * 0.01),
+          Math.max(minExploitationRatio, 0.3 + userPreferencesCount * 0.01),
         );
 
         console.log(
