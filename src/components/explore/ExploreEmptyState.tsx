@@ -39,9 +39,7 @@ export const ExploreEmptyState = ({
     <div className={cn("space-y-6", className)}>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="min-w-0 text-2xl font-semibold tracking-tight">
-          {metadata.hasPreferences
-            ? "Recommended for You"
-            : "Recommended at This Time"}
+          {metadata.hasPreferences ? "Recommended for You" : "Popular Places"}
         </h2>
         {metadata.hasPreferences ? (
           <div className="flex shrink-0 items-center gap-3">
@@ -132,6 +130,18 @@ export const ExploreEmptyState = ({
           // Check if this is a random exploration suggestion
           const isRandomExploration =
             suggestion.metadata?.isRandomExploration === true;
+
+          // Debug bowling specifically
+          if (suggestion.title.toLowerCase().includes("bowling")) {
+            console.log("[DEBUG] Bowling in ExploreEmptyState:", {
+              title: suggestion.title,
+              id: suggestion.id,
+              isExploration,
+              isNightSuggestion,
+              isRandomExploration,
+              metadata: suggestion.metadata,
+            });
+          }
 
           return (
             <Tooltip key={suggestion.id}>

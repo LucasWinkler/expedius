@@ -3,6 +3,7 @@ import { CATEGORY_GROUPS } from "@/constants/categoryGroups";
 import { weightedRandomSelection } from "@/lib/utils/math";
 import { getSpecificTypeSuggestions } from "@/utils/categories";
 import { deduplicateSuggestions } from "@/utils/suggestions";
+import { RANDOM_EXPLORATION_PROBABILITY } from "@/lib/suggestions/constants";
 
 export const SUGGESTION_CONTEXTS = {
   HOME: "home",
@@ -126,17 +127,22 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
 
   // For late night, ensure we add some variety through weighted random selection
   const isLateNight = hour < 5 || hour >= 22;
+  const isVeryLate = hour >= 2 && hour < 5;
+
   if (isLateNight) {
-    // Random chance of using subtypes (higher probability than before)
-    const useSubtypes = Math.random() < 0.7;
+    // Higher chance of using subtypes for more specific nightlife suggestions
+    // For very late hours, almost always use subtypes
+    const useSubtypes = isVeryLate ? Math.random() < 0.85 : Math.random() < 0.6;
 
     if (useSubtypes) {
       const nightSubtypes: CategoryGroup[] = [];
       const selectedMainCategories: CategoryGroup[] = [];
       const usedCategoryIds = new Set<string>();
 
-      // Use entertainment subtypes
-      const useEntertainmentSubtypes = Math.random() < 0.8;
+      // Use entertainment subtypes - high probability in very late hours
+      const useEntertainmentSubtypes = isVeryLate
+        ? Math.random() < 0.8
+        : Math.random() < 0.7;
       if (useEntertainmentSubtypes) {
         const entertainmentGroup = CATEGORY_GROUPS.entertainment;
 
@@ -170,18 +176,24 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
               },
             }));
 
-        // Add 1-2 entertainment subtypes
+        // Add 1-2 entertainment subtypes (more for very late hours)
+        const entertainmentCount = isVeryLate
+          ? Math.min(2, entertainmentNightSubtypes.length)
+          : Math.min(1, entertainmentNightSubtypes.length);
+
         const selectedEntertainmentSubtypes = weightedRandomSelection(
           entertainmentNightSubtypes,
-          Math.min(2, entertainmentNightSubtypes.length),
+          entertainmentCount,
         );
 
         nightSubtypes.push(...selectedEntertainmentSubtypes);
         usedCategoryIds.add("entertainment");
       }
 
-      // Use bars subtypes
-      const useBarsSubtypes = Math.random() < 0.7;
+      // Use bars subtypes - almost always in very late hours
+      const useBarsSubtypes = isVeryLate
+        ? Math.random() < 0.8
+        : Math.random() < 0.6;
       if (useBarsSubtypes) {
         const barsGroup = CATEGORY_GROUPS.bars;
 
@@ -207,23 +219,29 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
             },
           }));
 
-        // Add 1 bar subtype
+        // Add 1-2 bar subtypes (more for very late hours)
+        const barsCount = isVeryLate
+          ? Math.min(2, barsNightSubtypes.length)
+          : Math.min(1, barsNightSubtypes.length);
+
         const selectedBarsSubtypes = weightedRandomSelection(
           barsNightSubtypes,
-          1,
+          barsCount,
         );
 
         nightSubtypes.push(...selectedBarsSubtypes);
         usedCategoryIds.add("bars");
       }
 
-      // Use arts subtypes
-      const useArtsSubtypes = Math.random() < 0.6;
+      // Use arts subtypes (lower priority during very late hours)
+      const useArtsSubtypes = isVeryLate
+        ? Math.random() < 0.3
+        : Math.random() < 0.6;
       if (useArtsSubtypes) {
         const artsGroup = CATEGORY_GROUPS.arts;
 
         // Create night-appropriate arts subtypes
-        const artsNightSubtypes: CategoryGroup[] = artsGroup.types
+        let artsNightSubtypes: CategoryGroup[] = artsGroup.types
           .filter((type) =>
             [
               "movie_theater",
@@ -249,23 +267,36 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
             },
           }));
 
-        // Add 1 arts subtype
-        const selectedArtsSubtypes = weightedRandomSelection(
-          artsNightSubtypes,
-          1,
-        );
+        // Lower priority for very late hours
+        if (isVeryLate) {
+          // Only include movie theaters for very late hours - others would be closed
+          artsNightSubtypes = artsNightSubtypes.filter(
+            (type) => type.id === "arts_movie_theater",
+          );
+        }
 
-        nightSubtypes.push(...selectedArtsSubtypes);
-        usedCategoryIds.add("arts");
+        // Only add if we have valid subtypes after filtering
+        if (artsNightSubtypes.length > 0) {
+          // Add 1 arts subtype
+          const selectedArtsSubtypes = weightedRandomSelection(
+            artsNightSubtypes,
+            1,
+          );
+
+          nightSubtypes.push(...selectedArtsSubtypes);
+          usedCategoryIds.add("arts");
+        }
       }
 
-      // Use restaurant subtypes
-      const useRestaurantSubtypes = Math.random() < 0.5;
+      // Use restaurant subtypes (adjusted priority for very late hours)
+      const useRestaurantSubtypes = isVeryLate
+        ? Math.random() < 0.7
+        : Math.random() < 0.6;
       if (useRestaurantSubtypes) {
         const restaurantsGroup = CATEGORY_GROUPS.restaurants;
 
         // Create night-appropriate restaurant subtypes
-        const restaurantsNightSubtypes: CategoryGroup[] = restaurantsGroup.types
+        let restaurantsNightSubtypes: CategoryGroup[] = restaurantsGroup.types
           .filter((type) =>
             [
               "restaurant",
@@ -294,30 +325,39 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
             },
           }));
 
-        // Add 1 restaurant subtype
-        const selectedRestaurantSubtypes = weightedRandomSelection(
-          restaurantsNightSubtypes,
-          1,
-        );
+        // For very late hours, prioritize 24-hour restaurants and bar & grills
+        if (isVeryLate) {
+          restaurantsNightSubtypes = restaurantsNightSubtypes.filter((type) =>
+            type.id.includes("bar_and_grill"),
+          );
+        }
 
-        nightSubtypes.push(...selectedRestaurantSubtypes);
-        usedCategoryIds.add("restaurants");
+        // Only add if we have valid subtypes after filtering
+        if (restaurantsNightSubtypes.length > 0) {
+          // Add 1 restaurant subtype
+          const selectedRestaurantSubtypes = weightedRandomSelection(
+            restaurantsNightSubtypes,
+            1,
+          );
+
+          nightSubtypes.push(...selectedRestaurantSubtypes);
+          usedCategoryIds.add("restaurants");
+        }
       }
 
-      // Use dessert subtypes
-      const useDessertSubtypes = Math.random() < 0.4;
+      // Use dessert subtypes (lower priority for very late hours)
+      const useDessertSubtypes = isVeryLate
+        ? Math.random() < 0.2
+        : Math.random() < 0.4;
       if (useDessertSubtypes) {
         const dessertsGroup = CATEGORY_GROUPS.desserts;
 
         // Create night-appropriate dessert subtypes
         const dessertsNightSubtypes: CategoryGroup[] = dessertsGroup.types
           .filter((type) =>
-            [
-              "dessert_shop",
-              "ice_cream_shop",
-              "bakery",
-              "dessert_restaurant",
-            ].includes(type.id),
+            ["dessert_shop", "ice_cream_shop", "dessert_restaurant"].includes(
+              type.id,
+            ),
           )
           .map((type) => ({
             id: `desserts_${type.id}`,
@@ -361,8 +401,14 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
           ].includes(group.id),
       );
 
-      // Select from main categories to fill the remaining spots (up to 6 total suggestions)
-      const remainingCount = Math.max(0, 6 - nightSubtypes.length);
+      // Select from main categories to fill the remaining spots
+      // (up to 6 total suggestions, or more for very late hours)
+      const totalSuggestions = isVeryLate ? 6 : 6;
+      const remainingCount = Math.max(
+        0,
+        totalSuggestions - nightSubtypes.length,
+      );
+
       if (remainingCount > 0 && highRelevanceWithoutSubtypes.length > 0) {
         selectedMainCategories.push(
           ...weightedRandomSelection(
@@ -372,14 +418,44 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
         );
       }
 
+      // Add nighttime metadata to ensure styling is applied
+      const enhancedNightSubtypes = nightSubtypes.map((subtype) => ({
+        ...subtype,
+        metadata: {
+          ...subtype.metadata,
+          isNightSuggestion: true,
+        },
+      }));
+
+      // Add a random exploration suggestion (10% chance)
+      let randomSuggestion: CategoryGroup[] = [];
+      if (Math.random() < RANDOM_EXPLORATION_PROBABILITY) {
+        // Get all categories excluding those already selected
+        const existingIds = new Set([
+          ...nightSubtypes.map((s) => s.id),
+          ...selectedMainCategories.map((s) => s.id),
+        ]);
+
+        const randomSugg = getRandomExplorationSuggestion(existingIds);
+        if (randomSugg) {
+          randomSuggestion = [randomSugg];
+
+          // Reduce main categories by 1 if we're adding a random one
+          if (selectedMainCategories.length > 0) {
+            selectedMainCategories.pop();
+          }
+        }
+      }
+
       // Combine and return
       return deduplicateSuggestions([
-        ...nightSubtypes,
+        ...enhancedNightSubtypes,
+        ...randomSuggestion,
         ...selectedMainCategories,
       ]);
     }
 
-    // Regular behavior (30% of the time) - uses the original approach
+    // Regular behavior - if not using subtypes
     // Split into two groups: highly relevant and somewhat relevant
     const highRelevance = timeAppropriateGroups.filter((group) =>
       [
@@ -406,17 +482,62 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
         ].includes(group.id),
     );
 
-    // Ensure we return a mix of both groups with weighted random selection
-    // This ensures variety but still prioritizes nighttime-appropriate categories
+    // Enhance night categories with proper metadata
+    const enhancedHighRelevance = highRelevance.map((category) => {
+      if (["bars", "entertainment"].includes(category.id)) {
+        return {
+          ...category,
+          metadata: {
+            ...category.metadata,
+            isNightSuggestion: true,
+          },
+        };
+      }
+      return category;
+    });
+
+    // Check if we should include a random exploration suggestion
+    const shouldIncludeRandom = Math.random() < RANDOM_EXPLORATION_PROBABILITY; // 10% chance
+    const totalHighRelevance = shouldIncludeRandom
+      ? Math.min(enhancedHighRelevance.length, isVeryLate ? 3 : 2) // One less if including random
+      : Math.min(enhancedHighRelevance.length, isVeryLate ? 4 : 3);
+
+    const totalOtherRelevant = Math.max(
+      0,
+      (isVeryLate ? 6 : 6) - totalHighRelevance - (shouldIncludeRandom ? 1 : 0),
+    );
+
+    // Get high relevance and other suggestions
+    const highRelevanceSelections = weightedRandomSelection(
+      enhancedHighRelevance,
+      totalHighRelevance,
+    );
+
+    const otherRelevantSelections = weightedRandomSelection(
+      otherRelevant,
+      totalOtherRelevant,
+    );
+
+    // Create a random suggestion if needed
+    let randomSuggestion: CategoryGroup[] = [];
+    if (shouldIncludeRandom) {
+      // Get all categories excluding those already chosen
+      const existingIds = new Set([
+        ...highRelevanceSelections.map((s) => s.id),
+        ...otherRelevantSelections.map((s) => s.id),
+      ]);
+
+      const randomSugg = getRandomExplorationSuggestion(existingIds);
+      if (randomSugg) {
+        randomSuggestion = [randomSugg];
+      }
+    }
+
+    // Ensure we return a mix of all groups with weighted random selection
     return deduplicateSuggestions([
-      ...weightedRandomSelection(
-        highRelevance,
-        Math.min(highRelevance.length, 5),
-      ),
-      ...weightedRandomSelection(
-        otherRelevant,
-        Math.max(0, 6 - Math.min(highRelevance.length, 5)),
-      ),
+      ...highRelevanceSelections,
+      ...randomSuggestion,
+      ...otherRelevantSelections,
     ]);
   }
 
@@ -427,11 +548,137 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
   );
 }
 
+/**
+ * Add a random exploration suggestion to mix things up
+ * This has a 10% chance of returning a completely random category
+ */
+function getRandomExplorationSuggestion(
+  excludeIds: Set<string>,
+): CategoryGroup | null {
+  // 10% chance of including a random suggestion
+  if (Math.random() > RANDOM_EXPLORATION_PROBABILITY) {
+    return null;
+  }
+
+  // For debugging
+  console.log(
+    "[DEBUG] Getting random exploration suggestion, excluding:",
+    Array.from(excludeIds).sort(),
+  );
+
+  // Create broader exclusion set that includes parent categories
+  const expandedExcludeIds = new Set<string>();
+
+  // Add all original IDs
+  excludeIds.forEach((id) => expandedExcludeIds.add(id));
+
+  // For each ID, add the base category and any parent categories
+  excludeIds.forEach((id) => {
+    // If this is a subtype (has underscore), add the parent category
+    if (id.includes("_")) {
+      const baseCategory = id.split("_")[0];
+      const specificType = id.split("_")[1];
+
+      // Add parent category to exclusion list
+      expandedExcludeIds.add(baseCategory);
+
+      // If this is a default subtype (e.g., "restaurants_restaurant"),
+      // log this special case for debugging
+      if (specificType === baseCategory.replace(/s$/, "")) {
+        console.log(`[DEBUG] ${id} is a default subtype of ${baseCategory}`);
+      }
+    }
+  });
+
+  console.log(
+    "[DEBUG] Expanded exclusion set:",
+    Array.from(expandedExcludeIds).sort(),
+  );
+
+  // Get all categories that don't require explicit user intent
+  const eligibleCategories = Object.values(CATEGORY_GROUPS).filter(
+    (category) => {
+      // Skip categories that require explicit user intent/preferences
+      if (category.metadata?.requiresUserIntent) return false;
+
+      // Skip categories that are in the expanded exclusion set
+      if (expandedExcludeIds.has(category.id)) return false;
+
+      // Skip if this is a subtype of an excluded category
+      for (const excludeId of expandedExcludeIds) {
+        if (category.id.startsWith(excludeId + "_")) return false;
+      }
+
+      // Check root category matches (this is crucial to prevent duplicates)
+      // For example, if "restaurants_restaurant" is excluded, don't suggest "restaurants"
+      const categoryRoot = category.id.includes("_")
+        ? category.id.split("_")[0]
+        : category.id;
+
+      for (const excludeId of expandedExcludeIds) {
+        const excludeRoot = excludeId.includes("_")
+          ? excludeId.split("_")[0]
+          : excludeId;
+
+        if (categoryRoot === excludeRoot) {
+          console.log(
+            `[DEBUG] Filtering out ${category.id} because root category ${categoryRoot} matches excluded root ${excludeRoot}`,
+          );
+          return false;
+        }
+      }
+
+      return true;
+    },
+  );
+
+  if (eligibleCategories.length === 0) {
+    console.log("[DEBUG] No eligible categories for random exploration");
+    return null;
+  }
+
+  console.log(
+    "[DEBUG] Eligible categories for random exploration:",
+    eligibleCategories.map((c) => c.id).sort(),
+  );
+
+  // Get a random category
+  const randomIndex = Math.floor(Math.random() * eligibleCategories.length);
+  const randomCategory = eligibleCategories[randomIndex];
+
+  console.log("[DEBUG] Selected random category:", randomCategory.id);
+
+  // Mark it as a random exploration
+  return {
+    ...randomCategory,
+    metadata: {
+      ...randomCategory.metadata,
+      isRandomExploration: true,
+    },
+  };
+}
+
 export function getExplorationSuggestions(
   excludeIds: Set<string>,
   count: number,
   hour: number,
 ): CategoryGroup[] {
+  // Log for debugging exclusions
+  console.log(
+    "[DEBUG] getExplorationSuggestions called with excludeIds:",
+    Array.from(excludeIds).sort(),
+  );
+
+  // Try to include a random exploration suggestion first
+  const randomSuggestion = getRandomExplorationSuggestion(excludeIds);
+
+  // If we have a random suggestion, we'll need one less from the regular exploration pool
+  const adjustedCount = randomSuggestion ? count - 1 : count;
+
+  if (adjustedCount <= 0) {
+    return randomSuggestion ? [randomSuggestion] : [];
+  }
+
   // Keep time ranges consistent with getTimeBasedSuggestions
   const timeOfDay: TimeOfDay =
     hour >= 5 && hour < 11
@@ -446,13 +693,85 @@ export function getExplorationSuggestions(
 
   // Get all category groups that are appropriate for the current time
   const timeAppropriateGroups = Object.values(CATEGORY_GROUPS).filter(
-    (group) =>
-      !excludeIds.has(group.id) &&
-      group.metadata?.timeAppropriate?.[timeOfDay] !== false,
+    (group) => {
+      // Skip if directly excluded
+      if (excludeIds.has(group.id)) return false;
+
+      // Skip based on time appropriateness
+      if (group.metadata?.timeAppropriate?.[timeOfDay] === false) return false;
+
+      // Skip if this is a subtype of an excluded category
+      for (const excludeId of excludeIds) {
+        if (group.id.startsWith(excludeId + "_")) return false;
+      }
+
+      // Check root category matches to prevent duplicates
+      const groupRoot = group.id.includes("_")
+        ? group.id.split("_")[0]
+        : group.id;
+
+      for (const excludeId of excludeIds) {
+        // Skip if this exact ID is excluded
+        if (excludeId === group.id) return false;
+
+        // Get the root and type if this is a subtype
+        const excludeRoot = excludeId.includes("_")
+          ? excludeId.split("_")[0]
+          : excludeId;
+        const excludeType = excludeId.includes("_")
+          ? excludeId.split("_")[1]
+          : null;
+
+        // Different rules based on what we're checking:
+
+        // If checking a parent category (e.g., "restaurants")
+        if (!group.id.includes("_")) {
+          // Skip if we have a default subtype excluded
+          // e.g., if "restaurants_restaurant" is excluded, skip "restaurants"
+          if (
+            excludeId.includes("_") &&
+            excludeRoot === group.id &&
+            excludeType === excludeRoot.replace(/s$/, "")
+          ) {
+            console.log(
+              `[DEBUG] Skipping parent category ${group.id} because default subtype ${excludeId} is excluded`,
+            );
+            return false;
+          }
+        }
+        // If checking a subtype (e.g., "restaurants_thai_restaurant")
+        else {
+          const groupType = group.id.split("_")[1];
+
+          // Skip if this exact subtype is excluded
+          if (excludeId === group.id) return false;
+
+          // Skip if this is a default subtype and parent is excluded
+          // e.g., if "restaurants" is excluded, skip "restaurants_restaurant"
+          if (
+            !excludeId.includes("_") &&
+            excludeId === groupRoot &&
+            groupType === groupRoot.replace("s", "")
+          ) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    },
   );
 
   // Use weighted random selection to get suggestions
-  return weightedRandomSelection(timeAppropriateGroups, count);
+  const regularSuggestions = weightedRandomSelection(
+    timeAppropriateGroups,
+    adjustedCount,
+  );
+
+  // Combine with random suggestion if we have one
+  return randomSuggestion
+    ? [randomSuggestion, ...regularSuggestions]
+    : regularSuggestions;
 }
 
 export function getPersonalizedSuggestions(
@@ -489,7 +808,32 @@ export function getPersonalizedSuggestions(
   );
 
   // Create a set of already selected category IDs to avoid duplicates
-  const selectedIds = new Set(exploitationSuggestions.map((g) => g.id));
+  const selectedIds = new Set<string>();
+
+  // Add all exploitation suggestions to the exclusion set
+  exploitationSuggestions.forEach((suggestion) => {
+    selectedIds.add(suggestion.id);
+
+    // If this is a subtype, handle parent category appropriately
+    if (suggestion.id.includes("_")) {
+      const baseCategory = suggestion.id.split("_")[0];
+      const specificType = suggestion.id.split("_")[1];
+
+      // Only exclude parent category if this is the default type
+      // e.g., if "restaurants_restaurant", exclude "restaurants"
+      // but if "restaurants_thai_restaurant", don't exclude "restaurants"
+      if (specificType === baseCategory.replace("s", "")) {
+        selectedIds.add(baseCategory);
+        console.log(
+          `[DEBUG] Excluding parent category ${baseCategory} for ${suggestion.id} (default type)`,
+        );
+      } else {
+        console.log(
+          `[DEBUG] Not excluding parent category ${baseCategory} for ${suggestion.id} (specific subtype)`,
+        );
+      }
+    }
+  });
 
   // Get exploration suggestions
   const explorationSuggestions =

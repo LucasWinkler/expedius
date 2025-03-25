@@ -19,10 +19,22 @@ import {
 import { CATEGORY_GROUPS } from "@/constants/categoryGroups";
 import { weightedRandomSelection } from "@/lib/utils/math";
 import { deduplicateSuggestions } from "@/utils/suggestions";
+import { RANDOM_EXPLORATION_PROBABILITY } from "@/lib/suggestions/constants";
 
 interface ClientTimeInfo {
   timezoneOffset: number;
   clientHour: number;
+}
+
+// Updated metadata interface to match what's expected by the return type
+interface SuggestionMetadata {
+  source: SuggestionSource;
+  hasPreferences: boolean;
+  userPreferencesCount?: number;
+  explorationUsed?: boolean;
+  exploitationSuggestions?: CategoryGroup[];
+  explorationSuggestions?: CategoryGroup[];
+  exploitationIds: string[];
 }
 
 /**
@@ -42,14 +54,7 @@ export const suggestions = {
       timeInfo?: ClientTimeInfo,
     ): Promise<{
       suggestions: CategoryGroup[];
-      metadata: {
-        source: SuggestionSource;
-        hasPreferences: boolean;
-        userPreferencesCount?: number;
-        explorationUsed?: boolean;
-        exploitationSuggestions?: CategoryGroup[];
-        explorationSuggestions?: CategoryGroup[];
-      };
+      metadata: SuggestionMetadata;
     }> {
       let result: SuggestionsWithMeta;
 
@@ -78,8 +83,20 @@ export const suggestions = {
         ) {
           // Add some exploration suggestions to compensate
           const selectedIds = new Set(timeBasedSuggestions.map((s) => s.id));
+
+          // Create expanded set to avoid duplicates by category root
+          const expandedSelectedIds = new Set(selectedIds);
+
+          // Also add root categories to prevent duplication
+          selectedIds.forEach((id) => {
+            if (id.includes("_")) {
+              const rootCategory = id.split("_")[0];
+              expandedSelectedIds.add(rootCategory);
+            }
+          });
+
           const additionalSuggestions = getExplorationSuggestions(
-            selectedIds,
+            expandedSelectedIds, // Use expanded set here
             maxSuggestions - timeBasedSuggestions.length,
             clientHour,
           );
@@ -112,6 +129,7 @@ export const suggestions = {
             source: result.source,
             hasPreferences: result.hasPreferences,
             explorationUsed: result.explorationUsed,
+            exploitationIds: [], // Add empty array for non-logged in users
           },
         };
       }
@@ -149,6 +167,7 @@ export const suggestions = {
               source: result.source,
               hasPreferences: result.hasPreferences,
               explorationUsed: result.explorationUsed,
+              exploitationIds: [], // Add empty array for no preferences
             },
           };
         }
@@ -276,16 +295,63 @@ export const suggestions = {
           exploitationSuggestions.map((g: CategoryGroup) => g.id),
         );
 
-        // Get exploration suggestions within categories the user likes
+        // Create a more robust set of excluded IDs to avoid duplicates between exploitation and exploration
+        const expandedSelectedIds = new Set<string>(selectedIds);
+
+        // Modified deduplication logic to allow different subtypes from the same category
+        selectedIds.forEach((id) => {
+          // If this is a parent category (like "restaurants"), add it to expanded set
+          // This prevents showing both "restaurants" and "restaurants_X" together
+          if (!id.includes("_")) {
+            expandedSelectedIds.add(id);
+          }
+          // If this is a subtype (like "restaurants_restaurant")
+          else {
+            const rootCategory = id.split("_")[0];
+            const specificType = id.split("_")[1];
+
+            // Add the specific subtype to exclusion set
+            expandedSelectedIds.add(id);
+
+            // Add the root category only if the subtype is the default type
+            // e.g., if "restaurants_restaurant" is selected, exclude "restaurants"
+            // but if "restaurants_thai_restaurant" is selected, don't exclude "restaurants"
+            if (specificType === rootCategory) {
+              expandedSelectedIds.add(rootCategory);
+              console.log(
+                `[SERVER INFO] Added root category ${rootCategory} to expanded exclusion set for ${id} (default type)`,
+              );
+            } else {
+              console.log(
+                `[SERVER INFO] Not excluding root category ${rootCategory} for ${id} (specific subtype)`,
+              );
+            }
+          }
+        });
+
+        // First, try to add within-category exploration (from categories user likes but types they haven't tried)
+        // Increasing the percentage for within-category exploration to 80% (up from 60%)
+        const withinCategorySlots = Math.ceil(
+          timeAdjustedExplorationCount * 0.8,
+        );
         const categoryExplorationSuggestions =
           getCategoryExplorationSuggestions(
             [...userPrefs.primaryTypes, ...userPrefs.allTypes],
             selectedIds,
-            timeAdjustedExplorationCount,
+            withinCategorySlots,
           );
 
+        // Add some logging to show the exploration suggestions
+        console.log(
+          "[SERVER INFO] Within-category exploration suggestions:",
+          categoryExplorationSuggestions.map((s) => s.id),
+        );
+
+        // Update selected IDs with category exploration suggestions
+        categoryExplorationSuggestions.forEach((s) => selectedIds.add(s.id));
+
         // If we're in late night hours, ensure some night-appropriate exploration
-        let nightSpecificSuggestions: CategoryGroup[] = [];
+        const nightSpecificSuggestions: CategoryGroup[] = [];
 
         if (isLateNight && timeAdjustedExplorationCount > 0) {
           // Calculate minimum night suggestions based on total count
@@ -398,12 +464,7 @@ export const suggestions = {
                 } else if (categoryToTry === "restaurants") {
                   // Focus on late-night appropriate restaurants
                   subtypes = group.types
-                    .filter(
-                      (type) =>
-                        ["bar_and_grill", "24_hour_restaurant"].includes(
-                          type.id,
-                        ) || type.id.includes("24_hour"),
-                    )
+                    .filter((type) => ["bar_and_grill"].includes(type.id))
                     .map((type) => ({
                       id: `restaurants_${type.id}`,
                       title: type.name,
@@ -464,230 +525,158 @@ export const suggestions = {
         // If we don't have enough category exploration suggestions, fill with general exploration
         const totalExplorationCount = timeAdjustedExplorationCount;
 
-        // Reserve slots for potential random exploration (80% chance per slot)
-        // During testing we want to ensure we ALWAYS have at least 1 slot
-        const reservedRandomSlots = Math.max(
-          1,
-          Math.floor(totalExplorationCount * 0.3),
-        );
+        // Always reserve at least 1 slot for random exploration
+        // regardless of how many other suggestions we have
+        const randomExplorationSlots = 1;
 
         console.log(
-          `[SERVER INFO] Reserving ${reservedRandomSlots} slots for random exploration out of ${totalExplorationCount} total exploration slots`,
+          `[SERVER INFO] Reserving ${randomExplorationSlots} slot for random exploration out of ${totalExplorationCount} total exploration slots`,
         );
 
-        // Allocate the rest proportionally
-        const availableForOthers = Math.max(
+        // Now calculate how many slots we have left for category exploration
+        // We want to prioritize category exploration over general exploration
+        const availableForCategoryExploration = Math.max(
           0,
-          totalExplorationCount - reservedRandomSlots,
-        );
-
-        // Night suggestions get priority during late night hours
-        const maxNightSpecificSlots = isLateNight
-          ? Math.ceil(availableForOthers * 0.6) // 60% during late night
-          : Math.ceil(availableForOthers * 0.3); // 30% otherwise
-
-        const maxCategoryExplorationSlots = Math.floor(
-          availableForOthers * 0.4,
-        );
-
-        // Cap suggestions to respect the allocated limits
-        const limitedNightSuggestions = nightSpecificSuggestions.slice(
-          0,
-          maxNightSpecificSlots,
-        );
-        const limitedCategoryExplorationSuggestions =
-          categoryExplorationSuggestions.slice(0, maxCategoryExplorationSlots);
-
-        // Calculate remaining slots for random exploration
-        const remainingExplorationCount = Math.max(
-          reservedRandomSlots,
           totalExplorationCount -
-            limitedNightSuggestions.length -
-            limitedCategoryExplorationSuggestions.length,
+            randomExplorationSlots -
+            nightSpecificSuggestions.length,
         );
 
-        // Chance for completely random exploration (80% chance for testing)
-        // This helps users discover completely new things outside their preference bubble
-        const chanceForRandomExploration = 0.1;
-        let randomExplorationSuggestions: CategoryGroup[] = [];
+        // Make sure we allocate sufficient slots for category exploration (at least 1 if available)
+        const maxCategoryExplorationSlots = Math.min(
+          categoryExplorationSuggestions.length,
+          availableForCategoryExploration,
+        );
 
-        // Debug log exploitation categories to understand what we have
+        // Always reserve at least 1 slot for random, with a 5% chance of showing it
+        const randomExplorationSuggestions: CategoryGroup[] = [];
+
+        // Roll once to decide if we include a random suggestion
+        // This ensures we stick to the 5% probability strictly
+        const randomRoll = Math.random();
+        const includeRandomSuggestion =
+          randomRoll < RANDOM_EXPLORATION_PROBABILITY;
+
         console.log(
-          "[SERVER INFO] Exploitation suggestion categories:",
-          exploitationSuggestions.map((s) => {
-            return {
-              id: s.id,
-              title: s.title,
-              baseCategory: s.id.includes("_") ? s.id.split("_")[0] : s.id,
-            };
-          }),
+          `[SERVER INFO] Random roll: ${randomRoll.toFixed(3)}, threshold: ${RANDOM_EXPLORATION_PROBABILITY}, include random: ${includeRandomSuggestion}`,
         );
 
-        // For each slot, decide if we should include a random suggestion
-        for (let i = 0; i < remainingExplorationCount; i++) {
-          if (Math.random() < chanceForRandomExploration) {
-            // Get filtered categories that don't require explicit user intent
-            const eligibleCategoryIds = Object.keys(CATEGORY_GROUPS).filter(
-              (id) => {
-                const category = CATEGORY_GROUPS[id];
+        // If we want to include random exploration and have slots for it, get a random suggestion
+        if (includeRandomSuggestion) {
+          // Get candidates from all categories except what's excluded
+          const allCategoryIds = Object.keys(CATEGORY_GROUPS);
 
-                // Skip categories that require explicit user intent/preferences
-                if (category.metadata?.requiresUserIntent) return false;
+          // Try to find categories not already included
+          const eligibleCategoryIds = allCategoryIds.filter((id) => {
+            const category = CATEGORY_GROUPS[id];
 
-                // Skip categories that aren't appropriate for the current time
-                if (category.metadata?.timeAppropriate) {
-                  if (
-                    isVeryLate &&
-                    category.metadata.timeAppropriate.lateNight === false
-                  )
-                    return false;
-                  if (
-                    isLateNight &&
-                    category.metadata.timeAppropriate.lateNight === false
-                  )
-                    return false;
+            // Skip if already selected
+            if (selectedIds.has(id)) return false;
 
-                  // Apply more specific time filtering based on timeOfDay
-                  if (category.metadata.timeAppropriate[timeOfDay] === false)
-                    return false;
-                }
+            // Skip subtypes of selected categories
+            for (const selectedId of selectedIds) {
+              if (id.startsWith(selectedId + "_")) return false;
+            }
 
-                // Skip sports during late night
-                if (
-                  isLateNight &&
-                  (id.includes("sports") || id.includes("skating"))
-                )
-                  return false;
+            // Skip categories that require explicit user intent
+            if (category.metadata?.requiresUserIntent) return false;
 
-                // Get the base category (before underscore)
-                const baseCategory = id.includes("_") ? id.split("_")[0] : id;
+            // Skip categories that aren't appropriate for the current time
+            if (category.metadata?.timeAppropriate) {
+              if (
+                isVeryLate &&
+                category.metadata.timeAppropriate.lateNight === false
+              )
+                return false;
 
-                // Skip entire category groups if user has ANY interest in that category
-                // This ensures that if restaurants are in exploitation, ALL restaurant subtypes are excluded
-                if (
-                  exploitationSuggestions.some((s) => {
-                    const exploitBaseCategory = s.id.includes("_")
-                      ? s.id.split("_")[0]
-                      : s.id;
-                    return baseCategory === exploitBaseCategory;
-                  })
-                ) {
-                  return false;
-                }
+              if (
+                isLateNight &&
+                category.metadata.timeAppropriate.lateNight === false
+              )
+                return false;
 
-                // Skip if this category or any of its subtypes is already in exploitation suggestions
-                // This prevents duplicates like "restaurants" and "restaurants_italian"
-                if (
-                  exploitationSuggestions.some(
-                    (s) =>
-                      s.id === id || // Exact match
-                      s.id.startsWith(id + "_") || // This is a subtype
-                      id.startsWith(s.id + "_") || // This is a parent type
-                      (s.id.includes("_") &&
-                        id.includes("_") && // Both are subtypes
-                        s.id.split("_")[0] === id.split("_")[0]), // Same parent category
-                  )
-                ) {
-                  return false;
-                }
+              // Apply more specific time filtering based on timeOfDay
+              if (category.metadata.timeAppropriate[timeOfDay] === false)
+                return false;
+            }
 
-                // Also avoid duplicating any category already in night suggestions or category exploration
-                const allOtherExplorationSuggestions = [
-                  ...nightSpecificSuggestions,
-                  ...categoryExplorationSuggestions,
-                ];
+            return true;
+          });
 
-                if (
-                  allOtherExplorationSuggestions.some(
-                    (s) =>
-                      s.id === id || // Exact match
-                      s.id.startsWith(id + "_") || // This is a subtype
-                      id.startsWith(s.id + "_") || // This is a parent type
-                      (s.id.includes("_") &&
-                        id.includes("_") && // Both are subtypes
-                        s.id.split("_")[0] === id.split("_")[0]), // Same parent category
-                  )
-                ) {
-                  return false;
-                }
+          console.log(
+            `[SERVER INFO] Found ${eligibleCategoryIds.length} eligible categories for random exploration`,
+          );
 
-                return true;
-              },
-            );
-
-            // Only proceed if we have eligible categories
-            if (eligibleCategoryIds.length === 0) continue;
-
-            console.log(
-              "[SERVER INFO] Eligible categories for random exploration:",
-              eligibleCategoryIds.map((id) => {
-                const category = CATEGORY_GROUPS[id];
-                return {
-                  id,
-                  title: category?.title,
-                };
-              }),
-            );
-
+          if (eligibleCategoryIds.length > 0) {
             const randomIndex = Math.floor(
               Math.random() * eligibleCategoryIds.length,
             );
             const randomCategoryId = eligibleCategoryIds[randomIndex];
+            const randomCategory = CATEGORY_GROUPS[randomCategoryId];
 
-            if (!selectedIds.has(randomCategoryId)) {
-              const randomCategory = CATEGORY_GROUPS[randomCategoryId];
-              if (randomCategory) {
-                const enhancedRandomCategory = {
-                  ...randomCategory,
-                  metadata: {
-                    ...randomCategory.metadata,
-                    isRandomExploration: true,
-                  },
-                };
+            // Add metadata to mark this as a random exploration
+            const enhancedRandomCategory = {
+              ...randomCategory,
+              metadata: {
+                ...randomCategory.metadata,
+                isRandomExploration: true,
+              },
+            };
 
-                randomExplorationSuggestions.push(enhancedRandomCategory);
-                selectedIds.add(randomCategoryId);
-              }
-            }
+            randomExplorationSuggestions.push(enhancedRandomCategory);
+            selectedIds.add(randomCategory.id);
+
+            console.log(
+              `[SERVER INFO] Added random exploration suggestion: ${randomCategory.id}`,
+            );
           }
         }
 
         // Calculate how many regular general exploration suggestions we still need
-        const generalExplorationNeeded =
-          remainingExplorationCount - randomExplorationSuggestions.length;
+        const generalExplorationNeeded = includeRandomSuggestion ? 0 : 1;
 
+        // Ensure we're using the expanded selected IDs to avoid duplicates
         const generalExplorationSuggestions =
           generalExplorationNeeded > 0
             ? getExplorationSuggestions(
-                selectedIds,
+                expandedSelectedIds,
                 generalExplorationNeeded,
                 clientHour,
+              )
+            : [];
+
+        // Make sure we're including our category exploration suggestions even if no random ones
+        const finalCategoryExplorationSuggestions =
+          maxCategoryExplorationSlots > 0
+            ? categoryExplorationSuggestions.slice(
+                0,
+                maxCategoryExplorationSlots,
               )
             : [];
 
         // During very late hours, ensure night suggestions appear first and limit other exploration
         const orderedExplorationSuggestions = isVeryLate
           ? [
-              ...limitedNightSuggestions, // Night suggestions first during very late hours
-              ...randomExplorationSuggestions, // Random exploration suggestions
-              ...limitedCategoryExplorationSuggestions.slice(0, 1), // Limit regular exploration during very late hours
-              ...generalExplorationSuggestions.slice(0, 1), // Limit general exploration during very late hours
+              ...nightSpecificSuggestions,
+              ...randomExplorationSuggestions,
+              ...finalCategoryExplorationSuggestions.slice(0, 1),
+              ...generalExplorationSuggestions.slice(0, 1),
             ]
           : isLateNight
             ? [
-                ...limitedNightSuggestions,
+                ...nightSpecificSuggestions,
                 ...randomExplorationSuggestions,
-                ...limitedCategoryExplorationSuggestions.slice(0, 2),
+                ...finalCategoryExplorationSuggestions.slice(0, 2),
                 ...generalExplorationSuggestions.slice(0, 1),
               ]
             : [
-                ...limitedNightSuggestions,
+                ...nightSpecificSuggestions,
                 ...randomExplorationSuggestions,
-                ...limitedCategoryExplorationSuggestions,
+                ...finalCategoryExplorationSuggestions,
                 ...generalExplorationSuggestions,
               ];
 
-        // Combine all suggestions with exploitation first
+        // Combine all suggestions with exploitation first, ensuring we have at least 6 total
         const combinedSuggestions = [
           ...exploitationSuggestions,
           ...orderedExplorationSuggestions,
@@ -695,68 +684,6 @@ export const suggestions = {
 
         // For metadata tracking, ensure night suggestions are properly marked as exploration
         const allExplorationSuggestions = orderedExplorationSuggestions;
-
-        // Fill up to MAX_SUGGESTIONS if we don't have enough
-        if (combinedSuggestions.length < maxSuggestions) {
-          const additionalNeeded = maxSuggestions - combinedSuggestions.length;
-
-          if (additionalNeeded > 0) {
-            console.log(
-              `[SERVER INFO] Adding ${additionalNeeded} additional exploration suggestions to fill quota`,
-            );
-
-            // Get additional exploration suggestions, excluding all current ones
-            const currentIds = new Set(combinedSuggestions.map((g) => g.id));
-            const additionalSuggestions = getExplorationSuggestions(
-              currentIds,
-              additionalNeeded,
-              clientHour,
-            );
-
-            // Add the additional suggestions to the combined list
-            combinedSuggestions.push(...additionalSuggestions);
-
-            // IMPORTANT: Also add them to the exploration suggestions list for proper tracking
-            allExplorationSuggestions.push(...additionalSuggestions);
-
-            console.log("[SERVER INFO] Updated exploration suggestions:", {
-              original:
-                allExplorationSuggestions.length - additionalSuggestions.length,
-              additional: additionalSuggestions.length,
-              total: allExplorationSuggestions.length,
-            });
-          }
-        }
-
-        // Final deduplication step to ensure no duplicates
-        const dedupedSuggestions = deduplicateSuggestions(combinedSuggestions);
-
-        // If deduplication reduced suggestions below maxSuggestions, add additional ones
-        if (dedupedSuggestions.length < maxSuggestions) {
-          const currentIds = new Set(dedupedSuggestions.map((g) => g.id));
-          const additionalNeeded = maxSuggestions - dedupedSuggestions.length;
-
-          console.log(
-            `[SERVER INFO] After deduplication, need ${additionalNeeded} more suggestions`,
-          );
-
-          const extraSuggestions = getExplorationSuggestions(
-            currentIds,
-            additionalNeeded,
-            clientHour,
-          );
-
-          dedupedSuggestions.push(...extraSuggestions);
-
-          // Update exploration suggestions list for tracking
-          allExplorationSuggestions.push(...extraSuggestions);
-        }
-
-        // Ensure we don't exceed MAX_SUGGESTIONS
-        const finalSuggestions = dedupedSuggestions.slice(0, maxSuggestions);
-
-        // Determine source based on what was used
-        const source: SuggestionSource = "user_preferences";
 
         // Deduplicate metadata suggestions as well
         const dedupedExploitationSuggestions = deduplicateSuggestions(
@@ -766,9 +693,29 @@ export const suggestions = {
           allExplorationSuggestions,
         );
 
+        // Make sure exploitation suggestions are properly tracked for duplicate prevention
+        const exploitationIds = Array.from(
+          new Set(
+            exploitationSuggestions.map((s) => {
+              return s.id.includes("_") ? s.id.split("_")[0] : s.id;
+            }),
+          ),
+        );
+
+        // Log the final counts to debug
+        const finalExploitationCount = dedupedExploitationSuggestions.length;
+        const finalExplorationCount = dedupedExplorationSuggestions.length;
+        const finalTotalCount =
+          deduplicateSuggestions(combinedSuggestions).length;
+
+        console.log(
+          `[SERVER INFO] Final suggestion counts: ${finalExploitationCount} exploitation, ${finalExplorationCount} exploration, ${finalTotalCount} total`,
+        );
+
+        // Ensure we're returning all suggestions without over-deduplication
         result = {
-          suggestions: finalSuggestions,
-          source,
+          suggestions: combinedSuggestions, // Use combined before deduplication to preserve all types
+          source: "user_preferences",
           hasPreferences: true,
           userPreferencesCount:
             userPrefs.primaryTypes.length + userPrefs.allTypes.length,
@@ -779,10 +726,24 @@ export const suggestions = {
             generalExplorationSuggestions.length > 0,
           exploitationSuggestions: dedupedExploitationSuggestions,
           explorationSuggestions: dedupedExplorationSuggestions,
+          // Store the exploitationIds in a property that's compatible with SuggestionsWithMeta
+          metadata: {
+            // We don't need to reference result.metadata here since we haven't assigned it yet
+            timeInfo: timeInfo
+              ? {
+                  clientHour: timeInfo.clientHour,
+                  timezoneOffset: timeInfo.timezoneOffset,
+                }
+              : undefined,
+            userPreferences: {
+              primaryTypes: userPrefs.primaryTypes,
+              allTypes: userPrefs.allTypes,
+            },
+          },
         };
 
         console.log(
-          `[SERVER INFO] Generated ${source} suggestions for user ${userId.slice(0, 8)}...`,
+          `[SERVER INFO] Generated ${result.source} suggestions for user ${userId.slice(0, 8)}...`,
         );
 
         return {
@@ -794,6 +755,7 @@ export const suggestions = {
             explorationUsed: result.explorationUsed,
             exploitationSuggestions: result.exploitationSuggestions,
             explorationSuggestions: result.explorationSuggestions,
+            exploitationIds: exploitationIds, // Use the calculated value
           },
         };
       } catch (error) {
@@ -821,6 +783,7 @@ export const suggestions = {
             source: result.source,
             hasPreferences: result.hasPreferences,
             explorationUsed: result.explorationUsed,
+            exploitationIds: [], // Add empty array for fallback
           },
         };
       }
