@@ -11,8 +11,6 @@ import { TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Tooltip } from "../ui/tooltip";
 import {
   getSuggestionTooltipText,
-  isNightSpecificSuggestion,
-  isLateNightHour,
   isNightSuggestionForDisplay,
 } from "@/lib/suggestions/utils";
 
@@ -88,10 +86,10 @@ export const ExploreEmptyState = ({
             false;
 
           // Use the utility function to determine if it's a night-specific suggestion
-          const isNightSpecific = isNightSpecificSuggestion(suggestion);
+          // const isNightSpecific = isNightSpecificSuggestion(suggestion);
 
           // Use the utility function to determine if it's late night hours
-          const isLateNight = isLateNightHour();
+          // const isLateNight = isLateNightHour();
 
           // Use the combined utility to determine if this should get night styling
           const isNightSuggestion = isNightSuggestionForDisplay(

@@ -7,8 +7,6 @@ import { usePersonalizedSuggestions } from "@/hooks/usePersonalizedSuggestions";
 import {
   isExplorationSuggestion,
   getSuggestionTooltipText,
-  isNightSpecificSuggestion,
-  isLateNightHour,
   isNightSuggestionForDisplay,
 } from "@/lib/suggestions/utils";
 import {
@@ -40,8 +38,8 @@ export const PersonalizedSearchSuggestions = () => {
         );
 
         // Use utility functions for consistent night suggestion detection
-        const isNightSpecific = isNightSpecificSuggestion(suggestion);
-        const isLateNight = isLateNightHour();
+        // const isNightSpecific = isNightSpecificSuggestion(suggestion);
+        // const isLateNight = isLateNightHour();
 
         // Use the combined utility to determine if this should get night styling
         const isNightSuggestion = isNightSuggestionForDisplay(
