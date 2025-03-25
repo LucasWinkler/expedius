@@ -287,101 +287,176 @@ export const suggestions = {
         let nightSpecificSuggestions: CategoryGroup[] = [];
 
         if (isLateNight && timeAdjustedExplorationCount > 0) {
-          // Identify strong night categories that user might not have interacted with
-          const nightCategories = ["bars", "entertainment", "arts"];
-          const userCategoryIds = new Set([
-            ...userPrefs.primaryTypes.map(
-              (p) => getCategoryGroupsFromTypes([p.placeType])?.[0]?.id || "",
-            ),
-            ...userPrefs.allTypes.map(
-              (p) => getCategoryGroupsFromTypes([p.placeType])?.[0]?.id || "",
-            ),
-          ]);
+          // Calculate minimum night suggestions based on total count
+          // Base ratio: 1/5 = 0.2 (ensures 1 night suggestion for 5 total)
+          const baseNightRatio = 0.2;
 
-          // Find night categories the user hasn't engaged with much
-          const unexploredNightCategories = nightCategories.filter(
-            (id) =>
-              !selectedIds.has(id) &&
-              (!userCategoryIds.has(id) || Math.random() < 0.3), // Allow small chance even if they've engaged
+          // For very late hours (2am-5am), increase the ratio
+          const timeMultiplier = isLateNight ? 1.5 : 1;
+          const nightSuggestionRatio = baseNightRatio * timeMultiplier;
+
+          // Calculate minimum night suggestions, ensuring at least 1
+          const minNightSuggestions = Math.max(
+            1,
+            Math.min(
+              Math.ceil(maxSuggestions * nightSuggestionRatio),
+              Math.floor(timeAdjustedExplorationCount * 0.75), // Cap at 75% of exploration slots
+            ),
           );
 
-          if (unexploredNightCategories.length > 0) {
-            // Add 1-2 night-specific categories if available
-            const potentialNightSuggestions = unexploredNightCategories
+          // This will result in:
+          // Regular late night (10pm-2am):
+          //   - 5 suggestions: ceil(5 * 0.2) = 1 night suggestion
+          //   - 6 suggestions: ceil(6 * 0.2) = 2 night suggestions
+          //   - 8 suggestions: ceil(8 * 0.2) = 2 night suggestions
+          // Very late (2am-5am):
+          //   - 5 suggestions: ceil(5 * 0.2 * 1.5) = 2 night suggestions
+          //   - 6 suggestions: ceil(6 * 0.2 * 1.5) = 2 night suggestions
+          //   - 8 suggestions: ceil(8 * 0.2 * 1.5) = 3 night suggestions
+
+          // Identify strong night categories that user might not have interacted with
+          const nightCategories = [
+            "bars",
+            "entertainment",
+            "arts",
+            "restaurants",
+            "desserts",
+            "sports",
+            "markets",
+          ];
+
+          // Ensure we have enough night suggestions by trying multiple categories
+          let attempts = 0;
+          const maxAttempts = nightCategories.length;
+
+          while (
+            nightSpecificSuggestions.length < minNightSuggestions &&
+            attempts < maxAttempts
+          ) {
+            // Try each category type until we have enough suggestions
+            const categoryToTry =
+              nightCategories[attempts % nightCategories.length];
+
+            if (!selectedIds.has(categoryToTry)) {
+              const group = CATEGORY_GROUPS[categoryToTry];
+              if (group) {
+                // Get appropriate subtypes for the time of day
+                let subtypes: CategoryGroup[] = [];
+
+                if (categoryToTry === "bars") {
+                  subtypes = group.types
+                    .filter((type) =>
+                      ["bar", "wine_bar", "pub", "night_club"].includes(
+                        type.id,
+                      ),
+                    )
+                    .map((type) => ({
+                      id: `bars_${type.id}`,
+                      title: type.name,
+                      query: type.name.toLowerCase(),
+                      purpose: "primary" as const,
+                      imageUrl: type.imageUrl || group.imageUrl,
+                      types: [type],
+                      weight: 15,
+                      metadata: {
+                        isNightSuggestion: true,
+                        timeAppropriate: {
+                          ...(group.metadata?.timeAppropriate || {}),
+                          lateNight: true,
+                        },
+                      },
+                    }));
+                } else if (categoryToTry === "entertainment") {
+                  subtypes = group.types
+                    .filter(
+                      (type) =>
+                        [
+                          "karaoke",
+                          "pool_hall",
+                          "billiards",
+                          "nightclub",
+                        ].includes(type.id) ||
+                        (type.id === "movie_theater" && !isLateNight), // Only include movie theaters if not late night
+                    )
+                    .map((type) => ({
+                      id: `entertainment_${type.id}`,
+                      title: type.name,
+                      query: type.name.toLowerCase(),
+                      purpose: "primary" as const,
+                      imageUrl: type.imageUrl || group.imageUrl,
+                      types: [type],
+                      weight: 15,
+                      metadata: {
+                        isNightSuggestion: true,
+                        timeAppropriate: {
+                          ...(group.metadata?.timeAppropriate || {}),
+                          lateNight: true,
+                        },
+                      },
+                    }));
+                } else if (categoryToTry === "restaurants") {
+                  // Focus on late-night appropriate restaurants
+                  subtypes = group.types
+                    .filter(
+                      (type) =>
+                        ["bar_and_grill", "24_hour_restaurant"].includes(
+                          type.id,
+                        ) || type.id.includes("24_hour"),
+                    )
+                    .map((type) => ({
+                      id: `restaurants_${type.id}`,
+                      title: type.name,
+                      query: type.name.toLowerCase(),
+                      purpose: "primary" as const,
+                      imageUrl: type.imageUrl || group.imageUrl,
+                      types: [type],
+                      weight: 14,
+                      metadata: {
+                        isNightSuggestion: true,
+                        timeAppropriate: {
+                          ...(group.metadata?.timeAppropriate || {}),
+                          lateNight: true,
+                        },
+                      },
+                    }));
+                }
+
+                if (subtypes.length > 0) {
+                  const selectedSubtype = weightedRandomSelection(
+                    subtypes,
+                    1,
+                  )[0];
+                  if (selectedSubtype && !selectedIds.has(selectedSubtype.id)) {
+                    nightSpecificSuggestions.push(selectedSubtype);
+                    selectedIds.add(selectedSubtype.id);
+                    selectedIds.add(categoryToTry); // Prevent using this category again
+                  }
+                }
+              }
+            }
+            attempts++;
+          }
+
+          // If we still don't have enough night suggestions, add some general night categories
+          if (nightSpecificSuggestions.length < minNightSuggestions) {
+            const generalNightCategories = nightCategories
+              .filter((id) => !selectedIds.has(id))
               .map((id) => CATEGORY_GROUPS[id])
-              .filter(Boolean);
+              .filter(Boolean)
+              .map((group) => ({
+                ...group,
+                metadata: {
+                  ...group.metadata,
+                  isNightSuggestion: true,
+                },
+              }));
 
-            // For bar category, sometimes show specific subtypes instead
-            const useBarsSubtypes =
-              unexploredNightCategories.includes("bars") && Math.random() < 0.4;
+            const selectedGeneralCategories = weightedRandomSelection(
+              generalNightCategories,
+              minNightSuggestions - nightSpecificSuggestions.length,
+            );
 
-            if (useBarsSubtypes) {
-              // Replace 'bars' with specific bar subtypes
-              const barsGroup = CATEGORY_GROUPS.bars;
-              const barSubtypes: CategoryGroup[] = barsGroup.types
-                .filter((type) =>
-                  ["bar", "wine_bar", "pub", "night_club"].includes(type.id),
-                )
-                .map((type) => ({
-                  id: `bars_${type.id}`,
-                  title: type.name,
-                  query: type.name.toLowerCase(),
-                  purpose: "primary" as const,
-                  imageUrl: type.imageUrl || barsGroup.imageUrl,
-                  types: [type],
-                  weight: 15,
-                }));
-
-              // Select one random bar subtype
-              const selectedBarSubtype = weightedRandomSelection(
-                barSubtypes,
-                1,
-              );
-
-              // Filter out the general bars category and add the specific subtype
-              const filteredNightSuggestions = potentialNightSuggestions.filter(
-                (g) => g.id !== "bars",
-              );
-
-              // Take 1 night category, or 2 if we have enough exploration slots
-              const nightCategoriesCount = Math.min(
-                timeAdjustedExplorationCount > 1 ? 2 : 1,
-                filteredNightSuggestions.length,
-              );
-
-              // Select from other night categories
-              const otherNightCategories = weightedRandomSelection(
-                filteredNightSuggestions,
-                nightCategoriesCount,
-              );
-
-              nightSpecificSuggestions = [
-                ...selectedBarSubtype,
-                ...otherNightCategories,
-              ];
-            } else {
-              // Regular selection of night categories
-              // Take 1 night category, or 2 if we have enough exploration slots
-              const nightCategoriesCount = Math.min(
-                timeAdjustedExplorationCount > 1 ? 2 : 1,
-                potentialNightSuggestions.length,
-              );
-
-              nightSpecificSuggestions = weightedRandomSelection(
-                potentialNightSuggestions,
-                nightCategoriesCount,
-              );
-            }
-
-            // Add selected night categories to the selectedIds set
-            nightSpecificSuggestions.forEach((cat) => selectedIds.add(cat.id));
-
-            // Either use these as part of exploration or add them directly
-            if (nightSpecificSuggestions.length > 0) {
-              console.log(
-                `[SERVER INFO] Added ${nightSpecificSuggestions.length} night-specific exploration options`,
-              );
-            }
+            nightSpecificSuggestions.push(...selectedGeneralCategories);
           }
         }
 
@@ -390,6 +465,7 @@ export const suggestions = {
           timeAdjustedExplorationCount -
           categoryExplorationSuggestions.length -
           nightSpecificSuggestions.length;
+
         const generalExplorationSuggestions =
           remainingExplorationCount > 0
             ? getExplorationSuggestions(
@@ -399,20 +475,36 @@ export const suggestions = {
               )
             : [];
 
-        // Combine all suggestions
+        // During very late hours, ensure night suggestions appear first and limit other exploration
+        const isVeryLate = clientHour >= 2 && clientHour < 5;
+
+        // First, combine exploration suggestions with proper ordering
+        const orderedExplorationSuggestions = isVeryLate
+          ? [
+              ...nightSpecificSuggestions, // Night suggestions first during very late hours
+              ...categoryExplorationSuggestions.slice(0, 1), // Limit regular exploration during very late hours
+              ...generalExplorationSuggestions.slice(0, 1), // Limit general exploration during very late hours
+            ]
+          : isLateNight
+            ? [
+                ...nightSpecificSuggestions,
+                ...categoryExplorationSuggestions.slice(0, 2),
+                ...generalExplorationSuggestions.slice(0, 1),
+              ]
+            : [
+                ...nightSpecificSuggestions,
+                ...categoryExplorationSuggestions,
+                ...generalExplorationSuggestions,
+              ];
+
+        // Combine all suggestions with exploitation first
         const combinedSuggestions = [
           ...exploitationSuggestions,
-          ...nightSpecificSuggestions, // Add night categories with priority
-          ...categoryExplorationSuggestions,
-          ...generalExplorationSuggestions,
+          ...orderedExplorationSuggestions,
         ];
 
         // For metadata tracking, ensure night suggestions are properly marked as exploration
-        const allExplorationSuggestions = [
-          ...nightSpecificSuggestions,
-          ...categoryExplorationSuggestions,
-          ...generalExplorationSuggestions,
-        ];
+        const allExplorationSuggestions = orderedExplorationSuggestions;
 
         // Fill up to MAX_SUGGESTIONS if we don't have enough
         if (combinedSuggestions.length < maxSuggestions) {

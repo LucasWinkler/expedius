@@ -3,53 +3,91 @@ import { PERSONALIZATION_CONFIG } from "@/lib/suggestions";
 import type { SuggestionMeta } from "@/hooks/usePersonalizedSuggestions";
 
 /**
- * Check if a suggestion is a night-specific activity
- */
-export function isNightSpecificSuggestion(suggestion: CategoryGroup): boolean {
-  // Check direct subtypes and bar subtypes with prefix
-  const isSubtypeNight =
-    // Bar subtypes
-    suggestion.id.startsWith("bars_") ||
-    suggestion.id === "bars_bar" ||
-    suggestion.id === "bars_wine_bar" ||
-    suggestion.id === "bars_pub" ||
-    suggestion.id === "bars_night_club" ||
-    // Entertainment subtypes
-    suggestion.id === "bowling_alley" ||
-    suggestion.id === "karaoke" ||
-    suggestion.id === "pool_hall" ||
-    suggestion.id === "arcade" ||
-    suggestion.id === "movie_theater" ||
-    suggestion.id === "billiards";
-
-  // Check if it's a general nightlife category (these are only considered night-specific at night)
-  const isNightlifeCategory =
-    suggestion.id === "entertainment" ||
-    suggestion.id === "bars" ||
-    suggestion.id === "arts";
-
-  // Either it's a specific night subtype, or it's a nightlife category that's being shown at night
-  const isNight = isSubtypeNight || isNightlifeCategory;
-
-  // Log the check details to debug
-  console.log(`[DEBUG] Night suggestion check for ${suggestion.title}:`, {
-    id: suggestion.id,
-    isNight,
-    isSubtypeNight,
-    isNightlifeCategory,
-    title: suggestion.title,
-    query: suggestion.query,
-  });
-
-  return isNight;
-}
-
-/**
  * Check if current time is late night (10pm-5am)
  */
 export function isLateNightHour(): boolean {
   const currentHour = new Date().getHours();
   return currentHour < 5 || currentHour >= 22;
+}
+
+/**
+ * Check if it's very late (past typical closing hours)
+ */
+export function isVeryLateHour(): boolean {
+  const currentHour = new Date().getHours();
+  return currentHour >= 2 && currentHour < 5;
+}
+
+/**
+ * Check if a suggestion should be suppressed based on operating hours
+ */
+function isOutsideOperatingHours(suggestion: CategoryGroup): boolean {
+  const currentHour = new Date().getHours();
+  const isSports =
+    suggestion.id.includes("sports") || suggestion.id.includes("skating");
+  const isIndoorSports =
+    suggestion.id.includes("indoor") || suggestion.id.includes("gym");
+
+  // Most sports venues close by 10-11 PM
+  if (isSports && !isIndoorSports && currentHour >= 22) {
+    return true;
+  }
+
+  // Indoor sports/gyms might close later
+  if (isIndoorSports && currentHour >= 23) {
+    return true;
+  }
+
+  // Very late hour checks (2 AM - 5 AM)
+  if (isVeryLateHour()) {
+    return (
+      suggestion.id === "entertainment_bowling_alley" ||
+      suggestion.id === "entertainment_arcade" ||
+      suggestion.id === "entertainment_movie_theater" ||
+      suggestion.id === "arts_movie_theater" ||
+      suggestion.id.includes("skating") ||
+      suggestion.id.includes("sports") ||
+      (suggestion.id.includes("restaurant") &&
+        !suggestion.id.includes("24_hour"))
+    );
+  }
+
+  return false;
+}
+
+/**
+ * Check if a suggestion is a night-specific activity by its inherent nature
+ * This only checks the category/type, not the time of day
+ */
+export function isNightSpecificSuggestion(suggestion: CategoryGroup): boolean {
+  // Check if the suggestion has isNightSuggestion metadata property
+  if (suggestion.metadata?.isNightSuggestion) {
+    return true;
+  }
+
+  // Check specific subtypes that are inherently night-oriented
+  return (
+    // Bar and nightlife categories
+    (suggestion.id.startsWith("bars_") &&
+      suggestion.id !== "restaurants_bar_and_grill") ||
+    suggestion.id === "bars" ||
+    suggestion.id === "night_club" ||
+    suggestion.id === "nightlife" ||
+    // Entertainment subtypes that are typically open late
+    suggestion.id === "entertainment_karaoke" ||
+    suggestion.id === "entertainment_pool_hall" ||
+    suggestion.id === "entertainment_billiards" ||
+    suggestion.id === "entertainment_arcade" ||
+    suggestion.id === "entertainment_nightclub" ||
+    // Late night movie showings (but not all movie theaters)
+    (suggestion.id === "entertainment_movie_theater" && isLateNightHour()) ||
+    (suggestion.id === "arts_movie_theater" && isLateNightHour()) ||
+    // Performance venues during show times
+    ((suggestion.id === "arts_concert_hall" ||
+      suggestion.id === "arts_theater" ||
+      suggestion.id === "arts_performing_arts_theater") &&
+      isLateNightHour())
+  );
 }
 
 export function isExplorationSuggestion(
@@ -58,54 +96,44 @@ export function isExplorationSuggestion(
   suggestions: CategoryGroup[],
   maxSuggestions: number,
 ): boolean {
-  console.log(`[DEBUG] Checking if ${suggestion.title} is exploration:`, {
-    suggestionId: suggestion.id,
-    hasExplorationSuggestions: !!metadata.explorationSuggestions,
-    explorationSuggestionsCount: metadata.explorationSuggestions?.length || 0,
-    explorationSuggestionIds:
-      metadata.explorationSuggestions?.map((s) => s.id) || [],
-  });
-
-  // If no explorationSuggestions in metadata, fall back to position-based detection
-  if (!metadata.explorationSuggestions) {
-    if (!metadata.hasPreferences || !metadata.explorationUsed) {
-      console.log(
-        `[DEBUG] No preferences or explorationUsed=false, not exploration`,
-      );
+  // First check if this is explicitly marked as an exploitation suggestion
+  if (
+    metadata?.exploitationSuggestions?.some((s) => {
+      // Check exact ID match
+      if (s.id === suggestion.id) return true;
+      // Check if this is a subtype of an exploitation category
+      // e.g. if "restaurants" is in exploitation, "restaurants_bar_and_grill" should also be exploitation
+      if (suggestion.id.startsWith(s.id + "_")) return true;
       return false;
-    }
-
-    // Default to standard ratio if we can't determine dynamically
-    const defaultRatio = PERSONALIZATION_CONFIG.DEFAULT_EXPLOITATION_RATIO;
-    const userPrefCount = metadata.userPreferencesCount || 0;
-
-    // Use dynamic ratio calculation if available
-    const dynamicRatio = PERSONALIZATION_CONFIG.getDynamicExploitationRatio
-      ? PERSONALIZATION_CONFIG.getDynamicExploitationRatio(userPrefCount)
-      : defaultRatio;
-
-    const exploitationCount = Math.ceil(maxSuggestions * dynamicRatio);
-
-    const index = suggestions.findIndex((s) => s.id === suggestion.id);
-    const isExploration = index >= exploitationCount;
-
-    console.log(`[DEBUG] Using position-based detection:`, {
-      index,
-      exploitationCount,
-      isExploration,
-    });
-
-    return isExploration;
+    })
+  ) {
+    return false;
   }
 
   // If we have explicit exploration suggestions, use that
-  const isExploration = metadata.explorationSuggestions.some(
-    (s) => s.id === suggestion.id,
-  );
-  console.log(
-    `[DEBUG] Using explorationSuggestions array, isExploration:`,
-    isExploration,
-  );
+  if (metadata.explorationSuggestions?.length) {
+    return metadata.explorationSuggestions.some((s) => s.id === suggestion.id);
+  }
+
+  // If no explorationSuggestions in metadata, fall back to position-based detection
+  if (!metadata.hasPreferences || !metadata.explorationUsed) {
+    return false;
+  }
+
+  // Default to standard ratio if we can't determine dynamically
+  const defaultRatio = PERSONALIZATION_CONFIG.DEFAULT_EXPLOITATION_RATIO;
+  const userPrefCount = metadata.userPreferencesCount || 0;
+
+  // Use dynamic ratio calculation if available
+  const dynamicRatio = PERSONALIZATION_CONFIG.getDynamicExploitationRatio
+    ? PERSONALIZATION_CONFIG.getDynamicExploitationRatio(userPrefCount)
+    : defaultRatio;
+
+  const exploitationCount = Math.ceil(maxSuggestions * dynamicRatio);
+
+  const index = suggestions.findIndex((s) => s.id === suggestion.id);
+  const isExploration = index >= exploitationCount;
+
   return isExploration;
 }
 
@@ -139,7 +167,7 @@ export function getSuggestionTooltipText(
     },
     isPersonalized,
     result: isNightSuggestion
-      ? "Popular night activity to explore"
+      ? "Popular nightlife activity"
       : isExploration
         ? "Discover something new"
         : isPersonalized
@@ -148,7 +176,7 @@ export function getSuggestionTooltipText(
   });
 
   if (isNightSuggestion) {
-    return "Popular night activity to explore";
+    return "Popular nightlife activity";
   } else if (isExploration) {
     return "Discover something new";
   } else if (isPersonalized) {
@@ -160,27 +188,26 @@ export function getSuggestionTooltipText(
 
 /**
  * Determines if a suggestion should be displayed with night styling
- * This combines several checks to ensure consistent handling
+ * This is the main function that should be used for UI decisions
  */
 export function isNightSuggestionForDisplay(
   suggestion: CategoryGroup,
-  isExploration: boolean,
+  metadata?: SuggestionMeta,
 ): boolean {
-  const isNightSpecific = isNightSpecificSuggestion(suggestion);
-  const isLateNight = isLateNightHour();
+  // If this is an exploitation suggestion, never show night styling
+  if (metadata?.exploitationSuggestions?.some((s) => s.id === suggestion.id)) {
+    return false;
+  }
 
-  // Special handling for entertainment, arts, and bars categories at night
-  const isNightlifeCategoryAtNight =
-    isLateNight &&
-    (suggestion.id === "entertainment" ||
-      suggestion.id === "bars" ||
-      suggestion.id === "arts");
+  // First check if it's outside operating hours
+  if (isOutsideOperatingHours(suggestion)) {
+    return false;
+  }
 
-  // For exploration suggestions, apply night styling to:
-  // 1. Night-specific subtypes (bowling, karaoke, etc.) at night
-  // 2. General nightlife categories (entertainment, bars, arts) at night
-  return (
-    isExploration &&
-    ((isNightSpecific && isLateNight) || isNightlifeCategoryAtNight)
-  );
+  // Then check if it's late night hours
+  if (!isLateNightHour()) {
+    return false;
+  }
+
+  return isNightSpecificSuggestion(suggestion);
 }

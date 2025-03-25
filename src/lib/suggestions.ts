@@ -127,65 +127,259 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
   // For late night, ensure we add some variety through weighted random selection
   const isLateNight = hour < 5 || hour >= 22;
   if (isLateNight) {
-    // Create entertainment subtype direct categories (50% chance of using these)
-    const useEntertainmentSubtypes = Math.random() < 0.5;
+    // Random chance of using subtypes (higher probability than before)
+    const useSubtypes = Math.random() < 0.7;
 
-    if (useEntertainmentSubtypes) {
-      // Use subtypes directly from entertainment category
-      const entertainmentGroup = CATEGORY_GROUPS.entertainment;
+    if (useSubtypes) {
+      const nightSubtypes: CategoryGroup[] = [];
+      const selectedMainCategories: CategoryGroup[] = [];
+      const usedCategoryIds = new Set<string>();
 
-      // Create night-appropriate entertainment subtypes as standalone categories
-      const nightSubtypes: CategoryGroup[] = entertainmentGroup.types
-        .filter((type) =>
-          [
-            "bowling_alley",
-            "karaoke",
-            "arcade",
-            "pool_hall",
-            "billiards",
-            "movie_theater",
-          ].includes(type.id),
-        )
-        .map((type) => ({
-          id: type.id,
-          title: type.name,
-          query: type.name.toLowerCase(),
-          purpose: "primary" as const,
-          imageUrl: type.imageUrl || entertainmentGroup.imageUrl,
-          types: [type],
-          weight: 12,
-        }));
+      // Use entertainment subtypes
+      const useEntertainmentSubtypes = Math.random() < 0.8;
+      if (useEntertainmentSubtypes) {
+        const entertainmentGroup = CATEGORY_GROUPS.entertainment;
 
-      // Remove "entertainment" from the main categories to avoid duplication
-      const highRelevanceWithoutEntertainment = timeAppropriateGroups.filter(
+        // Create night-appropriate entertainment subtypes
+        const entertainmentNightSubtypes: CategoryGroup[] =
+          entertainmentGroup.types
+            .filter((type) =>
+              [
+                "bowling_alley",
+                "karaoke",
+                "arcade",
+                "pool_hall",
+                "billiards",
+                "movie_theater",
+              ].includes(type.id),
+            )
+            .map((type) => ({
+              id: `entertainment_${type.id}`,
+              title: type.name,
+              query: type.name.toLowerCase(),
+              purpose: "primary" as const,
+              imageUrl: type.imageUrl || entertainmentGroup.imageUrl,
+              types: [type],
+              weight: 12,
+              metadata: {
+                isNightSuggestion: true,
+                timeAppropriate: {
+                  ...(entertainmentGroup.metadata?.timeAppropriate || {}),
+                  lateNight: true,
+                },
+              },
+            }));
+
+        // Add 1-2 entertainment subtypes
+        const selectedEntertainmentSubtypes = weightedRandomSelection(
+          entertainmentNightSubtypes,
+          Math.min(2, entertainmentNightSubtypes.length),
+        );
+
+        nightSubtypes.push(...selectedEntertainmentSubtypes);
+        usedCategoryIds.add("entertainment");
+      }
+
+      // Use bars subtypes
+      const useBarsSubtypes = Math.random() < 0.7;
+      if (useBarsSubtypes) {
+        const barsGroup = CATEGORY_GROUPS.bars;
+
+        // Create night-appropriate bars subtypes
+        const barsNightSubtypes: CategoryGroup[] = barsGroup.types
+          .filter((type) =>
+            ["bar", "wine_bar", "pub", "night_club"].includes(type.id),
+          )
+          .map((type) => ({
+            id: `bars_${type.id}`,
+            title: type.name,
+            query: type.name.toLowerCase(),
+            purpose: "primary" as const,
+            imageUrl: type.imageUrl || barsGroup.imageUrl,
+            types: [type],
+            weight: 12,
+            metadata: {
+              isNightSuggestion: true,
+              timeAppropriate: {
+                ...(barsGroup.metadata?.timeAppropriate || {}),
+                lateNight: true,
+              },
+            },
+          }));
+
+        // Add 1 bar subtype
+        const selectedBarsSubtypes = weightedRandomSelection(
+          barsNightSubtypes,
+          1,
+        );
+
+        nightSubtypes.push(...selectedBarsSubtypes);
+        usedCategoryIds.add("bars");
+      }
+
+      // Use arts subtypes
+      const useArtsSubtypes = Math.random() < 0.6;
+      if (useArtsSubtypes) {
+        const artsGroup = CATEGORY_GROUPS.arts;
+
+        // Create night-appropriate arts subtypes
+        const artsNightSubtypes: CategoryGroup[] = artsGroup.types
+          .filter((type) =>
+            [
+              "movie_theater",
+              "concert_hall",
+              "theater",
+              "performing_arts_theater",
+            ].includes(type.id),
+          )
+          .map((type) => ({
+            id: `arts_${type.id}`,
+            title: type.name,
+            query: type.name.toLowerCase(),
+            purpose: "primary" as const,
+            imageUrl: type.imageUrl || artsGroup.imageUrl,
+            types: [type],
+            weight: 12,
+            metadata: {
+              isNightSuggestion: true,
+              timeAppropriate: {
+                ...(artsGroup.metadata?.timeAppropriate || {}),
+                lateNight: true,
+              },
+            },
+          }));
+
+        // Add 1 arts subtype
+        const selectedArtsSubtypes = weightedRandomSelection(
+          artsNightSubtypes,
+          1,
+        );
+
+        nightSubtypes.push(...selectedArtsSubtypes);
+        usedCategoryIds.add("arts");
+      }
+
+      // Use restaurant subtypes
+      const useRestaurantSubtypes = Math.random() < 0.5;
+      if (useRestaurantSubtypes) {
+        const restaurantsGroup = CATEGORY_GROUPS.restaurants;
+
+        // Create night-appropriate restaurant subtypes
+        const restaurantsNightSubtypes: CategoryGroup[] = restaurantsGroup.types
+          .filter((type) =>
+            [
+              "restaurant",
+              "fast_food_restaurant",
+              "bar_and_grill",
+              "japanese_restaurant",
+              "chinese_restaurant",
+              "thai_restaurant",
+              "mexican_restaurant",
+            ].includes(type.id),
+          )
+          .map((type) => ({
+            id: `restaurants_${type.id}`,
+            title: type.name,
+            query: type.name.toLowerCase(),
+            purpose: "primary" as const,
+            imageUrl: type.imageUrl || restaurantsGroup.imageUrl,
+            types: [type],
+            weight: 10,
+            metadata: {
+              isNightSuggestion: type.id === "bar_and_grill",
+              timeAppropriate: {
+                ...(restaurantsGroup.metadata?.timeAppropriate || {}),
+                lateNight: true,
+              },
+            },
+          }));
+
+        // Add 1 restaurant subtype
+        const selectedRestaurantSubtypes = weightedRandomSelection(
+          restaurantsNightSubtypes,
+          1,
+        );
+
+        nightSubtypes.push(...selectedRestaurantSubtypes);
+        usedCategoryIds.add("restaurants");
+      }
+
+      // Use dessert subtypes
+      const useDessertSubtypes = Math.random() < 0.4;
+      if (useDessertSubtypes) {
+        const dessertsGroup = CATEGORY_GROUPS.desserts;
+
+        // Create night-appropriate dessert subtypes
+        const dessertsNightSubtypes: CategoryGroup[] = dessertsGroup.types
+          .filter((type) =>
+            [
+              "dessert_shop",
+              "ice_cream_shop",
+              "bakery",
+              "dessert_restaurant",
+            ].includes(type.id),
+          )
+          .map((type) => ({
+            id: `desserts_${type.id}`,
+            title: type.name,
+            query: type.name.toLowerCase(),
+            purpose: "primary" as const,
+            imageUrl: type.imageUrl || dessertsGroup.imageUrl,
+            types: [type],
+            weight: 10,
+            metadata: {
+              isNightSuggestion: false,
+              timeAppropriate: {
+                ...(dessertsGroup.metadata?.timeAppropriate || {}),
+                lateNight: true,
+              },
+            },
+          }));
+
+        // Add 1 dessert subtype
+        const selectedDessertSubtypes = weightedRandomSelection(
+          dessertsNightSubtypes,
+          1,
+        );
+
+        nightSubtypes.push(...selectedDessertSubtypes);
+        usedCategoryIds.add("desserts");
+      }
+
+      // Filter timeAppropriateGroups to exclude categories we've used subtypes for
+      const highRelevanceWithoutSubtypes = timeAppropriateGroups.filter(
         (group) =>
+          !usedCategoryIds.has(group.id) &&
           [
             "restaurants",
             "bars",
             "desserts",
+            "entertainment",
             "arts",
             "sports",
             "markets",
           ].includes(group.id),
       );
 
-      // Randomly select 1-3 entertainment subtypes to showcase specific night activities
-      const selectedSubtypes = weightedRandomSelection(
-        nightSubtypes,
-        Math.min(3, nightSubtypes.length),
-      );
+      // Select from main categories to fill the remaining spots (up to 6 total suggestions)
+      const remainingCount = Math.max(0, 6 - nightSubtypes.length);
+      if (remainingCount > 0 && highRelevanceWithoutSubtypes.length > 0) {
+        selectedMainCategories.push(
+          ...weightedRandomSelection(
+            highRelevanceWithoutSubtypes,
+            Math.min(remainingCount, highRelevanceWithoutSubtypes.length),
+          ),
+        );
+      }
 
-      // Select from main categories to fill the remaining spots
-      const mainCategoriesCount = 6 - selectedSubtypes.length;
-      const selectedMainCategories = weightedRandomSelection(
-        highRelevanceWithoutEntertainment,
-        Math.min(mainCategoriesCount, highRelevanceWithoutEntertainment.length),
-      );
-
-      return [...selectedMainCategories, ...selectedSubtypes];
+      // Combine and return
+      return deduplicateSuggestions([
+        ...nightSubtypes,
+        ...selectedMainCategories,
+      ]);
     }
 
-    // Regular behavior (50% of the time)
+    // Regular behavior (30% of the time) - uses the original approach
     // Split into two groups: highly relevant and somewhat relevant
     const highRelevance = timeAppropriateGroups.filter((group) =>
       [
@@ -214,7 +408,7 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
 
     // Ensure we return a mix of both groups with weighted random selection
     // This ensures variety but still prioritizes nighttime-appropriate categories
-    return [
+    return deduplicateSuggestions([
       ...weightedRandomSelection(
         highRelevance,
         Math.min(highRelevance.length, 5),
@@ -223,7 +417,7 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
         otherRelevant,
         Math.max(0, 6 - Math.min(highRelevance.length, 5)),
       ),
-    ];
+    ]);
   }
 
   // For daytime, just use weighted random selection directly

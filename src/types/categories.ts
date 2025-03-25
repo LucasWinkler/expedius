@@ -25,5 +25,6 @@ export type CategoryGroup = {
     };
     requiresUserIntent?: boolean;
     minimumInteractionCount?: number;
+    isNightSuggestion?: boolean;
   };
 };

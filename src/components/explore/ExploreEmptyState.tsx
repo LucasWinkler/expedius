@@ -12,7 +12,9 @@ import { Tooltip } from "../ui/tooltip";
 import {
   getSuggestionTooltipText,
   isNightSuggestionForDisplay,
+  isExplorationSuggestion,
 } from "@/lib/suggestions/utils";
+import { SUGGESTION_COUNTS, SUGGESTION_CONTEXTS } from "@/lib/suggestions";
 
 interface ExploreEmptyStateProps {
   className?: string;
@@ -78,29 +80,21 @@ export const ExploreEmptyState = ({
 
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
         {suggestions.map((suggestion, index) => {
-          const isExploration =
-            (metadata.explorationUsed &&
-              metadata.explorationSuggestions?.some(
-                (s) => s.id === suggestion.id,
-              )) ||
-            false;
+          const isExploration = isExplorationSuggestion(
+            suggestion,
+            metadata,
+            suggestions,
+            SUGGESTION_COUNTS[SUGGESTION_CONTEXTS.EXPLORE],
+          );
 
-          // Use the utility function to determine if it's a night-specific suggestion
-          // const isNightSpecific = isNightSpecificSuggestion(suggestion);
-
-          // Use the utility function to determine if it's late night hours
-          // const isLateNight = isLateNightHour();
-
-          // Use the combined utility to determine if this should get night styling
           const isNightSuggestion = isNightSuggestionForDisplay(
             suggestion,
-            isExploration,
+            metadata,
           );
 
           return (
             <Tooltip key={suggestion.id}>
               <TooltipTrigger asChild>
-                {/* Needed for the tooltip to work */}
                 <div>
                   <CategoryCard
                     title={suggestion.title}
@@ -115,13 +109,7 @@ export const ExploreEmptyState = ({
                 </div>
               </TooltipTrigger>
               <TooltipContent className="max-w-[16rem] text-sm">
-                {isNightSuggestion
-                  ? "Popular night activity to explore"
-                  : getSuggestionTooltipText(
-                      isExploration,
-                      suggestion,
-                      metadata,
-                    )}
+                {getSuggestionTooltipText(isExploration, suggestion, metadata)}
               </TooltipContent>
             </Tooltip>
           );

@@ -44,7 +44,7 @@ export const PersonalizedSearchSuggestions = () => {
         // Use the combined utility to determine if this should get night styling
         const isNightSuggestion = isNightSuggestionForDisplay(
           suggestion,
-          isExploration,
+          metadata,
         );
 
         return (
@@ -61,7 +61,7 @@ export const PersonalizedSearchSuggestions = () => {
                     : "text-foreground/90",
                   isExploration &&
                     !isNightSuggestion &&
-                    "bg-background/80 shadow-[0_2px_8px_rgba(var(--primary),0.15)] before:absolute before:inset-0 before:animate-border-shimmer before:rounded-full before:bg-[linear-gradient(90deg,hsl(var(--primary)/0.15)_0%,hsl(var(--primary)/0.2)_20%,hsl(var(--primary)/0.35)_50%,hsl(var(--primary)/0.2)_80%,hsl(var(--primary)/0.15)_100%)] before:bg-[length:200%_100%] after:absolute after:inset-[2px] after:rounded-full after:bg-background/95 hover:shadow-[0_2px_12px_rgba(var(--primary),0.25)] hover:before:bg-[linear-gradient(90deg,hsl(var(--primary)/0.2)_0%,hsl(var(--primary)/0.25)_20%,hsl(var(--primary)/0.4)_50%,hsl(var(--primary)/0.25)_80%,hsl(var(--primary)/0.2)_100%)]",
+                    "bg-background/80 shadow-[0_2px_8px_rgba(59,130,246,0.25)] before:absolute before:inset-0 before:animate-border-shimmer before:rounded-full before:bg-[linear-gradient(90deg,rgba(59,130,246,0.15)_0%,rgba(59,130,246,0.2)_20%,rgba(59,130,246,0.35)_50%,rgba(59,130,246,0.2)_80%,rgba(59,130,246,0.15)_100%)] before:bg-[length:200%_100%] after:absolute after:inset-[2px] after:rounded-full after:bg-background/95 hover:shadow-[0_2px_12px_rgba(59,130,246,0.35)] hover:before:bg-[linear-gradient(90deg,rgba(59,130,246,0.2)_0%,rgba(59,130,246,0.25)_20%,rgba(59,130,246,0.4)_50%,rgba(59,130,246,0.25)_80%,rgba(59,130,246,0.2)_100%)]",
                   isNightSuggestion &&
                     "bg-background/80 shadow-[0_2px_8px_rgba(125,125,235,0.25)] before:absolute before:inset-0 before:animate-border-shimmer before:rounded-full before:bg-[linear-gradient(90deg,rgba(125,125,235,0.15)_0%,rgba(125,125,235,0.2)_20%,rgba(125,125,235,0.35)_50%,rgba(125,125,235,0.2)_80%,rgba(125,125,235,0.15)_100%)] before:bg-[length:200%_100%] after:absolute after:inset-[2px] after:rounded-full after:bg-background/95 hover:shadow-[0_2px_12px_rgba(125,125,235,0.35)] hover:before:bg-[linear-gradient(90deg,rgba(125,125,235,0.2)_0%,rgba(125,125,235,0.25)_20%,rgba(125,125,235,0.4)_50%,rgba(125,125,235,0.25)_80%,rgba(125,125,235,0.2)_100%)]",
                   !isExploration &&
@@ -73,12 +73,17 @@ export const PersonalizedSearchSuggestions = () => {
                 data-exploration={isExploration}
                 data-night-suggestion={isNightSuggestion}
               >
-                {isExploration && !isNightSuggestion && (
-                  <Sparkles className="z-10 mr-1.5 size-3.5 animate-pulse text-primary sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
-                )}
-                {isNightSuggestion && (
-                  <Moon className="z-10 mr-1.5 size-3.5 animate-pulse text-blue-500 sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
-                )}
+                {isNightSuggestion ? (
+                  <Moon
+                    className="z-10 mr-1.5 size-3.5 text-indigo-400 drop-shadow-[0_0_3px_rgba(129,140,248,0.5)] sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4"
+                    aria-hidden="true"
+                  />
+                ) : isExploration ? (
+                  <Sparkles
+                    className="z-10 mr-1.5 size-3.5 text-blue-400 drop-shadow-[0_0_3px_rgba(59,130,246,0.5)] sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4"
+                    aria-hidden="true"
+                  />
+                ) : null}
                 <span className="relative z-10">{suggestion.title}</span>
                 <ArrowRight className="relative z-10 ml-1.5 size-3.5 transition-transform duration-300 ease-out group-hover:translate-x-1 sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4" />
               </Link>
