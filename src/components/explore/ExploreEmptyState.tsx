@@ -24,7 +24,9 @@ export const ExploreEmptyState = ({
   });
 
   if (isLoading) {
-    return <ExploreCategoriesSkeleton context={context} />;
+    return (
+      <ExploreCategoriesSkeleton context={context} className={className} />
+    );
   }
 
   return (

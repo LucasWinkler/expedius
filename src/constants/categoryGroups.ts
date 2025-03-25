@@ -15,13 +15,13 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     title: "Restaurants",
     query: "restaurants",
     purpose: "primary",
-    imageUrl: undefined,
+    imageUrl: "/categories/restaurants.jpg",
     types: [
       {
         id: "restaurant",
         name: "Restaurants",
         baseWeight: 30,
-        imageUrl: undefined,
+        imageUrl: "/categories/restaurants.jpg",
       },
       {
         id: "fast_food_restaurant",
@@ -131,14 +131,19 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     title: "Cafes",
     query: "cafe",
     purpose: "primary",
-    imageUrl: undefined,
+    imageUrl: "/categories/cafes.jpg",
     types: [
-      { id: "cafe", name: "Cafes", baseWeight: 25, imageUrl: undefined },
+      {
+        id: "cafe",
+        name: "Cafes",
+        baseWeight: 25,
+        imageUrl: "/categories/cafes.jpg",
+      },
       {
         id: "coffee_shop",
         name: "Coffee Shops",
         baseWeight: 15,
-        imageUrl: undefined,
+        imageUrl: "/categories/coffee.jpg",
       },
       {
         id: "tea_house",
