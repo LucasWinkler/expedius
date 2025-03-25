@@ -3,16 +3,17 @@ import "server-only";
 import { userTypePreferences } from "./userTypePreferences";
 import {
   getCategoryGroupsFromTypes,
-  type CategoryGroup,
   getSpecificTypeSuggestions,
   getCategoryExplorationSuggestions,
-} from "@/constants/categoryGroups";
+} from "@/utils/categories";
+import type { CategoryGroup } from "@/types/categories";
 import {
   getTimeBasedSuggestions,
   getExplorationSuggestions,
-  PERSONALIZATION_CONFIG,
   type SuggestionsWithMeta,
   type SuggestionSource,
+  SuggestionsContext,
+  SUGGESTION_COUNTS,
 } from "@/lib/suggestions";
 
 interface ClientTimeInfo {
@@ -33,6 +34,7 @@ export const suggestions = {
      */
     async getPersonalizedSuggestions(
       userId: string | null,
+      context: SuggestionsContext,
       timeInfo?: ClientTimeInfo,
     ): Promise<{
       suggestions: CategoryGroup[];
@@ -45,9 +47,6 @@ export const suggestions = {
         explorationSuggestions?: CategoryGroup[];
       };
     }> {
-      const { MAX_SUGGESTIONS } = PERSONALIZATION_CONFIG;
-
-      // For metadata tracking
       let result: SuggestionsWithMeta;
 
       // Get the client's hour if provided, otherwise use server time
@@ -56,12 +55,14 @@ export const suggestions = {
           ? timeInfo.clientHour
           : new Date().getHours();
 
+      const maxSuggestions = SUGGESTION_COUNTS[context];
+
       // If user is not logged in, return time-based suggestions
       if (!userId) {
         const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
 
         result = {
-          suggestions: timeBasedSuggestions.slice(0, MAX_SUGGESTIONS),
+          suggestions: timeBasedSuggestions.slice(0, maxSuggestions),
           source: "default",
           hasPreferences: false,
           explorationUsed: true,
@@ -92,7 +93,7 @@ export const suggestions = {
           const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
 
           result = {
-            suggestions: timeBasedSuggestions.slice(0, MAX_SUGGESTIONS),
+            suggestions: timeBasedSuggestions.slice(0, maxSuggestions),
             source: "default",
             hasPreferences: false,
             explorationUsed: true,
@@ -125,28 +126,82 @@ export const suggestions = {
           userPrefs.primaryTypes.length + userPrefs.allTypes.length;
 
         // Get dynamic exploitation ratio based on user preference count
-        // More preferences = more exploitation, but with reasonable bounds
-        const minExploitationRatio = 0.5; // At least 50% personal suggestions
-        const maxExploitationRatio = 0.8; // At most 80% personal suggestions
+        // Less exploitation = more exploration
+        const minExploitationRatio = 0.2;
+        const maxExploitationRatio = 0.6;
         const exploitationRatio = Math.min(
           maxExploitationRatio,
-          Math.max(minExploitationRatio, 0.5 + userPreferencesCount * 0.01),
+          Math.max(minExploitationRatio, 0.3 + userPreferencesCount * 0.01),
         );
 
         console.log(
           `[SERVER INFO] Using exploitation ratio: ${exploitationRatio.toFixed(2)} for user with ${userPreferencesCount} preferences`,
         );
 
-        // Calculate exploitation vs exploration counts
-        const exploitationCount = Math.ceil(
-          MAX_SUGGESTIONS * exploitationRatio,
-        );
-        const explorationCount = MAX_SUGGESTIONS - exploitationCount;
+        // Determine time of day for time-appropriate filtering
+        const timeOfDay =
+          clientHour >= 5 && clientHour < 11
+            ? "morning"
+            : clientHour >= 11 && clientHour < 15
+              ? "lunch"
+              : clientHour >= 15 && clientHour < 17
+                ? "afternoon"
+                : clientHour >= 17 && clientHour < 22
+                  ? "evening"
+                  : "lateNight";
 
-        // Get specific type suggestions based on user preferences
+        // Filter user preferences by time-appropriate categories
+        // This ensures that categories like cafes don't appear at late night hours
+        // even if they're in the user's preferences
+        const timeAppropriatePreferences = [
+          ...userPrefs.primaryTypes,
+          ...userPrefs.allTypes,
+        ].filter((pref) => {
+          const categoryGroup = getCategoryGroupsFromTypes([pref.placeType])[0];
+          return (
+            !categoryGroup ||
+            categoryGroup.metadata?.timeAppropriate?.[timeOfDay] !== false
+          );
+        });
+
+        // Log time filtering info
+        console.log(
+          `[SERVER INFO] Time-based filtering for ${timeOfDay}: ${timeAppropriatePreferences.length} of ${userPreferencesCount} preferences are appropriate`,
+        );
+
+        // Adjust exploitation ratio based on how many preferences are appropriate for current time
+        const timeAppropriateRatio = Math.min(
+          1,
+          timeAppropriatePreferences.length / userPreferencesCount,
+        );
+
+        // Only adjust ratio if we have a significant number of time-inappropriate preferences
+        // This dynamically increases exploration and reduces exploitation when most user preferences
+        // are inappropriate for the current time (e.g., cafes at night)
+        const timeAdjustedExploitationRatio =
+          timeAppropriateRatio < 0.8
+            ? Math.max(
+                minExploitationRatio,
+                exploitationRatio * timeAppropriateRatio,
+              )
+            : exploitationRatio;
+
+        // Recalculate counts with adjusted ratio
+        const timeAdjustedExploitationCount = Math.ceil(
+          maxSuggestions * timeAdjustedExploitationRatio,
+        );
+        const timeAdjustedExplorationCount =
+          maxSuggestions - timeAdjustedExploitationCount;
+
+        console.log(
+          `[SERVER INFO] Time-adjusted exploitation ratio: ${timeAdjustedExploitationRatio.toFixed(2)} (original: ${exploitationRatio.toFixed(2)}, appropriate ratio: ${timeAppropriateRatio.toFixed(2)})`,
+        );
+
+        // Get specific type suggestions based on time-appropriate user preferences
         const specificTypeSuggestions = getSpecificTypeSuggestions(
-          [...userPrefs.primaryTypes, ...userPrefs.allTypes],
-          exploitationCount,
+          timeAppropriatePreferences,
+          timeAdjustedExploitationCount,
+          timeOfDay,
         );
 
         // Randomize the order of specific type suggestions while respecting weights
@@ -160,10 +215,14 @@ export const suggestions = {
             (group) =>
               !randomizedSpecificSuggestions.some((s) =>
                 s.id.startsWith(group.id),
-              ),
+              ) && group.metadata?.timeAppropriate?.[timeOfDay] !== false,
           )
           .sort(() => Math.random() - 0.5)
-          .slice(0, exploitationCount - randomizedSpecificSuggestions.length);
+          .slice(
+            0,
+            timeAdjustedExploitationCount -
+              randomizedSpecificSuggestions.length,
+          );
 
         // Combine specific type and category group suggestions
         const exploitationSuggestions = [
@@ -181,12 +240,12 @@ export const suggestions = {
           getCategoryExplorationSuggestions(
             [...userPrefs.primaryTypes, ...userPrefs.allTypes],
             selectedIds,
-            explorationCount,
+            timeAdjustedExplorationCount,
           );
 
         // If we don't have enough category exploration suggestions, fill with general exploration
         const remainingExplorationCount =
-          explorationCount - categoryExplorationSuggestions.length;
+          timeAdjustedExplorationCount - categoryExplorationSuggestions.length;
         const generalExplorationSuggestions =
           remainingExplorationCount > 0
             ? getExplorationSuggestions(
@@ -204,8 +263,8 @@ export const suggestions = {
         ];
 
         // Fill up to MAX_SUGGESTIONS if we don't have enough
-        if (combinedSuggestions.length < MAX_SUGGESTIONS) {
-          const additionalNeeded = MAX_SUGGESTIONS - combinedSuggestions.length;
+        if (combinedSuggestions.length < maxSuggestions) {
+          const additionalNeeded = maxSuggestions - combinedSuggestions.length;
 
           if (additionalNeeded > 0) {
             console.log(
@@ -237,7 +296,7 @@ export const suggestions = {
         }
 
         // Ensure we don't exceed MAX_SUGGESTIONS
-        const finalSuggestions = combinedSuggestions.slice(0, MAX_SUGGESTIONS);
+        const finalSuggestions = combinedSuggestions.slice(0, maxSuggestions);
 
         // Determine source based on what was used
         const source: SuggestionSource = "user_preferences";
@@ -281,7 +340,7 @@ export const suggestions = {
         const timeBasedSuggestions = getTimeBasedSuggestions(clientHour);
 
         result = {
-          suggestions: timeBasedSuggestions.slice(0, MAX_SUGGESTIONS),
+          suggestions: timeBasedSuggestions.slice(0, maxSuggestions),
           source: "default",
           hasPreferences: false,
           explorationUsed: true,

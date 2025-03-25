@@ -4,16 +4,27 @@ import { db } from "@/server/db";
 import { getPlaceTypes } from "@/lib/api/places";
 import { headers } from "next/headers";
 import { suggestions } from "@/server/data/suggestions";
+import {
+  SUGGESTION_CONTEXTS,
+  type SuggestionsContext,
+} from "@/lib/suggestions";
 
 /**
  * GET /api/suggestions
  * Fetches personalized suggestions for the current user
  */
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const context = searchParams.get("context") as SuggestionsContext;
+
+    if (!Object.values(SUGGESTION_CONTEXTS).includes(context)) {
+      return NextResponse.json({ error: "Invalid context" }, { status: 400 });
+    }
+
     const headersList = await headers();
-    const clientHour = headersList.get("x-client-hour");
-    const timezoneOffset = headersList.get("x-client-timezone-offset");
+    const clientHour = headersList.get("X-Client-Hour");
+    const timezoneOffset = headersList.get("X-Client-Timezone-Offset");
 
     // Create time info object with client's time if available, otherwise use server time
     const timeInfo = {
@@ -24,12 +35,15 @@ export async function GET() {
     const session = await getServerSession();
     if (!session) {
       return NextResponse.json(
-        await suggestions.queries.getPersonalizedSuggestions(null, timeInfo),
+        await suggestions.queries.getPersonalizedSuggestions(
+          null,
+          context,
+          timeInfo,
+        ),
         { status: 200 },
       );
     }
 
-    // Get user's liked places
     const userLikes = await db.query.like.findMany({
       where: (like, { eq }) => eq(like.userId, session.user.id),
     });
@@ -50,6 +64,7 @@ export async function GET() {
     return NextResponse.json(
       await suggestions.queries.getPersonalizedSuggestions(
         session.user.id,
+        context,
         timeInfo,
       ),
       { status: 200 },

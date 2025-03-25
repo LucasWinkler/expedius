@@ -5,7 +5,7 @@ export const destinations: Destination[] = [
     id: "eiffel-tower",
     category: "Landmarks",
     location: "Famous Monuments",
-    image: "/assets/destinations/eiffel-tower.jpg",
+    image: "/destinations/eiffel-tower.jpg",
     rotation: -2,
     initialPosition: {
       desktop: { top: "15%", right: "5%" },
@@ -26,7 +26,7 @@ export const destinations: Destination[] = [
     id: "cafes",
     category: "Cafés",
     location: "Local Coffee Shops",
-    image: "/assets/destinations/cafe.jpg",
+    image: "/destinations/cafe.jpg",
     rotation: 3,
     initialPosition: {
       desktop: { top: "45%", left: "5%" },
@@ -47,7 +47,7 @@ export const destinations: Destination[] = [
     id: "museums",
     category: "Museums",
     location: "Art Galleries",
-    image: "/assets/destinations/museum.jpg",
+    image: "/destinations/museum.jpg",
     rotation: -2.5,
     initialPosition: {
       desktop: { top: "18%", left: "5%" },
@@ -68,7 +68,7 @@ export const destinations: Destination[] = [
     id: "restaurants",
     category: "Dining",
     location: "Top Restaurants",
-    image: "/assets/destinations/restaurant.jpg",
+    image: "/destinations/restaurant.jpg",
     rotation: 2,
     initialPosition: {
       desktop: { top: "60%", right: "5%" },

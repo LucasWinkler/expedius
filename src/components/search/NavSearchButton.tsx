@@ -63,7 +63,7 @@ export const NavSearchButton = () => {
 
     if (query.trim().length >= minQueryLength) {
       updateSearchParams({ query });
-      router.push(`/discover?q=${encodeURIComponent(query)}`);
+      router.push(`/explore?q=${encodeURIComponent(query)}`);
       addToHistory(query);
 
       setOpen(false);

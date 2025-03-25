@@ -23,7 +23,7 @@ export default function CategoriesPage() {
         {ALL_CATEGORIES.map(({ title, query, icon: Icon, description }) => (
           <CategoryCard
             key={title}
-            href={`/discover?q=${encodeURIComponent(query)}`}
+            href={`/explore?q=${encodeURIComponent(query)}`}
             title={title}
             icon={Icon}
             description={description}

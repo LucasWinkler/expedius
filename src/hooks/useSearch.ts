@@ -134,7 +134,7 @@ export const useSearch = () => {
         return;
       }
 
-      const targetPath = pathname === "/" ? "/discover" : pathname;
+      const targetPath = pathname === "/" ? "/explore" : pathname;
       router.push(`${targetPath}?${newParamsString}`, { scroll: false });
     },
     [searchParams, router, pathname],
