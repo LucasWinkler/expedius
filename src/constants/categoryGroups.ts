@@ -397,9 +397,14 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     title: "Beaches",
     query: "beach",
     purpose: "primary",
-    imageUrl: undefined,
+    imageUrl: "/categories/beach.jpg",
     types: [
-      { id: "beach", name: "Beaches", baseWeight: 10, imageUrl: undefined },
+      {
+        id: "beach",
+        name: "Beaches",
+        baseWeight: 10,
+        imageUrl: "/categories/beach.jpg",
+      },
     ],
     weight: 15,
     metadata: {
