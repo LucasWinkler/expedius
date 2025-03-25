@@ -423,19 +423,19 @@ export const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     title: "Hiking",
     query: "hiking",
     purpose: "primary",
-    imageUrl: undefined,
+    imageUrl: "/categories/hiking.jpg",
     types: [
       {
         id: "hiking_area",
         name: "Hiking Areas",
         baseWeight: 10,
-        imageUrl: undefined,
+        imageUrl: "/categories/hiking.jpg",
       },
       {
         id: "off_roading_area",
         name: "Off-Roading Areas",
         baseWeight: 10,
-        imageUrl: undefined,
+        imageUrl: "/categories/off-roading.jpg",
       },
     ],
     weight: 10,
