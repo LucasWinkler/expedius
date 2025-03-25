@@ -96,6 +96,11 @@ export function isExplorationSuggestion(
   suggestions: CategoryGroup[],
   maxSuggestions: number,
 ): boolean {
+  // Check if this is explicitly marked as a random exploration suggestion
+  if (suggestion.metadata?.isRandomExploration) {
+    return true;
+  }
+
   // First check if this is explicitly marked as an exploitation suggestion
   if (
     metadata?.exploitationSuggestions?.some((s) => {
@@ -152,31 +157,42 @@ export function getSuggestionTooltipText(
   // Check if it's late night hours
   const isLateNight = isLateNightHour();
 
-  // Night suggestion requires both conditions
-  const isNightSuggestion = isExploration && isNightSpecific && isLateNight;
+  // Check if this is a random exploration suggestion
+  const isRandomExploration = suggestion.metadata?.isRandomExploration === true;
+
+  // Check if this should display with night styling (regardless of whether it's an "exploration" suggestion)
+  const shouldUseNightStyling =
+    isNightSpecificSuggestion(suggestion) && isLateNightHour();
 
   console.log(`[DEBUG] Tooltip for ${suggestion.title}:`, {
     isExploration,
     isNightSpecific,
     isLateNight,
-    isNightSuggestion,
+    isNightSuggestion: isExploration && isNightSpecific && isLateNight,
+    shouldUseNightStyling,
+    isRandomExploration,
     suggestionId: suggestion.id,
     metadata: {
       hasPreferences: metadata.hasPreferences,
       source: metadata.source,
     },
     isPersonalized,
-    result: isNightSuggestion
+    result: shouldUseNightStyling
       ? "Popular nightlife activity"
-      : isExploration
-        ? "Discover something new"
-        : isPersonalized
-          ? "Based on your interactions"
-          : "Based on the time of day",
+      : isRandomExploration
+        ? "Completely random category to try"
+        : isExploration
+          ? "Discover something new"
+          : isPersonalized
+            ? "Based on your interactions"
+            : "Based on the time of day",
   });
 
-  if (isNightSuggestion) {
+  // First check if this should use night styling, regardless of exploration status
+  if (shouldUseNightStyling) {
     return "Popular nightlife activity";
+  } else if (isRandomExploration) {
+    return "Completely random category to try";
   } else if (isExploration) {
     return "Discover something new";
   } else if (isPersonalized) {

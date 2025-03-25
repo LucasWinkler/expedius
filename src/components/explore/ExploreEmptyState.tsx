@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { CategoryCard } from "./CategoryCard";
 import { usePersonalizedSuggestions } from "@/hooks/usePersonalizedSuggestions";
-import { Sparkles, ArrowRight, Moon } from "lucide-react";
+import { Sparkles, ArrowRight, Moon, Dices } from "lucide-react";
 import { ExploreCategoriesSkeleton } from "./ExploreCategoriesSkeleton";
 import type { SuggestionsContext } from "@/lib/suggestions";
 import Link from "next/link";
@@ -53,20 +53,33 @@ export const ExploreEmptyState = ({
                 SUGGESTION_COUNTS[SUGGESTION_CONTEXTS.EXPLORE],
               ),
             ) && (
-              <Tooltip disableHoverableContent>
+              <Tooltip>
                 <TooltipTrigger>
                   <Sparkles className="size-[18px] shrink-0 text-blue-500" />
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[16rem] text-sm">
-                  Look for sparkles ✨ to discover new places that may include
-                  variety and completely new categories to explore
+                  Look for sparkles ✨ to discover new places similar to your
+                  interests
+                </TooltipContent>
+              </Tooltip>
+            )}
+            {suggestions.some(
+              (s) => s.metadata?.isRandomExploration === true,
+            ) && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <Dices className="size-[18px] shrink-0 text-blue-500" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[16rem] text-sm">
+                  Look for dice 🎲 to discover completely random categories
+                  outside your usual preferences
                 </TooltipContent>
               </Tooltip>
             )}
             {suggestions.some((s) =>
               isNightSuggestionForDisplay(s, metadata),
             ) && (
-              <Tooltip disableHoverableContent>
+              <Tooltip>
                 <TooltipTrigger>
                   <Moon
                     className="size-[18px] shrink-0 text-indigo-400"
@@ -116,8 +129,12 @@ export const ExploreEmptyState = ({
             metadata,
           );
 
+          // Check if this is a random exploration suggestion
+          const isRandomExploration =
+            suggestion.metadata?.isRandomExploration === true;
+
           return (
-            <Tooltip disableHoverableContent key={suggestion.id}>
+            <Tooltip key={suggestion.id}>
               <TooltipTrigger asChild>
                 <div>
                   <CategoryCard
@@ -129,6 +146,7 @@ export const ExploreEmptyState = ({
                     index={index}
                     isExploration={isExploration}
                     isNightSuggestion={isNightSuggestion}
+                    isRandomExploration={isRandomExploration}
                   />
                 </div>
               </TooltipTrigger>

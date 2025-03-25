@@ -61,6 +61,7 @@ export const suggestions = {
 
       const maxSuggestions = SUGGESTION_COUNTS[context];
       const isLateNight = clientHour < 5 || clientHour >= 22;
+      const isVeryLate = clientHour >= 2 && clientHour < 5;
 
       // Special handling for explore page during late night
       const isExploreContext = context === SUGGESTION_CONTEXTS.EXPLORE;
@@ -461,39 +462,228 @@ export const suggestions = {
         }
 
         // If we don't have enough category exploration suggestions, fill with general exploration
-        const remainingExplorationCount =
-          timeAdjustedExplorationCount -
-          categoryExplorationSuggestions.length -
-          nightSpecificSuggestions.length;
+        const totalExplorationCount = timeAdjustedExplorationCount;
+
+        // Reserve slots for potential random exploration (80% chance per slot)
+        // During testing we want to ensure we ALWAYS have at least 1 slot
+        const reservedRandomSlots = Math.max(
+          1,
+          Math.floor(totalExplorationCount * 0.3),
+        );
+
+        console.log(
+          `[SERVER INFO] Reserving ${reservedRandomSlots} slots for random exploration out of ${totalExplorationCount} total exploration slots`,
+        );
+
+        // Allocate the rest proportionally
+        const availableForOthers = Math.max(
+          0,
+          totalExplorationCount - reservedRandomSlots,
+        );
+
+        // Night suggestions get priority during late night hours
+        const maxNightSpecificSlots = isLateNight
+          ? Math.ceil(availableForOthers * 0.6) // 60% during late night
+          : Math.ceil(availableForOthers * 0.3); // 30% otherwise
+
+        const maxCategoryExplorationSlots = Math.floor(
+          availableForOthers * 0.4,
+        );
+
+        // Cap suggestions to respect the allocated limits
+        const limitedNightSuggestions = nightSpecificSuggestions.slice(
+          0,
+          maxNightSpecificSlots,
+        );
+        const limitedCategoryExplorationSuggestions =
+          categoryExplorationSuggestions.slice(0, maxCategoryExplorationSlots);
+
+        // Calculate remaining slots for random exploration
+        const remainingExplorationCount = Math.max(
+          reservedRandomSlots,
+          totalExplorationCount -
+            limitedNightSuggestions.length -
+            limitedCategoryExplorationSuggestions.length,
+        );
+
+        // Chance for completely random exploration (80% chance for testing)
+        // This helps users discover completely new things outside their preference bubble
+        const chanceForRandomExploration = 0.1;
+        let randomExplorationSuggestions: CategoryGroup[] = [];
+
+        // Debug log exploitation categories to understand what we have
+        console.log(
+          "[SERVER INFO] Exploitation suggestion categories:",
+          exploitationSuggestions.map((s) => {
+            return {
+              id: s.id,
+              title: s.title,
+              baseCategory: s.id.includes("_") ? s.id.split("_")[0] : s.id,
+            };
+          }),
+        );
+
+        // For each slot, decide if we should include a random suggestion
+        for (let i = 0; i < remainingExplorationCount; i++) {
+          if (Math.random() < chanceForRandomExploration) {
+            // Get filtered categories that don't require explicit user intent
+            const eligibleCategoryIds = Object.keys(CATEGORY_GROUPS).filter(
+              (id) => {
+                const category = CATEGORY_GROUPS[id];
+
+                // Skip categories that require explicit user intent/preferences
+                if (category.metadata?.requiresUserIntent) return false;
+
+                // Skip categories that aren't appropriate for the current time
+                if (category.metadata?.timeAppropriate) {
+                  if (
+                    isVeryLate &&
+                    category.metadata.timeAppropriate.lateNight === false
+                  )
+                    return false;
+                  if (
+                    isLateNight &&
+                    category.metadata.timeAppropriate.lateNight === false
+                  )
+                    return false;
+
+                  // Apply more specific time filtering based on timeOfDay
+                  if (category.metadata.timeAppropriate[timeOfDay] === false)
+                    return false;
+                }
+
+                // Skip sports during late night
+                if (
+                  isLateNight &&
+                  (id.includes("sports") || id.includes("skating"))
+                )
+                  return false;
+
+                // Get the base category (before underscore)
+                const baseCategory = id.includes("_") ? id.split("_")[0] : id;
+
+                // Skip entire category groups if user has ANY interest in that category
+                // This ensures that if restaurants are in exploitation, ALL restaurant subtypes are excluded
+                if (
+                  exploitationSuggestions.some((s) => {
+                    const exploitBaseCategory = s.id.includes("_")
+                      ? s.id.split("_")[0]
+                      : s.id;
+                    return baseCategory === exploitBaseCategory;
+                  })
+                ) {
+                  return false;
+                }
+
+                // Skip if this category or any of its subtypes is already in exploitation suggestions
+                // This prevents duplicates like "restaurants" and "restaurants_italian"
+                if (
+                  exploitationSuggestions.some(
+                    (s) =>
+                      s.id === id || // Exact match
+                      s.id.startsWith(id + "_") || // This is a subtype
+                      id.startsWith(s.id + "_") || // This is a parent type
+                      (s.id.includes("_") &&
+                        id.includes("_") && // Both are subtypes
+                        s.id.split("_")[0] === id.split("_")[0]), // Same parent category
+                  )
+                ) {
+                  return false;
+                }
+
+                // Also avoid duplicating any category already in night suggestions or category exploration
+                const allOtherExplorationSuggestions = [
+                  ...nightSpecificSuggestions,
+                  ...categoryExplorationSuggestions,
+                ];
+
+                if (
+                  allOtherExplorationSuggestions.some(
+                    (s) =>
+                      s.id === id || // Exact match
+                      s.id.startsWith(id + "_") || // This is a subtype
+                      id.startsWith(s.id + "_") || // This is a parent type
+                      (s.id.includes("_") &&
+                        id.includes("_") && // Both are subtypes
+                        s.id.split("_")[0] === id.split("_")[0]), // Same parent category
+                  )
+                ) {
+                  return false;
+                }
+
+                return true;
+              },
+            );
+
+            // Only proceed if we have eligible categories
+            if (eligibleCategoryIds.length === 0) continue;
+
+            console.log(
+              "[SERVER INFO] Eligible categories for random exploration:",
+              eligibleCategoryIds.map((id) => {
+                const category = CATEGORY_GROUPS[id];
+                return {
+                  id,
+                  title: category?.title,
+                };
+              }),
+            );
+
+            const randomIndex = Math.floor(
+              Math.random() * eligibleCategoryIds.length,
+            );
+            const randomCategoryId = eligibleCategoryIds[randomIndex];
+
+            if (!selectedIds.has(randomCategoryId)) {
+              const randomCategory = CATEGORY_GROUPS[randomCategoryId];
+              if (randomCategory) {
+                const enhancedRandomCategory = {
+                  ...randomCategory,
+                  metadata: {
+                    ...randomCategory.metadata,
+                    isRandomExploration: true,
+                  },
+                };
+
+                randomExplorationSuggestions.push(enhancedRandomCategory);
+                selectedIds.add(randomCategoryId);
+              }
+            }
+          }
+        }
+
+        // Calculate how many regular general exploration suggestions we still need
+        const generalExplorationNeeded =
+          remainingExplorationCount - randomExplorationSuggestions.length;
 
         const generalExplorationSuggestions =
-          remainingExplorationCount > 0
+          generalExplorationNeeded > 0
             ? getExplorationSuggestions(
                 selectedIds,
-                remainingExplorationCount,
+                generalExplorationNeeded,
                 clientHour,
               )
             : [];
 
         // During very late hours, ensure night suggestions appear first and limit other exploration
-        const isVeryLate = clientHour >= 2 && clientHour < 5;
-
-        // First, combine exploration suggestions with proper ordering
         const orderedExplorationSuggestions = isVeryLate
           ? [
-              ...nightSpecificSuggestions, // Night suggestions first during very late hours
-              ...categoryExplorationSuggestions.slice(0, 1), // Limit regular exploration during very late hours
+              ...limitedNightSuggestions, // Night suggestions first during very late hours
+              ...randomExplorationSuggestions, // Random exploration suggestions
+              ...limitedCategoryExplorationSuggestions.slice(0, 1), // Limit regular exploration during very late hours
               ...generalExplorationSuggestions.slice(0, 1), // Limit general exploration during very late hours
             ]
           : isLateNight
             ? [
-                ...nightSpecificSuggestions,
-                ...categoryExplorationSuggestions.slice(0, 2),
+                ...limitedNightSuggestions,
+                ...randomExplorationSuggestions,
+                ...limitedCategoryExplorationSuggestions.slice(0, 2),
                 ...generalExplorationSuggestions.slice(0, 1),
               ]
             : [
-                ...nightSpecificSuggestions,
-                ...categoryExplorationSuggestions,
+                ...limitedNightSuggestions,
+                ...randomExplorationSuggestions,
+                ...limitedCategoryExplorationSuggestions,
                 ...generalExplorationSuggestions,
               ];
 
