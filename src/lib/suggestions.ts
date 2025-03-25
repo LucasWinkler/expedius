@@ -49,12 +49,13 @@ export const getLateNightCategoryGroups = (): CategoryGroup[] => {
 
   // Fallback if not enough categories have metadata
   if (lateNightAppropriate.length < 5) {
+    // Ensure we only include categories that make sense for late-night Google Places results
     return [
       CATEGORY_GROUPS.restaurants, // 24-hour restaurants, late-night food
       CATEGORY_GROUPS.bars, // Bars and nightlife
-      CATEGORY_GROUPS.entertainment, // Entertainment options
-      CATEGORY_GROUPS.cafes, // 24-hour cafes
-      CATEGORY_GROUPS.desserts, // Late night dessert cravings
+      CATEGORY_GROUPS.entertainment, // Entertainment options like movie theaters, arcades
+      CATEGORY_GROUPS.desserts, // Late night dessert spots
+      CATEGORY_GROUPS.markets, // 24-hour convenience stores
     ];
   }
 
@@ -102,11 +103,12 @@ export function getTimeBasedSuggestions(hour: number): CategoryGroup[] {
     const timeAppropriate = group.metadata?.timeAppropriate;
     if (!timeAppropriate) return true;
 
-    if (hour >= 5 && hour < 12) return timeAppropriate.morning;
-    if (hour >= 12 && hour < 15) return timeAppropriate.lunch;
-    if (hour >= 15 && hour < 18) return timeAppropriate.afternoon;
-    if (hour >= 18 && hour < 22) return timeAppropriate.evening;
-    return timeAppropriate.lateNight;
+    // Align with typical business operating hours
+    if (hour >= 5 && hour < 11) return timeAppropriate.morning;
+    if (hour >= 11 && hour < 15) return timeAppropriate.lunch;
+    if (hour >= 15 && hour < 17) return timeAppropriate.afternoon;
+    if (hour >= 17 && hour < 22) return timeAppropriate.evening;
+    return timeAppropriate.lateNight; // 10pm-5am
   };
 
   // Add appropriate categories based on time
@@ -128,12 +130,13 @@ export function getExplorationSuggestions(
   count: number,
   hour: number,
 ): CategoryGroup[] {
+  // Keep time ranges consistent with getTimeBasedSuggestions
   const timeOfDay: TimeOfDay =
     hour >= 5 && hour < 11
       ? "morning"
-      : hour >= 11 && hour < 14
+      : hour >= 11 && hour < 15
         ? "lunch"
-        : hour >= 14 && hour < 17
+        : hour >= 15 && hour < 17
           ? "afternoon"
           : hour >= 17 && hour < 22
             ? "evening"

@@ -127,11 +127,11 @@ export function getSpecificTypeSuggestions(
 
 // Helper function to check if current time is critical
 function isTimeCritical(hour: number): boolean {
-  // Critical times: 7-10am (breakfast), 11:30am-2pm (lunch), 6-8pm (dinner)
+  // Critical times: 7-10am (breakfast), 11:30am-2pm (lunch), 5-8pm (dinner)
   return (
     (hour >= 7 && hour < 10) ||
-    (hour >= 11.5 && hour < 14) ||
-    (hour >= 18 && hour < 20)
+    (hour >= 11.5 && hour < 15) ||
+    (hour >= 17 && hour < 20)
   );
 }
 

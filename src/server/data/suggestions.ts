@@ -142,9 +142,40 @@ export const suggestions = {
         const exploitationCount = Math.ceil(maxSuggestions * exploitationRatio);
         const explorationCount = maxSuggestions - exploitationCount;
 
-        // Get specific type suggestions based on user preferences
+        // Determine time of day for time-appropriate filtering
+        const timeOfDay =
+          clientHour >= 5 && clientHour < 11
+            ? "morning"
+            : clientHour >= 11 && clientHour < 15
+              ? "lunch"
+              : clientHour >= 15 && clientHour < 17
+                ? "afternoon"
+                : clientHour >= 17 && clientHour < 22
+                  ? "evening"
+                  : "lateNight";
+
+        // Filter user preferences by time-appropriate categories
+        // This ensures that categories like cafes don't appear at late night hours
+        // even if they're in the user's preferences
+        const timeAppropriatePreferences = [
+          ...userPrefs.primaryTypes,
+          ...userPrefs.allTypes,
+        ].filter((pref) => {
+          const categoryGroup = getCategoryGroupsFromTypes([pref.placeType])[0];
+          return (
+            !categoryGroup ||
+            categoryGroup.metadata?.timeAppropriate?.[timeOfDay] !== false
+          );
+        });
+
+        // Log time filtering info
+        console.log(
+          `[SERVER INFO] Time-based filtering for ${timeOfDay}: ${timeAppropriatePreferences.length} of ${userPreferencesCount} preferences are appropriate`,
+        );
+
+        // Get specific type suggestions based on time-appropriate user preferences
         const specificTypeSuggestions = getSpecificTypeSuggestions(
-          [...userPrefs.primaryTypes, ...userPrefs.allTypes],
+          timeAppropriatePreferences,
           exploitationCount,
         );
 
@@ -159,7 +190,7 @@ export const suggestions = {
             (group) =>
               !randomizedSpecificSuggestions.some((s) =>
                 s.id.startsWith(group.id),
-              ),
+              ) && group.metadata?.timeAppropriate?.[timeOfDay] !== false,
           )
           .sort(() => Math.random() - 0.5)
           .slice(0, exploitationCount - randomizedSpecificSuggestions.length);
