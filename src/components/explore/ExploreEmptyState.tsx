@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { CategoryCard } from "./CategoryCard";
 import { usePersonalizedSuggestions } from "@/hooks/usePersonalizedSuggestions";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, Moon } from "lucide-react";
 import { ExploreCategoriesSkeleton } from "./ExploreCategoriesSkeleton";
 import type { SuggestionsContext } from "@/lib/suggestions";
 import Link from "next/link";
@@ -44,19 +44,42 @@ export const ExploreEmptyState = ({
             : "Recommended at This Time"}
         </h2>
         {metadata.hasPreferences ? (
-          <Tooltip>
-            <TooltipTrigger>
-              <div className="flex shrink-0 items-center gap-1.5 text-sm text-primary">
-                <Sparkles className="size-3.5 shrink-0 text-primary" />
-                Personalized
-              </div>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-[16rem] text-sm">
-              All recommendations are based on your interests. Look for sparkles
-              ✨ to discover new places, and moon 🌙 for nightlife activities
-              during late hours.
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex shrink-0 items-center gap-3">
+            {suggestions.some((s) =>
+              isExplorationSuggestion(
+                s,
+                metadata,
+                suggestions,
+                SUGGESTION_COUNTS[SUGGESTION_CONTEXTS.EXPLORE],
+              ),
+            ) && (
+              <Tooltip disableHoverableContent>
+                <TooltipTrigger>
+                  <Sparkles className="size-[18px] shrink-0 text-blue-500" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[16rem] text-sm">
+                  Look for sparkles ✨ to discover new places that may include
+                  variety and completely new categories to explore
+                </TooltipContent>
+              </Tooltip>
+            )}
+            {suggestions.some((s) =>
+              isNightSuggestionForDisplay(s, metadata),
+            ) && (
+              <Tooltip disableHoverableContent>
+                <TooltipTrigger>
+                  <Moon
+                    className="size-[18px] shrink-0 text-indigo-400"
+                    strokeWidth={2.5}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[16rem] text-sm">
+                  Look for moon 🌙 to find nightlife activities during late
+                  hours
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         ) : (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -73,8 +96,7 @@ export const ExploreEmptyState = ({
             </TooltipTrigger>
             <TooltipContent className="max-w-[16rem] text-sm">
               Sign up to receive personalized suggestions based on your
-              interests. For now, we're showing suggestions based on the time of
-              day - look for moon 🌙 for nightlife activities during late hours.
+              interests
             </TooltipContent>
           </Tooltip>
         )}
@@ -95,7 +117,7 @@ export const ExploreEmptyState = ({
           );
 
           return (
-            <Tooltip key={suggestion.id}>
+            <Tooltip disableHoverableContent key={suggestion.id}>
               <TooltipTrigger asChild>
                 <div>
                   <CategoryCard
