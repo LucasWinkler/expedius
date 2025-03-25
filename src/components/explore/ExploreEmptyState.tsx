@@ -41,7 +41,7 @@ export const ExploreEmptyState = ({
         <h2 className="min-w-0 text-2xl font-semibold tracking-tight">
           {metadata.hasPreferences
             ? "Recommended for You"
-            : "Popular Right Now"}
+            : "Recommended at This Time"}
         </h2>
         {metadata.hasPreferences ? (
           <Tooltip>
@@ -52,8 +52,9 @@ export const ExploreEmptyState = ({
               </div>
             </TooltipTrigger>
             <TooltipContent className="max-w-[16rem] text-sm">
-              All recommendations are based on your interests. Items with
-              sparkles ✨ are suggested to help you discover new places.
+              All recommendations are based on your interests. Look for sparkles
+              ✨ to discover new places, and moon 🌙 for nightlife activities
+              during late hours.
             </TooltipContent>
           </Tooltip>
         ) : (
@@ -72,7 +73,8 @@ export const ExploreEmptyState = ({
             </TooltipTrigger>
             <TooltipContent className="max-w-[16rem] text-sm">
               Sign up to receive personalized suggestions based on your
-              interests
+              interests. For now, we're showing suggestions based on the time of
+              day - look for moon 🌙 for nightlife activities during late hours.
             </TooltipContent>
           </Tooltip>
         )}
