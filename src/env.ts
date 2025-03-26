@@ -17,6 +17,7 @@ export const env = createEnv({
     GOOGLE_PLACES_API_KEY: z
       .string()
       .min(1, "Google Places API key is required"),
+    GOOGLE_MAPS_API_KEY: z.string().min(1, "Google Maps API key is required"),
     GOOGLE_PLACES_API_BASE_URL: z
       .literal("https://places.googleapis.com/v1")
       .default("https://places.googleapis.com/v1"),
@@ -59,6 +60,7 @@ export const env = createEnv({
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
     GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY,
+    GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     NODE_ENV: process.env.NODE_ENV,
