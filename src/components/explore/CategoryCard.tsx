@@ -24,7 +24,6 @@ export function CategoryCard({
   isNightSuggestion = false,
   isRandomExploration = false,
 }: CategoryCardProps) {
-  // Use exploration styling for both regular exploration and random exploration
   const useExplorationStyling = isExploration && !isNightSuggestion;
 
   return (

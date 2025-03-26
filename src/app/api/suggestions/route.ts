@@ -48,19 +48,6 @@ export async function GET(request: Request) {
       where: (like, { eq }) => eq(like.userId, session.user.id),
     });
 
-    // Get place types for each liked place
-    const placeTypes = await Promise.all(
-      userLikes.map(async (like) => {
-        const types = await getPlaceTypes(like.placeId);
-        return types ? { placeId: like.placeId, ...types } : null;
-      }),
-    );
-
-    // Filter out nulls
-    placeTypes.filter(
-      (types): types is NonNullable<typeof types> => types !== null,
-    );
-
     return NextResponse.json(
       await suggestions.queries.getPersonalizedSuggestions(
         session.user.id,

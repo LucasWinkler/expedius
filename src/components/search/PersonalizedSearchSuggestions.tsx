@@ -37,11 +37,6 @@ export const PersonalizedSearchSuggestions = () => {
           suggestionsCount,
         );
 
-        // Use utility functions for consistent night suggestion detection
-        // const isNightSpecific = isNightSpecificSuggestion(suggestion);
-        // const isLateNight = isLateNightHour();
-
-        // Use the combined utility to determine if this should get night styling
         const isNightSuggestion = isNightSuggestionForDisplay(
           suggestion,
           metadata,

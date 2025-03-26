@@ -1,6 +1,6 @@
 import type { CategoryGroup } from "@/types/categories";
 import { PERSONALIZATION_CONFIG } from "@/lib/suggestions";
-import type { SuggestionMeta } from "@/hooks/usePersonalizedSuggestions";
+import type { SuggestionMeta } from "@/lib/api/suggestions";
 
 /**
  * Check if current time is late night (10pm-5am)
