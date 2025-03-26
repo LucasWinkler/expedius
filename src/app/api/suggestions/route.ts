@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "@/server/auth/session";
-import { db } from "@/server/db";
 import { headers } from "next/headers";
 import { suggestions } from "@/server/data/suggestions";
 import {
