@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "@/server/auth/session";
 import { db } from "@/server/db";
-import { getPlaceTypes } from "@/lib/api/places";
 import { headers } from "next/headers";
 import { suggestions } from "@/server/data/suggestions";
 import {
@@ -33,24 +32,10 @@ export async function GET(request: Request) {
     };
 
     const session = await getServerSession();
-    if (!session) {
-      return NextResponse.json(
-        await suggestions.queries.getPersonalizedSuggestions(
-          null,
-          context,
-          timeInfo,
-        ),
-        { status: 200 },
-      );
-    }
-
-    const userLikes = await db.query.like.findMany({
-      where: (like, { eq }) => eq(like.userId, session.user.id),
-    });
 
     return NextResponse.json(
       await suggestions.queries.getPersonalizedSuggestions(
-        session.user.id,
+        session?.user.id ?? null,
         context,
         timeInfo,
       ),
