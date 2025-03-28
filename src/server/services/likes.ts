@@ -3,10 +3,7 @@ import { processPlaceThumbnail } from "./photos";
 import { env } from "@/env";
 import { DbLike } from "../types/db";
 
-export const getLikesWithPlaceDetails = async (
-  userId: string,
-  likes: DbLike[],
-) => {
+export const getLikesWithPlaceDetails = async (likes: DbLike[]) => {
   const likesWithPlaceDetails = await Promise.all(
     likes.map(async (like) => {
       const res = await fetch(
