@@ -13,7 +13,6 @@ import { getLikesWithPlaceDetails } from "@/server/services/likes";
 import { getServerSession } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 60;
 
 interface LikesPageProps {
   params: Promise<{ username: string }>;
@@ -104,7 +103,6 @@ export default async function LikesPage({
   });
 
   const likesWithPlaceDetails = await getLikesWithPlaceDetails(
-    user.id,
     paginatedLikes.items,
   );
 
