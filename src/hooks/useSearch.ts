@@ -210,7 +210,9 @@ export const useSearch = () => {
       }
     },
     enabled: shouldEnableSearch,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     retry: false,
   });
@@ -270,9 +272,11 @@ export const useSearch = () => {
       query === currentQuery &&
       !isChangingSearchParams.current &&
       shouldEnableSearch,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
-    retry: false, // Disable retries completely
+    retry: false,
   });
 
   useEffect(() => {
