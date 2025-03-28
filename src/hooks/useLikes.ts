@@ -45,6 +45,10 @@ export const useLikesInfinite = (
         : undefined,
     initialPageParam: 1,
     enabled: enabled && !!username,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 
   const removeLike = (placeId: string) => {
