@@ -16,13 +16,6 @@ const FIELD_MASK = [
   "nextPageToken",
 ].join(",");
 
-const placesCache = new Map<
-  string,
-  { data: PlaceSearchResponse; timestamp: number }
->();
-
-const CACHE_DURATION = 24 * 3600000; // 24 hours
-
 export const GET = withApiLimit(async (request: Request) => {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q");
@@ -51,28 +44,6 @@ export const GET = withApiLimit(async (request: Request) => {
       )
     : undefined;
   const parsedOpenNow = openNow === "true" ? true : undefined;
-
-  const generateCacheKey = () => {
-    const cacheKeyParams = [
-      `query:${query}`,
-      `size:${parsedSize}`,
-      lat && `lat:${lat}`,
-      lng && `lng:${lng}`,
-      `radius:${validatedRadius}`,
-      ...(parsedMinRating ? [`minRating:${parsedMinRating}`] : []),
-      ...(parsedOpenNow ? [`openNow:${parsedOpenNow}`] : []),
-    ].filter(Boolean);
-    return `search:${cacheKeyParams.join(":")}`;
-  };
-
-  if (!pageToken) {
-    const cacheKey = generateCacheKey();
-    const cachedPlaces = placesCache.get(cacheKey);
-
-    if (cachedPlaces && Date.now() - cachedPlaces.timestamp < CACHE_DURATION) {
-      return NextResponse.json(cachedPlaces.data);
-    }
-  }
 
   try {
     const body = {
@@ -117,12 +88,6 @@ export const GET = withApiLimit(async (request: Request) => {
     }
 
     const placesData = await res.json();
-
-    if (!pageToken) {
-      const cacheKey = generateCacheKey();
-      placesCache.set(cacheKey, { data: placesData, timestamp: Date.now() });
-    }
-
     return NextResponse.json(placesData);
   } catch (error) {
     console.error("Places API error:", error);
