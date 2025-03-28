@@ -36,7 +36,7 @@ export function PlaceDetailsCarousel({
   return (
     <div className="relative">
       <Carousel
-        className="relative aspect-video w-full overflow-hidden rounded-lg"
+        className="relative w-full overflow-hidden rounded-lg"
         opts={{
           align: "start",
           loop: true,
@@ -46,29 +46,50 @@ export function PlaceDetailsCarousel({
         <CarouselContent>
           {photos.map((photo, index) => (
             <CarouselItem
-              className="relative block aspect-video w-full select-none"
+              className="relative aspect-video w-full select-none"
               key={photo.name}
             >
-              {!imagesLoaded[photo.name] && (
-                <div className="absolute inset-0">
-                  <Skeleton className="absolute inset-0 rounded-none" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Loader2 className="size-8 animate-spin text-muted-foreground" />
+              <div className="relative h-full w-full overflow-hidden rounded-lg">
+                {!imagesLoaded[photo.name] && (
+                  <div className="absolute inset-0 z-10">
+                    <Skeleton className="h-full w-full rounded-lg" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                    </div>
                   </div>
-                </div>
-              )}
-              <Image
-                src={`/api/places/photo/${encodeURIComponent(photo.name)}?maxHeightPx=480&maxWidthPx=850`}
-                alt={`${placeName} photo ${index + 1}`}
-                className="object-cover"
-                fill
-                priority={index === 0}
-                unoptimized
-                onLoad={() =>
-                  setImagesLoaded((prev) => ({ ...prev, [photo.name]: true }))
-                }
-              />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                )}
+                <Image
+                  src={`/api/places/photo/${encodeURIComponent(photo.name)}?maxHeightPx=480&maxWidthPx=850`}
+                  alt={`${placeName} photo ${index + 1}`}
+                  className="h-full w-full rounded-lg object-cover"
+                  fill
+                  priority={index === 0}
+                  unoptimized
+                  onLoad={() =>
+                    setImagesLoaded((prev) => ({ ...prev, [photo.name]: true }))
+                  }
+                />
+                <div className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-to-t from-black/50 to-transparent" />
+                {photo.authorAttributions?.length > 0 && (
+                  <div className="absolute bottom-4 left-4 right-4 z-20 text-xs text-white">
+                    <p>
+                      Photo by{" "}
+                      {photo.authorAttributions.map((author, i) => (
+                        <a
+                          key={author.uri}
+                          href={author.uri}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline"
+                        >
+                          {author.displayName}
+                          {i < photo.authorAttributions.length - 1 ? ", " : ""}
+                        </a>
+                      ))}
+                    </p>
+                  </div>
+                )}
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>
