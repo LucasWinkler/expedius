@@ -1,4 +1,3 @@
-import { unstable_cache } from "next/cache";
 import { eq, and, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { like } from "@/server/db/schema";
@@ -10,61 +9,43 @@ import { PaginatedResponse } from "../types/profile";
 export const likes = {
   queries: {
     getByPlaceId: async (userId: DbUser["id"], placeId: DbLike["placeId"]) => {
-      return unstable_cache(
-        async () => {
-          return db.query.like.findFirst({
-            where: and(eq(like.userId, userId), eq(like.placeId, placeId)),
-          });
-        },
-        [`like-${userId}-${placeId}`],
-        {
-          tags: [`user-${userId}-likes`, `user-likes`],
-          revalidate: 60,
-        },
-      )();
+      return db.query.like.findFirst({
+        where: and(eq(like.userId, userId), eq(like.placeId, placeId)),
+      });
     },
 
     getAllByUserId: async (
       userId: DbUser["id"],
       { page = 1, limit = 10 }: PaginationParams = {},
     ): Promise<PaginatedResponse<DbLike>> => {
-      return unstable_cache(
-        async () => {
-          const offset = (page - 1) * limit;
+      const offset = (page - 1) * limit;
 
-          const [items, totalItems] = await Promise.all([
-            db.query.like.findMany({
-              where: eq(like.userId, userId),
-              orderBy: (like, { desc }) => [desc(like.createdAt)],
-              limit,
-              offset,
-            }),
-            db
-              .select({ count: sql<number>`count(*)` })
-              .from(like)
-              .where(eq(like.userId, userId))
-              .then((result) => Number(result[0].count)),
-          ]);
+      const [items, totalItems] = await Promise.all([
+        db.query.like.findMany({
+          where: eq(like.userId, userId),
+          orderBy: (like, { desc }) => [desc(like.createdAt)],
+          limit,
+          offset,
+        }),
+        db
+          .select({ count: sql<number>`count(*)` })
+          .from(like)
+          .where(eq(like.userId, userId))
+          .then((result) => Number(result[0].count)),
+      ]);
 
-          const totalPages = Math.ceil(totalItems / limit);
-          const hasNextPage = page < totalPages;
+      const totalPages = Math.ceil(totalItems / limit);
+      const hasNextPage = page < totalPages;
 
-          return {
-            items,
-            metadata: {
-              currentPage: page,
-              totalPages,
-              totalItems,
-              hasNextPage,
-            },
-          };
+      return {
+        items,
+        metadata: {
+          currentPage: page,
+          totalPages,
+          totalItems,
+          hasNextPage,
         },
-        [`user-${userId}-likes-page-${page}-limit-${limit}`],
-        {
-          tags: [`user-${userId}-likes`, `user-likes`],
-          revalidate: 60,
-        },
-      )();
+      };
     },
 
     getStatuses: async (placeIds: DbLike["placeId"][]) => {
@@ -73,50 +54,29 @@ export const likes = {
 
       if (!placeIds.length) return {};
 
-      const cacheKey = `user-${session.user.id}-likes-statuses-${placeIds.length}`;
-      const cachedFn = unstable_cache(
-        async () => {
-          const likedPlaces = await Promise.all(
-            placeIds.map(async (placeId) => {
-              const like = await likes.queries.getByPlaceId(
-                session.user.id,
-                placeId,
-              );
-              return [placeId, !!like] as const;
-            }),
+      const likedPlaces = await Promise.all(
+        placeIds.map(async (placeId) => {
+          const like = await likes.queries.getByPlaceId(
+            session.user.id,
+            placeId,
           );
-
-          return Object.fromEntries(likedPlaces);
-        },
-        [cacheKey],
-        {
-          tags: [`user-${session.user.id}-likes`, `user-likes`],
-          revalidate: 60,
-        },
+          return [placeId, !!like] as const;
+        }),
       );
 
-      return cachedFn();
+      return Object.fromEntries(likedPlaces);
     },
 
     getPaginatedLikes: async (
       userId: DbUser["id"],
       { page = 1, limit = 10 }: PaginationParams = {},
     ): Promise<PaginatedResponse<DbLike>> => {
-      return unstable_cache(
-        async () => {
-          const userLikes = await likes.queries.getAllByUserId(userId, {
-            page,
-            limit,
-          });
+      const userLikes = await likes.queries.getAllByUserId(userId, {
+        page,
+        limit,
+      });
 
-          return userLikes;
-        },
-        [`user-${userId}-likes-page-${page}-limit-${limit}`],
-        {
-          tags: [`user-${userId}-likes`, `user-likes`],
-          revalidate: 60,
-        },
-      )();
+      return userLikes;
     },
   },
 
