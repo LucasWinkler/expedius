@@ -18,7 +18,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       headers: {
         "content-type": res.headers.get("content-type") || "image/jpeg",
         "cache-control": "public, max-age=31536000, immutable",
-        etag: res.headers.get("etag") || crypto.randomUUID(),
       },
     });
   } catch (error) {

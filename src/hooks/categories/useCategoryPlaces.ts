@@ -87,5 +87,10 @@ export const useCategoryPlaces = ({
       }
     },
     enabled: shouldEnableQuery,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    retry: false,
   });
 };

@@ -5,7 +5,6 @@ import nextBundleAnalyzer from "@next/bundle-analyzer";
 
 const nextConfig: NextConfig = {
   images: {
-    minimumCacheTTL: 604800,
     remotePatterns: [
       {
         protocol: "https",

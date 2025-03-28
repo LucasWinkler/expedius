@@ -39,7 +39,6 @@ export async function GET(
       headers: {
         "content-type": contentType || "image/jpeg",
         "x-blur-data": base64,
-        etag: res.headers.get("etag") || crypto.randomUUID(),
       },
     });
   } catch (error) {
