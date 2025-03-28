@@ -38,7 +38,6 @@ export async function GET(
     return new NextResponse(buffer, {
       headers: {
         "content-type": contentType || "image/jpeg",
-        "cache-control": "public, max-age=604800, stale-while-revalidate=86400",
         "x-blur-data": base64,
         etag: res.headers.get("etag") || crypto.randomUUID(),
       },
