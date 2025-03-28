@@ -79,9 +79,6 @@ export async function GET(request: Request, { params }: RouteParams) {
               "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
               "X-Goog-FieldMask": FIELD_MASK,
             },
-            next: {
-              revalidate: 3600, // Cache for 1 hour
-            },
           },
         );
 
