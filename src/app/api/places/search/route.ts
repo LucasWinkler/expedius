@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { env } from "@/env";
-import type { PlaceSearchResponse } from "@/types";
 import { withApiLimit } from "@/server/lib/rate-limit";
 import { PLACE_FILTERS } from "@/constants";
 
