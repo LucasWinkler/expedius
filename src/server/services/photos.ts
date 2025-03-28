@@ -1,17 +1,14 @@
 import "server-only";
 
-import { cache } from "react";
 import { env } from "@/env";
 import { getPlacePhotoUrl } from "@/lib/place";
 import { getPlaiceholder } from "plaiceholder";
 import { Place } from "@/types";
 
-export const getEnhancedPlacePhoto = cache(async (photoRef: string) => {
+export const getEnhancedPlacePhoto = async (photoRef: string) => {
   try {
     const apiUrl = `${env.NEXT_PUBLIC_BASE_URL}${getPlacePhotoUrl(photoRef)}`;
-    const res = await fetch(apiUrl, {
-      next: { revalidate: 604800 }, // Cache for 1 week
-    });
+    const res = await fetch(apiUrl);
 
     if (!res.ok) {
       throw new Error(`Failed to fetch photo: ${res.statusText}`);
@@ -33,7 +30,7 @@ export const getEnhancedPlacePhoto = cache(async (photoRef: string) => {
     console.error("Error processing place photo:", error);
     throw error;
   }
-});
+};
 
 export const processPlaceThumbnail = async (place: Place): Promise<Place> => {
   try {
