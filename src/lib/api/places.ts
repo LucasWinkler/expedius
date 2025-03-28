@@ -1,6 +1,5 @@
 import { env } from "@/env";
 import type { PlaceDetails } from "@/types";
-import { cache } from "react";
 
 const PLACE_DETAILS_FIELD_MASK = [
   "id",
@@ -51,28 +50,25 @@ const PLACE_DETAILS_FIELD_MASK = [
   "allowsDogs",
 ].join(",");
 
-export const getPlaceDetails = cache(
-  async (placeId: string): Promise<PlaceDetails> => {
-    const res = await fetch(
-      `${env.GOOGLE_PLACES_API_BASE_URL}/places/${placeId}`,
-      {
-        headers: {
-          "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
-          "X-Goog-FieldMask": PLACE_DETAILS_FIELD_MASK,
-        },
-        next: {
-          revalidate: 3600, // Cache for 1 hour
-        },
+export const getPlaceDetails = async (
+  placeId: string,
+): Promise<PlaceDetails> => {
+  const res = await fetch(
+    `${env.GOOGLE_PLACES_API_BASE_URL}/places/${placeId}`,
+    {
+      headers: {
+        "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
+        "X-Goog-FieldMask": PLACE_DETAILS_FIELD_MASK,
       },
-    );
+    },
+  );
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch place details: ${res.statusText}`);
-    }
+  if (!res.ok) {
+    throw new Error(`Failed to fetch place details: ${res.statusText}`);
+  }
 
-    return res.json();
-  },
-);
+  return res.json();
+};
 
 interface PlaceTypesResponse {
   id: string;

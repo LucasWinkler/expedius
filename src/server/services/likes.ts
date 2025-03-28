@@ -16,9 +16,6 @@ export const getLikesWithPlaceDetails = async (
             "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
             "X-Goog-FieldMask": LIKES_FIELD_MASK,
           },
-          next: {
-            revalidate: 3600,
-          },
         },
       );
 
