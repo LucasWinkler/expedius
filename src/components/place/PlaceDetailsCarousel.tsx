@@ -70,9 +70,9 @@ export function PlaceDetailsCarousel({
                   }
                 />
                 <div className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-to-t from-black/50 to-transparent" />
-                {photo.authorAttributions?.length > 0 && (
-                  <div className="absolute bottom-4 left-4 right-4 z-20 text-xs text-white">
-                    <p>
+                {photo.authorAttributions && (
+                  <div className="absolute left-2 right-2 top-2 z-30 rounded bg-black/60 px-2 py-1 text-[10px] text-white/90 sm:text-xs">
+                    <p className="line-clamp-2">
                       Photo by{" "}
                       {photo.authorAttributions.map((author, i) => (
                         <a

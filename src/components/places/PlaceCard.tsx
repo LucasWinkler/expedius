@@ -80,17 +80,53 @@ export const PlaceCard = ({
         <Link href={`/place/${place.id}`} className="block">
           <div className="relative m-4 overflow-hidden rounded-lg">
             {place.image ? (
-              <Image
-                className="aspect-[4/3] h-full w-full rounded-lg object-cover duration-200 ease-in-out group-hover:scale-105"
-                src={place.image.url}
-                width={place.image.width}
-                height={place.image.height}
-                placeholder={place.image.blurDataURL ? "blur" : undefined}
-                blurDataURL={place.image.blurDataURL ?? undefined}
-                alt={place.displayName.text}
-                priority={priority}
-                unoptimized
-              />
+              <>
+                <Image
+                  className="aspect-[4/3] h-full w-full rounded-lg object-cover duration-200 ease-in-out group-hover:scale-105"
+                  src={place.image.url}
+                  width={place.image.width}
+                  height={place.image.height}
+                  placeholder={place.image.blurDataURL ? "blur" : undefined}
+                  blurDataURL={place.image.blurDataURL ?? undefined}
+                  alt={place.displayName.text}
+                  priority={priority}
+                  unoptimized
+                />
+                {(() => {
+                  const photo = place.photos?.[0];
+                  const attributions = photo?.authorAttributions;
+                  if (!attributions?.length) return null;
+
+                  return (
+                    <div className="absolute bottom-2 left-2 right-2 z-20 rounded bg-black/60 px-2 py-1 text-xs text-white/90">
+                      <p className="line-clamp-2">
+                        Photo by{" "}
+                        {attributions.map((author, i) => (
+                          <a
+                            key={author.uri}
+                            href={author.uri}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              window.open(
+                                author.uri,
+                                "_blank",
+                                "noopener,noreferrer",
+                              );
+                            }}
+                          >
+                            {author.displayName}
+                            {i < attributions.length - 1 ? ", " : ""}
+                          </a>
+                        ))}
+                      </p>
+                    </div>
+                  );
+                })()}
+              </>
             ) : (
               <Image
                 className="aspect-[4/3] h-full w-full rounded-lg object-cover duration-200 ease-in-out group-hover:scale-105"
