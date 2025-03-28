@@ -8,6 +8,10 @@ export const useSavedPlaces = (listId: string, page?: number) => {
   return useQuery({
     queryKey: [QUERY_KEYS.SAVED_PLACES, listId, { page }],
     queryFn: () => getSavedPlaces(listId, { page }),
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 };
 
