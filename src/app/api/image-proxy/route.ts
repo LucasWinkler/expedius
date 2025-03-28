@@ -14,10 +14,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const buffer = Buffer.from(await res.arrayBuffer());
 
+    const isGooglePlacesImage =
+      url.includes("places.googleapis.com") ||
+      url.includes("googleusercontent.com");
+
     return new NextResponse(buffer, {
       headers: {
         "content-type": res.headers.get("content-type") || "image/jpeg",
-        "cache-control": "public, max-age=31536000, immutable",
+        "cache-control": isGooglePlacesImage
+          ? "no-store, no-cache, must-revalidate, proxy-revalidate"
+          : "public, max-age=31536000, immutable",
       },
     });
   } catch (error) {
