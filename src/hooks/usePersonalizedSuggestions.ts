@@ -27,34 +27,16 @@ const calculateTimeUntilNextHour = (): number => {
 export const usePersonalizedSuggestions = (
   options: UsePersonalizedSuggestionsOptions = {},
 ) => {
-  const currentHour = useMemo(() => new Date().getHours(), []);
   const timeUntilNextHour = useMemo(() => calculateTimeUntilNextHour(), []);
 
-  // Default staleTime to time until next hour or user-provided value
-  const defaultStaleTime = Math.min(
-    timeUntilNextHour,
-    options.staleTime ?? 1000 * 60 * 30, // 30 minutes maximum
-  );
-
-  console.log("[DEBUG] Time until next hour:", timeUntilNextHour);
-  console.log("[DEBUG] Default staleTime:", defaultStaleTime);
-  console.log("[DEBUG] Current hour:", currentHour);
-  console.log("[DEBUG] Options:", options);
-  console.log("[DEBUG] Query key:", [
-    QUERY_KEYS.SUGGESTIONS,
-    options.context,
-    currentHour,
-  ]);
-
   const { data, isLoading, error } = useQuery({
-    queryKey: [QUERY_KEYS.SUGGESTIONS, options.context, currentHour],
+    queryKey: [QUERY_KEYS.SUGGESTIONS, options.context],
     queryFn: () =>
       fetchSuggestionsWithFallback({
         context: options.context,
       }),
-    staleTime: options.staleTime ?? defaultStaleTime,
-    gcTime: options.cacheTime ?? 1000 * 60 * 60, // 1 hour by default
-    refetchOnWindowFocus: false,
+    staleTime: options.staleTime ?? timeUntilNextHour,
+    gcTime: options.cacheTime ?? timeUntilNextHour + 5 * 60 * 1000, // next hour + 5 minutes
   });
 
   const suggestions = data?.suggestions || [];
