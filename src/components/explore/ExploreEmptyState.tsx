@@ -127,21 +127,8 @@ export const ExploreEmptyState = ({
             metadata,
           );
 
-          // Check if this is a random exploration suggestion
           const isRandomExploration =
             suggestion.metadata?.isRandomExploration === true;
-
-          // Debug bowling specifically
-          if (suggestion.title.toLowerCase().includes("bowling")) {
-            console.log("[DEBUG] Bowling in ExploreEmptyState:", {
-              title: suggestion.title,
-              id: suggestion.id,
-              isExploration,
-              isNightSuggestion,
-              isRandomExploration,
-              metadata: suggestion.metadata,
-            });
-          }
 
           return (
             <Tooltip key={suggestion.id}>

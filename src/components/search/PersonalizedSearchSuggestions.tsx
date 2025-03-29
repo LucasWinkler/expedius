@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Sparkles, Moon } from "lucide-react";
+import { ArrowRight, Sparkles, Moon, Dices } from "lucide-react";
 import Link from "next/link";
 import { SuggestionSkeleton } from "./SuggestionSkeleton";
 import { usePersonalizedSuggestions } from "@/hooks/usePersonalizedSuggestions";
@@ -42,6 +42,9 @@ export const PersonalizedSearchSuggestions = () => {
           metadata,
         );
 
+        const isRandomExploration =
+          suggestion.metadata?.isRandomExploration === true;
+
         return (
           <Tooltip disableHoverableContent key={suggestion.id}>
             <TooltipTrigger asChild>
@@ -73,8 +76,13 @@ export const PersonalizedSearchSuggestions = () => {
                     className="z-10 mr-1.5 size-3.5 text-indigo-400 drop-shadow-[0_0_3px_rgba(129,140,248,0.5)] sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4"
                     aria-hidden="true"
                   />
-                ) : isExploration ? (
+                ) : isExploration && !isRandomExploration ? (
                   <Sparkles
+                    className="z-10 mr-1.5 size-3.5 text-blue-400 drop-shadow-[0_0_3px_rgba(59,130,246,0.5)] sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4"
+                    aria-hidden="true"
+                  />
+                ) : isRandomExploration ? (
+                  <Dices
                     className="z-10 mr-1.5 size-3.5 text-blue-400 drop-shadow-[0_0_3px_rgba(59,130,246,0.5)] sm:size-3.5 md:size-4 lg:size-3.5 xl:size-3.5 2xl:size-4"
                     aria-hidden="true"
                   />
