@@ -7,6 +7,7 @@ import { createMetadata } from "@/lib/metadata";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
               duration={3000}
             />
           </TooltipProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryProvider>
         <Analytics />
         <SpeedInsights />
