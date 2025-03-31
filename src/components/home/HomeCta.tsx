@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export const HomeCta = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary/70 py-24 text-primary-foreground">
+    <section className="relative overflow-hidden bg-primary py-24 text-primary-foreground">
       <div className="bg-grid-white absolute inset-0 opacity-10" />
       <div className="container relative mx-auto px-6">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
