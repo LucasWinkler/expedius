@@ -7,14 +7,17 @@ import { Sparkles, ArrowRight, Moon, Dices } from "lucide-react";
 import { ExploreCategoriesSkeleton } from "./ExploreCategoriesSkeleton";
 import type { SuggestionsContext } from "@/lib/suggestions";
 import Link from "next/link";
-import { TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { Tooltip } from "../ui/tooltip";
 import {
   getSuggestionTooltipText,
   isNightSuggestionForDisplay,
   isExplorationSuggestion,
 } from "@/lib/suggestions/utils";
 import { SUGGESTION_COUNTS, SUGGESTION_CONTEXTS } from "@/lib/suggestions";
+import {
+  HybridTooltip,
+  HybridTooltipContent,
+  HybridTooltipTrigger,
+} from "@/components/ui/hybrid-tooltip";
 
 interface ExploreEmptyStateProps {
   className?: string;
@@ -51,65 +54,57 @@ export const ExploreEmptyState = ({
                 SUGGESTION_COUNTS[SUGGESTION_CONTEXTS.EXPLORE],
               ),
             ) && (
-              <Tooltip>
-                <TooltipTrigger>
+              <HybridTooltip disableHoverableContent>
+                <HybridTooltipTrigger>
                   <Sparkles className="size-[18px] shrink-0 text-blue-500" />
-                </TooltipTrigger>
-                <TooltipContent className="max-w-[16rem] text-sm">
+                </HybridTooltipTrigger>
+                <HybridTooltipContent className="max-w-[16rem] text-sm">
                   Look for sparkles ✨ to discover new places similar to your
                   interests
-                </TooltipContent>
-              </Tooltip>
+                </HybridTooltipContent>
+              </HybridTooltip>
             )}
             {suggestions.some(
               (s) => s.metadata?.isRandomExploration === true,
             ) && (
-              <Tooltip>
-                <TooltipTrigger>
+              <HybridTooltip disableHoverableContent>
+                <HybridTooltipTrigger>
                   <Dices className="size-[18px] shrink-0 text-blue-500" />
-                </TooltipTrigger>
-                <TooltipContent className="max-w-[16rem] text-sm">
+                </HybridTooltipTrigger>
+                <HybridTooltipContent className="max-w-[16rem] text-sm">
                   Look for dice 🎲 to discover completely random categories
                   outside your usual preferences
-                </TooltipContent>
-              </Tooltip>
+                </HybridTooltipContent>
+              </HybridTooltip>
             )}
             {suggestions.some((s) =>
               isNightSuggestionForDisplay(s, metadata),
             ) && (
-              <Tooltip>
-                <TooltipTrigger>
+              <HybridTooltip disableHoverableContent>
+                <HybridTooltipTrigger>
                   <Moon
                     className="size-[18px] shrink-0 text-indigo-400"
                     strokeWidth={2.5}
                   />
-                </TooltipTrigger>
-                <TooltipContent className="max-w-[16rem] text-sm">
+                </HybridTooltipTrigger>
+                <HybridTooltipContent className="max-w-[16rem] text-sm">
                   Look for moon 🌙 to find nightlife activities during late
                   hours
-                </TooltipContent>
-              </Tooltip>
+                </HybridTooltipContent>
+              </HybridTooltip>
             )}
           </div>
         ) : (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/auth/sign-up"
-                className="inline-flex w-fit shrink-0 items-center gap-1.5 text-sm text-primary hover:underline"
-              >
-                <Sparkles className="size-3.5 shrink-0" />
-                <span className="flex items-center gap-1.5">
-                  Get recommendations
-                  <ArrowRight className="size-3.5 shrink-0" />
-                </span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-[16rem] text-sm">
-              Sign up to receive personalized suggestions based on your
-              interests
-            </TooltipContent>
-          </Tooltip>
+          <Link
+            href="/auth/sign-up"
+            className="inline-flex w-fit shrink-0 items-center gap-1.5 text-sm text-primary hover:underline"
+          >
+            <Sparkles className="size-3.5 shrink-0" />
+            <span className="flex items-center gap-1.5">
+              Get recommendations
+              <ArrowRight className="size-3.5 shrink-0" />
+            </span>
+          </Link>
         )}
       </div>
 
@@ -131,8 +126,8 @@ export const ExploreEmptyState = ({
             suggestion.metadata?.isRandomExploration === true;
 
           return (
-            <Tooltip key={suggestion.id}>
-              <TooltipTrigger asChild>
+            <HybridTooltip key={suggestion.id}>
+              <HybridTooltipTrigger asChild>
                 <div>
                   <CategoryCard
                     title={suggestion.title}
@@ -146,11 +141,11 @@ export const ExploreEmptyState = ({
                     isRandomExploration={isRandomExploration}
                   />
                 </div>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-[16rem] text-sm">
+              </HybridTooltipTrigger>
+              <HybridTooltipContent className="max-w-[16rem] text-sm">
                 {getSuggestionTooltipText(isExploration, suggestion, metadata)}
-              </TooltipContent>
-            </Tooltip>
+              </HybridTooltipContent>
+            </HybridTooltip>
           );
         })}
       </div>

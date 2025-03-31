@@ -6,8 +6,8 @@ import { QueryProvider } from "@/providers/query-provider";
 import { createMetadata } from "@/lib/metadata";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { HybridTooltipProvider } from "@/components/ui/hybrid-tooltip";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,7 +28,7 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
         className={`${inter.variable} flex min-h-screen flex-col bg-background font-inter antialiased`}
       >
         <QueryProvider>
-          <TooltipProvider delayDuration={300}>
+          <HybridTooltipProvider delayDuration={300}>
             {children}
             <Toaster
               position="bottom-right"
@@ -37,7 +37,7 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
               closeButton={true}
               duration={3000}
             />
-          </TooltipProvider>
+          </HybridTooltipProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryProvider>
         <Analytics />
