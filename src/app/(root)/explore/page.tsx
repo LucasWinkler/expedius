@@ -1,7 +1,6 @@
 import { createMetadata } from "@/lib/metadata";
 import { ExploreContent } from "@/components/explore/ExploreContent";
 import { Search } from "lucide-react";
-import Link from "next/link";
 import { RotatingExampleQueries } from "@/components/explore/RotatingExampleQueries";
 import { ExampleQueries } from "@/components/explore/ExampleQueries";
 
