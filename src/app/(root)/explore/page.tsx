@@ -1,6 +1,9 @@
 import { createMetadata } from "@/lib/metadata";
 import { ExploreContent } from "@/components/explore/ExploreContent";
 import { Search } from "lucide-react";
+import Link from "next/link";
+import { RotatingExampleQueries } from "@/components/explore/RotatingExampleQueries";
+import { ExampleQueries } from "@/components/explore/ExampleQueries";
 
 export const metadata = createMetadata({
   title: "Explore Places",
@@ -23,26 +26,9 @@ export default function ExplorePage() {
           Find specific places or browse popular categories. Use filters to
           refine your results.
         </p>
-        <div className="mt-4 hidden flex-wrap justify-center gap-2 text-sm text-muted-foreground sm:flex">
-          <span>Try:</span>
-          <span className="font-medium text-foreground">
-            &ldquo;Coffee shops Seattle&rdquo;
-          </span>
-          <span>•</span>
-          <span className="font-medium text-foreground">
-            &ldquo;Sushi restaurants Tokyo&rdquo;
-          </span>
-          <span>•</span>
-          <span className="font-medium text-foreground">
-            &ldquo;Art galleries Paris&rdquo;
-          </span>
-          <span>•</span>
-          <span className="font-medium text-foreground">
-            &ldquo;Rooftop bars Manhattan&rdquo;
-          </span>
-        </div>
+        <RotatingExampleQueries />
+        <ExampleQueries />
       </div>
-
       <ExploreContent />
     </div>
   );
