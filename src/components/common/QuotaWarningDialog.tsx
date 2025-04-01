@@ -78,7 +78,7 @@ export const QuotaWarningDialog = () => {
           >
             <div>
               <p className="mb-2">
-                Please be aware that we're currently using the free tier of
+                Please be aware that we&apos;re currently using the free tier of
                 Google Cloud APIs, which has daily usage limits.
               </p>
               <p className="mb-2">
