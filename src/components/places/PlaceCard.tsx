@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { getPriceLevelDisplayShort } from "@/lib/place";
 import placeImageFallback from "@/../public/place-image-fallback.webp";
 import { useLocation } from "@/contexts/LocationContext";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, Fragment } from "react";
 import { calculateDistance } from "@/utils/places";
 
 interface PlaceCardProps {
@@ -102,25 +102,10 @@ export const PlaceCard = ({
                       <p className="line-clamp-2">
                         Photo by{" "}
                         {attributions.map((author, i) => (
-                          <a
-                            key={author.uri}
-                            href={author.uri}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              window.open(
-                                author.uri,
-                                "_blank",
-                                "noopener,noreferrer",
-                              );
-                            }}
-                          >
+                          <Fragment key={`${author.uri}-${i}`}>
                             {author.displayName}
                             {i < attributions.length - 1 ? ", " : ""}
-                          </a>
+                          </Fragment>
                         ))}
                       </p>
                     </div>
