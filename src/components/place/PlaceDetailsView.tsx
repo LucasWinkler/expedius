@@ -35,6 +35,7 @@ export function PlaceDetailsView({ place }: PlaceDetailsViewProps) {
             <PlaceDetailsCarousel
               photos={place.photos}
               placeName={place.displayName.text}
+              showThumbnails={false}
             />
           ) : null}
 

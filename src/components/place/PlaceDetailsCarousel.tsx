@@ -17,11 +17,13 @@ import { cn } from "@/lib/utils";
 interface PlaceDetailsCarouselProps {
   photos?: PlacePhoto[];
   placeName: string;
+  showThumbnails?: boolean;
 }
 
 export function PlaceDetailsCarousel({
   photos,
   placeName,
+  showThumbnails = true,
 }: PlaceDetailsCarouselProps) {
   const { currentSnapPoint, snapPointCount, api, setApi } = useCarouselState();
   const [imagesLoaded, setImagesLoaded] = useState<Record<string, boolean>>({});
@@ -122,7 +124,7 @@ export function PlaceDetailsCarousel({
           </>
         )}
       </Carousel>
-      {photos.length > 1 && (
+      {showThumbnails && photos.length > 1 && (
         <div className="scrollbar-thin mt-4 overflow-x-auto pb-2">
           <div className="flex gap-2">
             {photos.map((photo, index) => (
