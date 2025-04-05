@@ -51,8 +51,8 @@ export default function PlaceDetailsError({
         <>
           <h1 className="mt-6 text-3xl font-bold">API Quota Exceeded</h1>
           <p className="mt-4 max-w-md text-muted-foreground">
-            We've reached our daily limit for Google Places API requests. The
-            quota will reset at midnight Pacific Time.
+            We&apos;ve reached our daily limit for Google Places API requests.
+            The quota will reset at midnight Pacific Time.
           </p>
           {timeRemaining && (
             <div className="mt-4 flex items-center gap-2 rounded-lg bg-amber-50 px-4 py-2 text-amber-700">

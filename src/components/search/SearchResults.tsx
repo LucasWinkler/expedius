@@ -79,8 +79,8 @@ export const SearchResults = ({ className }: SearchResultsProps) => {
             </div>
             <h2 className="mt-4 text-xl font-semibold">API Quota Exceeded</h2>
             <p className="mt-2 max-w-md text-muted-foreground">
-              We've reached our daily limit for Google Places API requests. The
-              quota will reset at midnight Pacific Time.
+              We&apos;ve reached our daily limit for Google Places API requests.
+              The quota will reset at midnight Pacific Time.
             </p>
             {timeRemaining && (
               <div className="mt-4 flex items-center gap-2 rounded-lg bg-amber-50 px-4 py-2 text-amber-700">
