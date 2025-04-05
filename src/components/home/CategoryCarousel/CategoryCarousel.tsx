@@ -17,9 +17,6 @@ import type { LucideIcon } from "lucide-react";
 import { Fragment, useState, useEffect } from "react";
 import { CarouselDotsSkeleton } from "@/components/skeletons/CarouselDotsSkeleton";
 import { AlertCircle, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 interface CategoryCarouselProps {
   title: string;
