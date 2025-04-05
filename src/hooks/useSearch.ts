@@ -59,6 +59,7 @@ export const useSearch = () => {
   const [allPlaces, setAllPlaces] = useState<Place[]>([]);
   const [pageToken, setPageToken] = useState<string | null>(null);
   const [paginationError, setPaginationError] = useState<string | null>(null);
+  const [combinedError, setCombinedError] = useState<Error | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [currentQuery, setCurrentQuery] = useState<string>(query);
   const isChangingSearchParams = useRef(false);
@@ -79,6 +80,7 @@ export const useSearch = () => {
     setPageToken(null);
     setAllPlaces([]);
     setPaginationError(null);
+    setCombinedError(null);
 
     const timeoutId = setTimeout(() => {
       isChangingSearchParams.current = false;
@@ -176,6 +178,7 @@ export const useSearch = () => {
     data: searchData,
     isPending,
     isError,
+    error: searchError,
   } = useQuery({
     queryKey: [
       QUERY_KEYS.SEARCH,
@@ -186,7 +189,6 @@ export const useSearch = () => {
     ],
     queryFn: async () => {
       try {
-        // Ensure location has been requested if needed
         if (!hasRequestedLocation) {
           await requestLocation();
         }
@@ -206,6 +208,9 @@ export const useSearch = () => {
         return result;
       } catch (error) {
         console.error("[SEARCH] Error:", error);
+        setCombinedError(
+          error instanceof Error ? error : new Error(String(error)),
+        );
         throw error;
       }
     },
@@ -260,7 +265,16 @@ export const useSearch = () => {
         return result;
       } catch (error) {
         console.error("[SEARCH] Pagination error:", error);
-        setPaginationError("Failed to load more results. Please try again.");
+        const errorMessage = "Failed to load more results. Please try again.";
+        setPaginationError(errorMessage);
+
+        if (
+          error instanceof Error &&
+          error.message.includes("Too Many Requests")
+        ) {
+          setCombinedError(error);
+        }
+
         throw error;
       } finally {
         setIsLoadingMore(false);
@@ -354,6 +368,16 @@ export const useSearch = () => {
     };
   }, [searchData, paginationData, allPlaces]);
 
+  useEffect(() => {
+    if (searchError) {
+      setCombinedError(
+        searchError instanceof Error
+          ? searchError
+          : new Error(String(searchError)),
+      );
+    }
+  }, [searchError]);
+
   return {
     query,
     filters,
@@ -363,6 +387,7 @@ export const useSearch = () => {
     isPending:
       isPending || (!!searchData && allPlaces.length === 0 && !isError),
     isError,
+    error: combinedError,
     loadMore,
     hasMore: !!(pageToken
       ? paginationData?.nextPageToken
