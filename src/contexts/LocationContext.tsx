@@ -5,6 +5,8 @@ import {
   useContext,
   useState,
   useCallback,
+  useRef,
+  useEffect,
   type ReactNode,
 } from "react";
 
@@ -43,6 +45,8 @@ const LocationContext = createContext<LocationContextType>({
   hasRequestedLocation: false,
 });
 
+const LOCATION_TIMEOUT_MS = 15000; // 15 seconds total timeout
+
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const [coords, setCoords] = useState<{
     latitude: number | null;
@@ -58,7 +62,25 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const [isPermissionPending, setIsPermissionPending] = useState(false);
   const [hasRequestedLocation, setHasRequestedLocation] = useState(false);
 
+  // Reference to track active timeout
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clear timeout when component unmounts
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleSuccess = useCallback((position: GeolocationPosition) => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
     const newCoords = {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
@@ -70,6 +92,11 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const handleError = useCallback((err: GeolocationPositionError) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
     setCoords({ latitude: null, longitude: null });
 
     if (err.code === 1) {
@@ -83,6 +110,16 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(false);
     setIsPermissionPending(false);
+  }, []);
+
+  const handleLocationTimeout = useCallback(() => {
+    console.warn("Location request timed out after global timeout");
+    setCoords({ latitude: null, longitude: null });
+    setPermissionState("timeout");
+    setError("Location request timed out");
+    setIsLoading(false);
+    setIsPermissionPending(false);
+    timeoutRef.current = null;
   }, []);
 
   const requestLocation = useCallback(async () => {
@@ -101,15 +138,21 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     setIsPermissionPending(true);
 
+    // Set a global timeout that will trigger regardless of other scenarios
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(handleLocationTimeout, LOCATION_TIMEOUT_MS);
+
     const options: PositionOptions = {
       enableHighAccuracy: true,
-      timeout: 10000,
+      timeout: 10000, // Geolocation API timeout (may not always work in all environments)
       maximumAge: 0,
     };
 
     try {
       const permission = await navigator.permissions.query({
-        name: "geolocation",
+        name: "geolocation" as PermissionName,
       });
 
       if (permission.state === "granted") {
@@ -120,6 +163,10 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
           options,
         );
       } else if (permission.state === "denied") {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
         setPermissionState("denied");
         setIsLoading(false);
         setIsPermissionPending(false);
@@ -140,6 +187,10 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
             options,
           );
         } else if (permission.state === "denied") {
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+          }
           setPermissionState("denied");
           setCoords({ latitude: null, longitude: null });
           setIsLoading(false);
@@ -154,7 +205,13 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
         options,
       );
     }
-  }, [handleSuccess, handleError, hasRequestedLocation, isLoading]);
+  }, [
+    handleSuccess,
+    handleError,
+    handleLocationTimeout,
+    hasRequestedLocation,
+    isLoading,
+  ]);
 
   const value = {
     coords,
