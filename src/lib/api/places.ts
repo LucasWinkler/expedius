@@ -64,7 +64,12 @@ export const getPlaceDetails = async (
   );
 
   if (!res.ok) {
-    throw new Error(`Failed to fetch place details: ${res.statusText}`);
+    if (res.status === 429) {
+      throw new Error("Too Many Requests: API quota exceeded");
+    }
+    throw new Error(
+      `Failed to fetch place details: ${res.statusText} (${res.status})`,
+    );
   }
 
   return res.json();

@@ -13,7 +13,10 @@ export default function PlaceDetailsError({
   reset: () => void;
 }) {
   const [timeRemaining, setTimeRemaining] = useState<string>("");
-  const isQuotaError = error.message?.includes("Too Many Requests");
+  // Look for our special error message format that works in production
+  const isQuotaError =
+    error.message?.includes("ERROR_QUOTA_EXCEEDED") ||
+    error.message?.includes("Too Many Requests");
 
   useEffect(() => {
     if (!isQuotaError) return;

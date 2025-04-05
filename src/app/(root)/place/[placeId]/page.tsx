@@ -2,6 +2,7 @@ import { getPlaceDetails } from "@/lib/api/places";
 import { PlaceDetailsView } from "@/components/place/PlaceDetailsView";
 import { createMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 interface PlaceDetailsPageProps {
   params: Promise<{ placeId: string }>;
@@ -42,7 +43,25 @@ export default async function PlaceDetailsPage({
   params,
 }: PlaceDetailsPageProps) {
   const { placeId } = await params;
-  const placeDetails = await getPlaceDetails(placeId);
 
-  return <PlaceDetailsView place={placeDetails} />;
+  try {
+    const placeDetails = await getPlaceDetails(placeId);
+
+    if (!placeDetails) {
+      redirect("/404");
+    }
+
+    return <PlaceDetailsView place={placeDetails} />;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (error.message.includes("429") ||
+        error.message.includes("Too Many Requests") ||
+        error.message.includes("quota"))
+    ) {
+      throw new Error("ERROR_QUOTA_EXCEEDED");
+    }
+
+    throw error;
+  }
 }
