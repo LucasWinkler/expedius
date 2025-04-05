@@ -111,8 +111,12 @@ export async function searchPlacesClient(
     const res = await fetch(url);
     if (!res.ok) {
       if (res.status === 429) {
-        toast.error("Please wait a moment before searching again");
-        return null;
+        toast.error("Unable to search", {
+          description:
+            "API quota exceeded or you've made too many requests. Please try again later.",
+          duration: 10000,
+        });
+        throw new Error("Too Many Requests: API quota exceeded");
       }
       console.error(`Search API error: ${res.status} ${res.statusText}`);
       throw new Error(`Failed to fetch results: ${res.statusText}`);
@@ -125,6 +129,6 @@ export async function searchPlacesClient(
     return { ...data, places: placesWithPhotos };
   } catch (error) {
     console.error("Failed to search:", error);
-    return null;
+    throw error;
   }
 }
