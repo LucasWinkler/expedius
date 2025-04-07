@@ -276,7 +276,6 @@ const CarouselDots = ({
       ? "bg-zinc-800 dark:bg-zinc-200"
       : "bg-white hover:bg-white/80";
 
-  // Use at least 1 to ensure layout is preserved even when count is 0
   const dotsCount = Math.max(1, count);
 
   return (

@@ -135,8 +135,8 @@ export const CategoryCarousel = ({
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="hidden pt-6 md:block">
-              <div className="flex justify-between">
+            <div className="hidden md:block">
+              <div className="flex justify-center">
                 {snapPointCount > 0 && dotsLoaded ? (
                   <CarouselDots
                     count={snapPointCount}
