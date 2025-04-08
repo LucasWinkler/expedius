@@ -29,6 +29,7 @@ export async function generateMetadata({
         place.editorialSummary?.text ??
         `Discover ${place.displayName.text} on Expedius. ${place.formattedAddress}`,
       canonicalUrlRelative: `/place/${placeId}`,
+      robots: { index: false, follow: false },
     });
   } catch {
     return createMetadata({
