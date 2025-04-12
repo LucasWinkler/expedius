@@ -140,7 +140,7 @@ export const CategoryCarousel = ({
                 {snapPointCount > 0 && dotsLoaded ? (
                   <CarouselDots
                     count={snapPointCount}
-                    currentIndex={currentSnapPoint}
+                    currentIndex={currentSnapPoint - 1}
                     onDotClick={(index) => api?.scrollTo(index)}
                   />
                 ) : (
@@ -157,7 +157,7 @@ export const CategoryCarousel = ({
             {snapPointCount > 0 && dotsLoaded ? (
               <CarouselDots
                 count={snapPointCount}
-                currentIndex={currentSnapPoint}
+                currentIndex={currentSnapPoint - 1}
                 onDotClick={(index) => api?.scrollTo(index)}
               />
             ) : (
